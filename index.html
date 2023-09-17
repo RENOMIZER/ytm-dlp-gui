@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <meta charset="UTF-8">
+  <!-- https://developer.mozilla.org/en-US/docs/Web/HTTP/CSP -->
+  <meta http-equiv="Content-Security-Policy" content="
+      default-src 'self'; 
+      script-src 'self'; 
+      style-src 'self' https://www.nerdfonts.com/assets/css/webfont.css;
+      font-src 'self' https://www.nerdfonts.com/assets/fonts/Symbols-2048-em%20Nerd%20Font%20Complete.woff2
+    ">
+  <link rel="stylesheet" href="./styles/style_main.css">
+  <title>YTM-DLP GUI</title>
+</head>
+
+<body>
+  <div id="titleBarContainer">
+    <div id="titleBar" class="draggable">
+      <!-- <button type="button" id="consButton" class="non-draggable act-button cons-button"><i class="nf nf-oct-terminal"></i></button> -->
+      <span class="draggable header">YTM-DLP</span>
+    </div>
+  </div>
+  <div class="container">
+    <span class="waiting-label" id="waitingLabel">Ожидаю</span>
+    <div class="button-container">
+      <button type="button" id="dlButton" class="act-button"><i class="nf nf-fa-download"></i></button>
+      <input type="text" id="inputURL" class="input-url"></input>
+      <button type="button" id="setButton" class="act-button"><i class="nf nf-md-cog"></i></button>
+    </div>
+    <div class="loc-container">
+      <input type="text" id="inputLocation" class="input-location"></input>
+      <button type="button" id="locButton" class="act-button"><i class="nf nf-custom-folder_oct"></i></button>
+    </div>
+  </div>
+  <script src="./scripts/main_renderer.js"></script>
+</body>
+
+</html>

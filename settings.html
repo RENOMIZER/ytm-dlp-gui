@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <meta charset="UTF-8">
+  <!-- https://developer.mozilla.org/en-US/docs/Web/HTTP/CSP -->
+  <meta http-equiv="Content-Security-Policy" content="
+      default-src 'self'; 
+      script-src 'self'; 
+      img-src 'self' https://*;
+      style-src 'self' https://www.nerdfonts.com/assets/css/webfont.css;
+      font-src 'self' https://www.nerdfonts.com/assets/fonts/Symbols-2048-em%20Nerd%20Font%20Complete.woff2
+    ">
+  <link rel="stylesheet" href="./styles/style_settings.css">
+</head>
+
+<body>
+  <div id="titleBarContainer">
+    <div id="titleBar" class="draggable">
+      <span id="header" class="draggable">Loading...</span>
+    </div>
+  </div>
+  <div class="container">
+    <button type="button" id="artButton" class="art-button" disabled></button>
+    <img class="art" id="art">
+    <div class="art-button-container" id="artButtonContainer">
+      <button type="button" id="urlButton" class="url-button art-buttons">Load from URL</button>
+      <button type="button" id="fileButton" class="file-button art-buttons">Load from file</button>
+    </div>
+    <div class="meta-container">
+      <span class="txt">Title:</span>
+      <input type="text" class="input" id="title">
+    </div>
+    <div class="meta-container">
+      <span class="txt">Artist:</span>
+      <input type="text" class="input" id="artist">
+    </div>
+    <div class="meta-container">
+      <span class="txt">Album:</span>
+      <input type="text" class="input" id="album">
+    </div>
+    <div class="meta-container">
+      <span class="txt">Year:</span>
+      <input type="text" class="input" id="year" maxlength="4">
+    </div>
+    <div class="meta-container">
+      <span class="txt">Custom:</span>
+      <i class="nf nf-oct-info info">
+        <div class="info-content">
+          this is a place holder ᗜˬᗜ
+        </div>
+      </i>
+      <textarea type="text" class="input args" id="args"></textarea>
+    </div>
+    <div class="button-container">
+      <span class="txt mp3Txt">MP3:</span>
+      <input type="checkbox" class="mp3-check" id="mp3Check">
+      <button type="button" id="relButton" class="act-button rel-button" disabled><i class="nf nf-oct-sync"></i></button>
+      <button type="button" id="accButton" class="act-button acc-button" disabled><i class="nf nf-oct-check"></i></button>
+      <button type="button" id="decButton" class="act-button dec-button"><i class="nf nf-oct-x"></i></button>
+    </div>
+  </div>
+  <script src="./scripts/settings_renderer.js"></script>
+</body>
+
+</html>
