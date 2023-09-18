@@ -289,7 +289,7 @@ ${path.join(getAppDataPath("ytm-dlp"), "ffmpeg")}
       (err) => { if (err) { console.error(err) } })
   }
 
-  if (!fs.existsSync(path.join(getAppDataPath("ytm-dlp"), "ffmpeg"))) {
+  if (!fs.existsSync(path.join(getAppDataPath("ytm-dlp"), "ffmpeg/ffmpeg.exe")) || !fs.existsSync(path.join(getAppDataPath("ytm-dlp"), "ffmpeg/ffprobe.exe"))) {
     ffbinaries.downloadBinaries(['ffmpeg', 'ffprobe'], { destination: path.join(getAppDataPath("ytm-dlp"), "/ffmpeg/") }, (err) => { if (err) { console.error(err) } })
   }
 }

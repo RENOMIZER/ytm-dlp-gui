@@ -1,0 +1,6 @@
+@font-face {
+  font-family: 'AKONY Bold';
+  font-style: normal;
+  font-weight: normal;
+  src: local('AKONY Bold'), url('akony.woff') format('woff');
+}
