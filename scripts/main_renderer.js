@@ -1,15 +1,24 @@
+let language
+
 /* Listeners */
 document.getElementById('dlButton').addEventListener('click', downloadStart)
 document.getElementById('setButton').addEventListener('click', settingsOpen)
-document.getElementById('locButton').addEventListener('click', directoryChoose)
+document.getElementById('aboutButton').addEventListener('click', () => { window.electronAPI.sendOpenAbout() })
+document.getElementById('locButton').addEventListener('click', async () => { window.electronAPI.sendChooseDirectory() })
+
+window.onload = async () => { 
+  language = await window.electronAPI.sendGetLanguage()
+
+  document.getElementById('waitingLabel').textContent = language.waiting
+}
 
 window.electronAPI.onDownloadFinished(() => {
-  document.getElementById('waitingLabel').textContent = 'Ожидаю'
+  document.getElementById('waitingLabel').textContent = language.waiting
   document.getElementById('dlButton').removeAttribute('disabled')
 })
 
 window.electronAPI.onDownloadError(() => {
-  document.getElementById('waitingLabel').textContent = 'Ошибка!'
+  document.getElementById('waitingLabel').textContent = language.error
   document.getElementById('dlButton').removeAttribute('disabled')
 })
 
@@ -36,7 +45,7 @@ function downloadStart() {
   }
 
   document.getElementById('dlButton').setAttribute('disabled', true)
-  document.getElementById('waitingLabel').textContent = 'Скачиваю...'
+  document.getElementById('waitingLabel').textContent = language.downloading
   document.getElementById('inputURL').value = ''
 }
 

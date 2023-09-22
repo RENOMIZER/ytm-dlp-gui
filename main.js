@@ -23,6 +23,7 @@ let metadata = {}
 let rawMetadata
 let currentVideo
 let customArt
+let language
 
 /* Initialisation */
 app.whenReady().then(() => {
@@ -30,16 +31,20 @@ app.whenReady().then(() => {
   ipcMain.on('clickedSettings', createSettings)
   ipcMain.on('recieveMetadata', (_event, metadata) => { changedMetadata = metadata })
   ipcMain.on('receiveOnlineArt', artReceive)
+  ipcMain.on('recieveLanguage', changeLang)
   ipcMain.on('chooseDirectory', chooseDirectory)
-  ipcMain.on('metadataReload', () => { SetWin.webContents.send('sendMetadata', metadata) })
-  ipcMain.on('artOpen', artOpen)
-  ipcMain.on('artGet', createUrl)
+  ipcMain.on('reloadMetadata', () => { SetWin.webContents.send('sendMetadata', metadata) })
+  ipcMain.handle('getLanguage', () => { return language })
+  ipcMain.on('openAbout', createAbout)
+  ipcMain.on('openArt', artOpen)
+  ipcMain.on('getArt', createUrl)
 
   getYTDlp()
+  getLang()
   createWindow()
 })
 
-/* Listeners' functions */
+/* General functions */
 const startDownload = (_event, videoURL, dirPath) => {
   let arguments = fs.readFileSync(path.join(getAppDataPath("ytm-dlp"), "yt-dlp/arguments.txt"), 'UTF-8').split(/\n/).map(e => { return e.replace(/"/g, '') })
 
@@ -100,6 +105,7 @@ const startDownload = (_event, videoURL, dirPath) => {
   console.log(arguments)
 
   YtDlpWrap.exec(arguments)
+    .on('ytDlpEvent', (eType, eData) => { console.log('[' + eType + ']', eData) })
     .on('error', (error) => { MainWin.webContents.send('sendDownloadError'); console.error(error) })
     .on('close', () => {
       MainWin.webContents.send('sendDownloadFinished');
@@ -139,7 +145,6 @@ const artReceive = (_event, artURL) => {
     });
 }
 
-/* General functions */
 const createWindow = () => {
   MainWin = new BrowserWindow({
     width: 800,
@@ -185,6 +190,15 @@ const createSettings = (_event, videoURL, type) => {
 
   SetWin.loadFile('settings.html')
   SetWin.on('ready-to-show', () => { SetWin.show(); getMetadata(videoURL, type) })
+  SetWin.on('minimize', () => {
+    try {
+      AboutWin.close()
+    } catch (e) {
+      console.error(e)
+    }
+    
+    MainWin.minimize()
+  })
 }
 
 const createUrl = () => {
@@ -211,12 +225,52 @@ const createUrl = () => {
   UrlWin.on('ready-to-show', () => { UrlWin.show() })
 }
 
+const createAbout = () => {
+  AboutWin = new BrowserWindow({
+    width: 450,
+    height: 600,
+    resizable: false,
+    titleBarStyle: 'hidden',
+    titleBarOverlay: {
+      color: '#181825',
+      symbolColor: '#bac2de',
+      height: 45,
+    },
+    parent: MainWin,
+    show: false,
+    icon: path.join(__dirname, '/images/icon.ico'),
+    webPreferences: {
+      preload: path.join(__dirname, '/scripts/preload.js')
+    }
+  })
+
+  AboutWin.loadFile('about.html')
+  AboutWin.on('ready-to-show', () => { AboutWin.show() })
+}
+
 const chooseDirectory = () => {
   dialog.showOpenDialog(MainWin, {
     title: 'Select download folder',
     buttonLabel: 'Select',
     properties: ['openDirectory']
   }).then((e) => { if (!e.canceled) { MainWin.webContents.send('sendDirectory', e.filePaths[0]) } })
+}
+
+const getLang = () => {
+  if (!fs.existsSync(path.join(getAppDataPath("ytm-dlp"), "config.json"))) {
+    fs.writeFileSync(path.join(getAppDataPath("ytm-dlp"), "config.json"), `{\n\t"lang": "en"\n}`)
+  }
+
+  let local = JSON.parse(fs.readFileSync(path.join(getAppDataPath("ytm-dlp"), "config.json")))
+  language = JSON.parse(fs.readFileSync(path.join(__dirname, '/lang/', local.lang + '.json')))
+}
+
+const changeLang = (_event, lang) => {
+  if (lang !== language.current) {
+    fs.writeFileSync(path.join(getAppDataPath("ytm-dlp"), "config.json"), `{\n\t"lang": "${lang}"\n}`)
+    app.relaunch()
+    app.quit()
+  }
 }
 
 /* Async functions */

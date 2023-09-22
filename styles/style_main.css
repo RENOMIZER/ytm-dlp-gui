@@ -77,7 +77,7 @@ body {
   transition: 0.2s;
 }
 
-.cons-button {
+.about-button {
   margin: auto 10px;
   height: 30px;
   width: 30px;
@@ -86,12 +86,12 @@ body {
   font-size: small;
 }
 
-.cons-button:hover {
+.about-button:hover {
   background-color: #252538;
   transition: 0.2s;
 }
 
-.cons-button:active {
+.about-button:active {
   background-color: #151520;
   transition: 0.2s;
 }

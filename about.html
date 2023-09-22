@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <meta charset="UTF-8">
+  <!-- https://developer.mozilla.org/en-US/docs/Web/HTTP/CSP -->
+  <meta http-equiv="Content-Security-Policy" content="
+      default-src 'self'; 
+      script-src 'self'; 
+      img-src 'self' https://*;
+      style-src 'self' https://www.nerdfonts.com/assets/css/webfont.css;
+      font-src 'self' https://www.nerdfonts.com/assets/fonts/Symbols-2048-em%20Nerd%20Font%20Complete.woff2
+    ">
+  <link rel="stylesheet" href="./styles/style_about.css">
+</head>
+
+<body>
+  <div id="titleBarContainer">
+    <div id="titleBar" class="draggable">
+      <span id="header" class="draggable">About</span>
+    </div>
+  </div>
+  <div class="container txt">
+    <img src="images\icon.ico">
+    <p>YTM-DLP</p>
+    <span>
+      YTM-DLP is an app created for sole purpose of
+      downloading music off YouTube Music in particular and YouTube in general. <br>
+      It does not download video, only audio. <br>
+      It provides convinient way of editing said audio's metadata on the spot. <br>
+      It was created as a practice project, to try my hand at development of desktop apps. <br>
+      It is my first attempt at making such, so be aware of bad code and tons of bugs 
+      which you can report back to me and I'll try to fix them. <br>
+      <br>
+      If you are wondering "How to use this app?" 
+      you can refer to README file in the GitHub repository. 
+    </span>
+    <div class="lang-container">
+      <span id="langTxt">Language:</span>
+      <select name="language" id="langSelect">
+        <option value="en">English</option>
+        <option value="ru">Русский</option>
+      </select>
+    </div>
+    <script src="./scripts/about_renderer.js"></script>
+  </div>
+</body>

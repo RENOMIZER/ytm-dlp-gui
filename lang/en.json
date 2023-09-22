@@ -1,0 +1,16 @@
+{
+  "current": "en",
+  "waiting": "Waiting",
+  "downloading": "Downloading...",
+  "error": "Error!",
+  "loading": "Loading...",
+  "edit": "Edit",
+  "loadurl": "Load from URL",
+  "loadfile": "Load from file",
+  "title": "Title",
+  "artist": "Artist",
+  "album": "Album",
+  "year": "Year",
+  "about": "About",
+  "language": "Language"
+}

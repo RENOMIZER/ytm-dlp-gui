@@ -13,7 +13,7 @@ module.exports = {
         description: "An ElectronJS app for downloading music off Youtube Music",
         exe: "YTM-DLP-GUI.exe",
         name: "YTM-DLP",
-        setupExe: "YTM-DLP-GUI Install.exe",
+        setupExe: "YTM-DLP-GUI.exe",
         setupIcon: './images/icon.ico',
         loadingGif: 'images/loading.gif',
       },
