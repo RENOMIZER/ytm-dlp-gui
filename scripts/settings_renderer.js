@@ -32,8 +32,9 @@ window.electronAPI.onRecieveMetadata((_event, metadata) => {
   album.value = metadata.album ? metadata.album : ""
   year.value = metadata.upload_year ? metadata.upload_year : ""
   args.value = metadata.custom ? metadata.custom : ""
-  document.getElementById('mp3Check').checked = metadata.mp3
   document.getElementById('header').textContent = language.edit
+  document.getElementById('mp3Check').checked = metadata.mp3
+  document.getElementById('mp3Check').removeAttribute('disabled')
   document.getElementById('accButton').removeAttribute('disabled')
   document.getElementById('relButton').removeAttribute('disabled')
   document.getElementById('artButton').removeAttribute('disabled')

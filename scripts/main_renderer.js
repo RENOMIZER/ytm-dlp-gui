@@ -4,7 +4,7 @@ let language
 document.getElementById('dlButton').addEventListener('click', downloadStart)
 document.getElementById('setButton').addEventListener('click', settingsOpen)
 document.getElementById('aboutButton').addEventListener('click', () => { window.electronAPI.sendOpenAbout() })
-document.getElementById('locButton').addEventListener('click', async () => { window.electronAPI.sendChooseDirectory() })
+document.getElementById('locButton').addEventListener('click', () => { window.electronAPI.sendChooseDirectory() })
 
 window.onload = async () => { 
   language = await window.electronAPI.sendGetLanguage()
@@ -65,8 +65,4 @@ function settingsOpen() {
   }
 
   window.electronAPI.sendClickedSettings(videoURL.replace(/&list.*/gm, ''))
-}
-
-function directoryChoose() {
-  window.electronAPI.sendChooseDirectory()
 }
