@@ -26,6 +26,8 @@ let customArt
 let language
 
 /* Initialisation */
+if (require('electron-squirrel-startup')) return; 
+
 app.whenReady().then(() => {
   ipcMain.on('startDownload', startDownload)
   ipcMain.on('clickedSettings', createSettings)
@@ -158,13 +160,13 @@ const createWindow = () => {
       height: 45,
     },
     show: false,
-    icon: path.join(__dirname, '/images/icon.ico'),
+    icon: path.join(__dirname, 'images/icon.ico'),
     webPreferences: {
-      preload: path.join(__dirname, '/scripts/preload.js')
+      preload: path.join(__dirname, '/preload.js')
     }
   })
 
-  MainWin.loadFile('index.html')
+  MainWin.loadFile('src/screens/index.html')
   MainWin.on('ready-to-show', () => { MainWin.show() })
 }
 
@@ -182,13 +184,13 @@ const createSettings = (_event, videoURL, type) => {
     parent: MainWin,
     modal: true,
     show: false,
-    icon: path.join(__dirname, '/images/icon.ico'),
+    icon: path.join(__dirname, 'images/icon.ico'),
     webPreferences: {
-      preload: path.join(__dirname, '/scripts/preload.js')
+      preload: path.join(__dirname, '/preload.js')
     }
   })
 
-  SetWin.loadFile('settings.html')
+  SetWin.loadFile('src/screens/settings.html')
   SetWin.on('ready-to-show', () => { SetWin.show(); getMetadata(videoURL, type) })
   SetWin.on('minimize', () => {
     try {
@@ -215,13 +217,13 @@ const createUrl = () => {
     parent: SetWin,
     modal: true,
     show: false,
-    icon: path.join(__dirname, '/images/icon.ico'),
+    icon: path.join(__dirname, 'images/icon.ico'),
     webPreferences: {
-      preload: path.join(__dirname, '/scripts/preload.js')
+      preload: path.join(__dirname, '/preload.js')
     }
   })
 
-  UrlWin.loadFile('url.html')
+  UrlWin.loadFile('src/screens/url.html')
   UrlWin.on('ready-to-show', () => { UrlWin.show() })
 }
 
@@ -238,13 +240,13 @@ const createAbout = () => {
     },
     parent: MainWin,
     show: false,
-    icon: path.join(__dirname, '/images/icon.ico'),
+    icon: path.join(__dirname, 'images/icon.ico'),
     webPreferences: {
-      preload: path.join(__dirname, '/scripts/preload.js')
+      preload: path.join(__dirname, '/preload.js')
     }
   })
 
-  AboutWin.loadFile('about.html')
+  AboutWin.loadFile('src/screens/about.html')
   AboutWin.on('ready-to-show', () => { AboutWin.show() })
 }
 

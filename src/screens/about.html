@@ -11,17 +11,17 @@
       style-src 'self' https://www.nerdfonts.com/assets/css/webfont.css;
       font-src 'self' https://www.nerdfonts.com/assets/fonts/Symbols-2048-em%20Nerd%20Font%20Complete.woff2
     ">
-  <link rel="stylesheet" href="./styles/style_about.css">
+  <link rel="stylesheet" href="about.css">
 </head>
 
 <body>
   <div id="titleBarContainer">
     <div id="titleBar" class="draggable">
-      <span id="header" class="draggable">About</span>
+      <span id="header" class="draggable"></span>
     </div>
   </div>
   <div class="container txt">
-    <img src="images\icon.ico">
+    <img src="..\images\icon.ico">
     <p>YTM-DLP</p>
     <span>
       YTM-DLP is an app created for sole purpose of
@@ -36,12 +36,12 @@
       you can refer to README file in the GitHub repository. 
     </span>
     <div class="lang-container">
-      <span id="langTxt">Language:</span>
+      <span id="langTxt"></span>
       <select name="language" id="langSelect">
         <option value="en">English</option>
         <option value="ru">Русский</option>
       </select>
     </div>
-    <script src="./scripts/about_renderer.js"></script>
   </div>
+  <script src="about.js"></script>
 </body>

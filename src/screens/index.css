@@ -1,5 +1,5 @@
 @import "https://www.nerdfonts.com/assets/css/webfont.css";
-@import "./font/style.css";
+@import "../font/akony.css";
 
 :root {
   --fallback-title-bar-height: 40px;

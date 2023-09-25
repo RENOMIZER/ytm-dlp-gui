@@ -1,7 +1,7 @@
 module.exports = {
   packagerConfig: {
     asar: true,
-    icon: './images/icon'
+    icon: 'src/images/icon'
   },
   rebuildConfig: {},
   makers: [
@@ -14,8 +14,9 @@ module.exports = {
         exe: "YTM-DLP-GUI.exe",
         name: "YTM-DLP",
         setupExe: "YTM-DLP-GUI.exe",
-        setupIcon: './images/icon.ico',
-        loadingGif: 'images/loading.gif',
+        setupIcon: 'src/images/icon.ico',
+        loadingGif: 'src/images/loading.gif',
+        title: 'YTM-DLP',
       },
     },
     {
@@ -23,7 +24,7 @@ module.exports = {
       config: {
         description: "An ElectronJS app for downloading music off Youtube Music",
         exe: "YTM-DLP-GUI",
-        icon: './images/icon.ico',
+        icon: 'src/images/icon.ico',
         language: 1033,
         manufacturer: "RENOMIZER",
         name: "YTM-DLP",

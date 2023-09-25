@@ -12,5 +12,6 @@
   "album": "Album",
   "year": "Year",
   "about": "About",
-  "language": "Language"
+  "language": "Language",
+  "url": "Input URL"
 }

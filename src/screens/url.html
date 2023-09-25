@@ -11,7 +11,7 @@
       style-src 'self' https://www.nerdfonts.com/assets/css/webfont.css;
       font-src 'self' https://www.nerdfonts.com/assets/fonts/Symbols-2048-em%20Nerd%20Font%20Complete.woff2
     ">
-  <link rel="stylesheet" href="./styles/style_url.css">
+  <link rel="stylesheet" href="url.css">
 </head>
 
 <body>
@@ -22,12 +22,12 @@
   </div>
   <div class="main-container">
     <div class="input-container">
-      <span class="txt">Input URL</span>
+      <span class="txt" id="urlTxt"></span>
       <input type="text" class="url-input" id="urlInput">
       <button type="button" id="accButton" class="act-button acc-button"><i class="nf nf-oct-check"></i></button>
     </div>
   </div>
-  <script src="./scripts/url_renderer.js"></script>
+  <script src="url.js"></script>
 </body>
 
 </html>
