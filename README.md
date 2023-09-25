@@ -1,5 +1,5 @@
 # YTM-DLP 
-![logo](https://raw.githubusercontent.com/RENOMIZER/ytm-dlp-gui/main/images/icon.ico)
+![logo](https://raw.githubusercontent.com/RENOMIZER/ytm-dlp-gui/main/src/images/icon.ico)
 
 An ElectronJS app for downloading music off Youtube Music
 
