@@ -12,7 +12,7 @@ and gives the ability to change them to what ever you'd like.
 ## Why is it a thing?
 Main reason: I wanted a convinient tool for donloading music off YouTube since most online services dows not include the functionality I desired.
 
-Secondary reason: For practice. I never developed any desktop apps before so I thought that this project would to a good opportunity to gain some experience in that field.
+Secondary reason: For practice. I never developed any desktop apps before so I thought that this project would be a good opportunity to gain some experience in that field.
 
 ## How to use it?
 
