@@ -32,18 +32,59 @@ app.whenReady().then(() => {
   ipcMain.on('startDownload', startDownload)
   ipcMain.on('clickedSettings', createSettings)
   ipcMain.on('recieveMetadata', (_event, metadata) => { changedMetadata = metadata })
-  ipcMain.on('receiveOnlineArt', artReceive)
-  ipcMain.on('recieveLanguage', changeLang)
-  ipcMain.on('chooseDirectory', chooseDirectory)
-  ipcMain.on('reloadMetadata', () => { SetWin.webContents.send('sendMetadata', metadata) })
+  
+	ipcMain.on('receiveOnlineArt', (_event, artURL) => {
+		fetch(artURL)
+			.then((response) => response.buffer())
+			.then((buffer) => {
+				if (!fs.existsSync(path.join(os.tmpdir(), '/ytm-dlp-images/'))) { fs.mkdirSync(path.join(os.tmpdir(), '/ytm-dlp-images/')) }
+	
+				fs.writeFileSync(path.join(os.tmpdir(), '/ytm-dlp-images/art'), buffer)
+	
+				SetWin.webContents.send('sendArt', path.join(os.tmpdir(), '/ytm-dlp-images/art'))
+				customArt = path.join(os.tmpdir(), '/ytm-dlp-images/art')
+			})
+			.catch((error) => {
+				console.error(error);
+			});
+	})
+  
+	ipcMain.on('recieveLanguage', (_event, lang) => {
+		if (lang !== language.current) {
+			fs.writeFileSync(path.join(getAppDataPath("ytm-dlp"), "config.json"), `{\n\t"lang": "${lang}"\n}`)
+			app.relaunch()
+			app.quit()
+		}
+	})
+  
+	ipcMain.on('chooseDirectory', () => {
+		dialog.showOpenDialog(MainWin, {
+			title: 'Select download folder',
+			buttonLabel: 'Select',
+			properties: ['openDirectory']
+		}).then((e) => { if (!e.canceled) { MainWin.webContents.send('sendDirectory', e.filePaths[0]) } })
+	})
+  
+	ipcMain.on('reloadMetadata', () => { SetWin.webContents.send('sendMetadata', metadata) })
   ipcMain.handle('getLanguage', () => { return language })
   ipcMain.on('openAbout', createAbout)
-  ipcMain.on('openArt', artOpen)
-  ipcMain.on('getArt', createUrl)
+  
+	ipcMain.on('openArt', () => {
+		dialog.showOpenDialog(SetWin, {
+			title: 'Select album artwork',
+			buttonLabel: 'Select',
+			filters: [
+				{ name: 'Images', extensions: ['png', 'jpg', 'jpeg', 'webp'] }
+			],
+			properties: ['openFile']
+		}).then((e) => { if (!e.canceled) { SetWin.webContents.send('sendArt', e.filePaths[0]); customArt = e.filePaths[0] } })
+	})
+  
+	ipcMain.on('getArt', createUrl)
 
   getYTDlp()
   getLang()
-  createWindow()
+  createMain()
 })
 
 /* General functions */
@@ -120,34 +161,7 @@ const startDownload = (_event, videoURL, dirPath) => {
   changedMetadata = { "no": "data" }
 }
 
-const artOpen = () => {
-  dialog.showOpenDialog(SetWin, {
-    title: 'Select album artwork',
-    buttonLabel: 'Select',
-    filters: [
-      { name: 'Images', extensions: ['png', 'jpg', 'jpeg', 'webp'] }
-    ],
-    properties: ['openFile']
-  }).then((e) => { if (!e.canceled) { SetWin.webContents.send('sendArt', e.filePaths[0]); customArt = e.filePaths[0] } })
-}
-
-const artReceive = (_event, artURL) => {
-  fetch(artURL)
-    .then((response) => response.buffer())
-    .then((buffer) => {
-      if (!fs.existsSync(path.join(os.tmpdir(), '/ytm-dlp-images/'))) { fs.mkdirSync(path.join(os.tmpdir(), '/ytm-dlp-images/')) }
-
-      fs.writeFileSync(path.join(os.tmpdir(), '/ytm-dlp-images/art'), buffer)
-
-      SetWin.webContents.send('sendArt', path.join(os.tmpdir(), '/ytm-dlp-images/art'))
-      customArt = path.join(os.tmpdir(), '/ytm-dlp-images/art')
-    })
-    .catch((error) => {
-      console.error(error);
-    });
-}
-
-const createWindow = () => {
+const createMain = () => {
   MainWin = new BrowserWindow({
     width: 800,
     minWidth: 400,
@@ -250,14 +264,6 @@ const createAbout = () => {
   AboutWin.on('ready-to-show', () => { AboutWin.show() })
 }
 
-const chooseDirectory = () => {
-  dialog.showOpenDialog(MainWin, {
-    title: 'Select download folder',
-    buttonLabel: 'Select',
-    properties: ['openDirectory']
-  }).then((e) => { if (!e.canceled) { MainWin.webContents.send('sendDirectory', e.filePaths[0]) } })
-}
-
 const getLang = () => {
   if (!fs.existsSync(path.join(getAppDataPath("ytm-dlp"), "config.json"))) {
     fs.writeFileSync(path.join(getAppDataPath("ytm-dlp"), "config.json"), `{\n\t"lang": "en"\n}`)
@@ -265,14 +271,6 @@ const getLang = () => {
 
   let local = JSON.parse(fs.readFileSync(path.join(getAppDataPath("ytm-dlp"), "config.json")))
   language = JSON.parse(fs.readFileSync(path.join(__dirname, '/lang/', local.lang + '.json')))
-}
-
-const changeLang = (_event, lang) => {
-  if (lang !== language.current) {
-    fs.writeFileSync(path.join(getAppDataPath("ytm-dlp"), "config.json"), `{\n\t"lang": "${lang}"\n}`)
-    app.relaunch()
-    app.quit()
-  }
 }
 
 /* Async functions */
@@ -316,32 +314,32 @@ const getYTDlp = async () => {
 
   if (!fs.existsSync(path.join(getAppDataPath("ytm-dlp"), "yt-dlp/arguments.txt"))) {
     fs.writeFile(path.join(getAppDataPath("ytm-dlp"), "yt-dlp/arguments.txt"), `-o
-"./ytm-dlp/%(artist)s - %(title)s.%(ext)s"
--x
--f
-bestaudio
---embed-thumbnail
---embed-metadata
---parse-metadata
-":(?P<meta_synopsis>)"
---parse-metadata
-":(?P<meta_purl>)"
---parse-metadata
-":(?P<meta_comment>)"
---parse-metadata
-":(?P<meta_description>)"
---sponsorblock-remove
-all
---ffmpeg-location
-${path.join(getAppDataPath("ytm-dlp"), "ffmpeg")}
---ppa
-"ThumbnailsConvertor+ffmpeg_o:-c:v png -vf crop='ih'"
---parse-metadata
-"upload_date:(?P<meta_date>^[0-9]{4})"
---replace-in-metadata
-"artist"
-"(,[a-zа-яА-ЯA-Z0-9_ ]).*"
-""`,
+			"./ytm-dlp/%(artist)s - %(title)s.%(ext)s"
+			-x
+			-f
+			bestaudio
+			--embed-thumbnail
+			--embed-metadata
+			--parse-metadata
+			":(?P<meta_synopsis>)"
+			--parse-metadata
+			":(?P<meta_purl>)"
+			--parse-metadata
+			":(?P<meta_comment>)"
+			--parse-metadata
+			":(?P<meta_description>)"
+			--sponsorblock-remove
+			all
+			--ffmpeg-location
+			${path.join(getAppDataPath("ytm-dlp"), "ffmpeg")}
+			--ppa
+			"ThumbnailsConvertor+ffmpeg_o:-c:v png -vf crop='ih'"
+			--parse-metadata
+			"upload_date:(?P<meta_date>^[0-9]{4})"
+			--replace-in-metadata
+			"artist"
+			"(,[a-zа-яА-ЯA-Z0-9_ ]).*"
+			""`.replace(/\t/gm, ''),
       (err) => { if (err) { console.error(err) } })
   }
 
