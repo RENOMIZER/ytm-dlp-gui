@@ -89,10 +89,10 @@ app.whenReady().then(() => {
 
 /* General functions */
 const startDownload = (_event, videoURL, dirPath) => {
-  let arguments = fs.readFileSync(path.join(getAppDataPath("ytm-dlp"), "yt-dlp/arguments.txt"), 'UTF-8').split(/\n/).map(e => { return e.replace(/"/g, '') })
+  let arguments = fs.readFileSync(path.join(getAppDataPath("ytm-dlp"), "yt-dlp/arguments.list"), 'UTF-8').split(/\n/).map(e => { return e.replace(/"/g, '') })
 
   if (!changedMetadata.no) {
-    for (let i = 0; i < 6; i++) {
+    for (let i = 0; i < 10; i++) {
       arguments.pop()
     }
 
@@ -110,17 +110,19 @@ const startDownload = (_event, videoURL, dirPath) => {
     }
 
     arguments.push(
-      '--parse-metadata', `${changedMetadata.track}:%(meta_title)s`,
-      '--parse-metadata', `${changedMetadata.track}:%(title)s`,
-      '--parse-metadata', `${changedMetadata.artist}:%(meta_artist)s`,
-      '--parse-metadata', `${changedMetadata.artist}:%(artist)s`,
-      '--parse-metadata', `${changedMetadata.album}:%(meta_album)s`,
-      '--parse-metadata', `${changedMetadata.upload_year}:%(meta_date)s`,
+      '--parse-metadata', "NA:%(meta_title)s",
+      '--parse-metadata', "NA:%(title)s",
+      '--parse-metadata', "NA:%(meta_artist)s",
+      '--parse-metadata', "NA:%(artist)s",
+      '--parse-metadata', "NA:%(album_artist)s",
+      '--parse-metadata', "NA:%(meta_album)s",
+      '--parse-metadata', "NA:%(meta_date)s",
 
       '--replace-in-metadata', 'meta_title', 'NA', changedMetadata.track,
       '--replace-in-metadata', 'title', 'NA', changedMetadata.track,
       '--replace-in-metadata', 'meta_artist', 'NA', changedMetadata.artist,
       '--replace-in-metadata', 'artist', 'NA', changedMetadata.artist,
+      '--replace-in-metadata', 'album_artist', 'NA', changedMetadata.artist,
       '--replace-in-metadata', 'meta_album', 'NA', changedMetadata.album,
       '--replace-in-metadata', 'meta_date', 'NA', changedMetadata.upload_year,
     )
@@ -132,7 +134,7 @@ const startDownload = (_event, videoURL, dirPath) => {
     }
 
     arguments.unshift(
-      '-o', `${dirPath}/%(artist)s - %(title)s.%(ext)s`
+      '-o', `${dirPath}/%(artist,uploader)s - %(title,meta_title)s.%(ext)s`
     )
   }
 
@@ -282,13 +284,13 @@ const getMetadata = async (videoURL) => {
       metadata.track = rawMetadata.track
       metadata.artist = rawMetadata.artist
       metadata.album = rawMetadata.album
-      metadata.upload_year = rawMetadata.upload_date.replace(/(?<=^\d{4}).*/gm, '')
+      metadata.upload_year = rawMetadata.description.match(/(?<=Released on: )[0-9]{4}/gm)
     }
     else {
       metadata.track = rawMetadata.title
       metadata.artist = rawMetadata.uploader
       metadata.album = ''
-      metadata.upload_year = rawMetadata.upload_date.replace(/(?<=^\d{4}).*/gm, '')
+      metadata.upload_year = rawMetadata.upload_date.match(/^\d{4}/gm)
     }
 
     metadata.art = rawMetadata['thumbnails'].pop()['url']
@@ -312,9 +314,9 @@ const getYTDlp = async () => {
     await YTDlpWrap.downloadFromGithub(path.join(getAppDataPath("ytm-dlp"), "yt-dlp/yt-dlp.exe"))
   }
 
-  if (!fs.existsSync(path.join(getAppDataPath("ytm-dlp"), "yt-dlp/arguments.txt"))) {
-    fs.writeFile(path.join(getAppDataPath("ytm-dlp"), "yt-dlp/arguments.txt"), `-o
-			"./ytm-dlp/%(artist)s - %(title)s.%(ext)s"
+  if (!fs.existsSync(path.join(getAppDataPath("ytm-dlp"), "yt-dlp/arguments.list"))) {
+    fs.writeFile(path.join(getAppDataPath("ytm-dlp"), "yt-dlp/arguments.list"), `-o
+			"./ytm-dlp/%(artist,uploader)s - %(title,meta_title)s.%(ext)s"
 			-x
 			-f
 			bestaudio
@@ -336,6 +338,10 @@ const getYTDlp = async () => {
 			"ThumbnailsConvertor+ffmpeg_o:-c:v png -vf crop='ih'"
 			--parse-metadata
 			"upload_date:(?P<meta_date>^[0-9]{4})"
+			--parse-metadata
+			"description:(?P<meta_date>(?<=Released on: )[0-9]{4}")
+			--parse-metadata
+			"%(album_artist,artist,uploader)s:%(album_artist)s"
 			--replace-in-metadata
 			"artist"
 			"(,[a-zа-яА-ЯA-Z0-9_ ]).*"
