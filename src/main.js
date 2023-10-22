@@ -117,14 +117,16 @@ const startDownload = (_event, videoURL, dirPath) => {
       '--parse-metadata', "NA:%(album_artist)s",
       '--parse-metadata', "NA:%(meta_album)s",
       '--parse-metadata', "NA:%(meta_date)s",
+      '--parse-metadata', "NA:%(genre)s",
 
       '--replace-in-metadata', 'meta_title', 'NA', changedMetadata.track,
       '--replace-in-metadata', 'title', 'NA', changedMetadata.track,
       '--replace-in-metadata', 'meta_artist', 'NA', changedMetadata.artist,
       '--replace-in-metadata', 'artist', 'NA', changedMetadata.artist,
-      '--replace-in-metadata', 'album_artist', 'NA', changedMetadata.artist,
+      '--replace-in-metadata', 'album_artist', 'NA', changedMetadata.album_artist,
       '--replace-in-metadata', 'meta_album', 'NA', changedMetadata.album,
       '--replace-in-metadata', 'meta_date', 'NA', changedMetadata.upload_year,
+      '--replace-in-metadata', 'genre', 'NA', changedMetadata.genre,
     )
   }
 
@@ -285,14 +287,17 @@ const getMetadata = async (videoURL) => {
       metadata.artist = rawMetadata.artist
       metadata.album = rawMetadata.album
       metadata.upload_year = rawMetadata.description.match(/(?<=Released on: )[0-9]{4}/gm)
+			metadata.album_artist = rawMetadata.album_artist ? rawMetadata.album_artist : rawMetadata.artist
     }
     else {
       metadata.track = rawMetadata.title
       metadata.artist = rawMetadata.uploader
-      metadata.album = ''
+      metadata.album = ""
       metadata.upload_year = rawMetadata.upload_date.match(/^\d{4}/gm)
+			metadata.album_artist = rawMetadata.album_artist ? rawMetadata.album_artist : rawMetadata.uploader
     }
 
+		metadata.genre = rawMetadata.genre ? rawMetadata.genre : ""
     metadata.art = rawMetadata['thumbnails'].pop()['url']
     currentVideo = videoURL
   }
@@ -316,7 +321,7 @@ const getYTDlp = async () => {
 
   if (!fs.existsSync(path.join(getAppDataPath("ytm-dlp"), "yt-dlp/arguments.list"))) {
     fs.writeFile(path.join(getAppDataPath("ytm-dlp"), "yt-dlp/arguments.list"), `-o
-			"./ytm-dlp/%(artist,uploader)s - %(title,meta_title)s.%(ext)s"
+			"./ytm-dlp/%(artist,uploader)s - %(title)s.%(ext)s"
 			-x
 			-f
 			bestaudio

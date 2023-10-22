@@ -13,5 +13,7 @@
   "year": "Year",
   "about": "About",
   "language": "Language",
-  "url": "Input URL"
+  "url": "Input URL",
+	"genre": "Genre",
+	"albumartist": "Album artist"
 }

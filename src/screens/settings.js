@@ -23,6 +23,8 @@ window.onload = async () => {
   document.getElementById('artistTxt').textContent = language.artist + ':'
   document.getElementById('albumTxt').textContent = language.album + ':'
   document.getElementById('yearTxt').textContent = language.year + ':'
+  document.getElementById('genreTxt').textContent = language.genre + ':'
+  document.getElementById('albumArtistTxt').textContent = language.albumartist + ':'
 }
 
 window.electronAPI.onRecieveMetadata((_event, metadata) => {
@@ -31,7 +33,8 @@ window.electronAPI.onRecieveMetadata((_event, metadata) => {
   artist.value = metadata.artist ? metadata.artist : ""
   album.value = metadata.album ? metadata.album : ""
   year.value = metadata.upload_year ? metadata.upload_year : ""
-  args.value = metadata.custom ? metadata.custom : ""
+	genre.value = metadata.genre ? metadata.genre : ""
+	albumArtist.value = metadata.album_artist ? metadata.album_artist : ""
   document.getElementById('header').textContent = language.edit
   document.getElementById('mp3Check').checked = metadata.mp3
   document.getElementById('mp3Check').removeAttribute('disabled')
@@ -50,7 +53,8 @@ function applyMetadata() {
     "artist": artist.value,
     "album": album.value,
     "upload_year": year.value,
-    "custom": args.value,
+		"genre": genre.value,
+		"album_artist": albumArtist.value,
     "art": art.getAttribute('src'),
     "mp3": document.getElementById('mp3Check').checked
   })
