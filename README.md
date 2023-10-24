@@ -38,11 +38,11 @@ and click the download button
 
 After that you will get your desired song with all metadata inplace
 
-## Building a project
-_Make sure you have NodeJS installed_
+## How to build it?
+_Make sure you have NodeJS and [WiX v3](https://wixtoolset.org/docs/wix3/) installed_
 
 1. Clone the repo
-2. Open terminal and run `npm install`
-3. Run `npm run make`
+2. Open cloned repo in terminal and run `npm install`
+3. Run `npm run make` to build distributables or `npm run package` to build unzipped package
 
 The output files will be available in 'out' directory
