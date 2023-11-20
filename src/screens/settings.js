@@ -36,8 +36,6 @@ window.electronAPI.onRecieveMetadata((_event, metadata) => {
 	genre.value = metadata.genre ? metadata.genre : ""
 	albumArtist.value = metadata.album_artist ? metadata.album_artist : ""
   document.getElementById('header').textContent = language.edit
-  document.getElementById('mp3Check').checked = metadata.mp3
-  document.getElementById('mp3Check').removeAttribute('disabled')
   document.getElementById('accButton').removeAttribute('disabled')
   document.getElementById('relButton').removeAttribute('disabled')
   document.getElementById('artButton').removeAttribute('disabled')
@@ -56,7 +54,6 @@ function applyMetadata() {
 		"genre": genre.value,
 		"album_artist": albumArtist.value,
     "art": art.getAttribute('src'),
-    "mp3": document.getElementById('mp3Check').checked
   })
 
   window.close()

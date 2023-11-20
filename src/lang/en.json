@@ -15,5 +15,7 @@
   "language": "Language",
   "url": "Input URL",
 	"genre": "Genre",
-	"albumartist": "Album artist"
+	"albumartist": "Album artist",
+	"extension": "Extension",
+	"order": "Order"
 }

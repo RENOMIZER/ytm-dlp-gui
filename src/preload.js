@@ -2,7 +2,7 @@ const { contextBridge, ipcRenderer } = require('electron')
 
 contextBridge.exposeInMainWorld('electronAPI', {
   /* To Main */
-  sendStartDownload: (videoURL, path) => ipcRenderer.send('startDownload', videoURL, path),
+  sendStartDownload: (videoURL, path, ext, order) => ipcRenderer.send('startDownload', videoURL, path, ext, order),
   sendClickedSettings: (videoURL) => ipcRenderer.send('clickedSettings', videoURL),
   sendChangedMetadata: (metadata) => ipcRenderer.send('recieveMetadata', metadata),
   sendOnlineArt: (artURL) => ipcRenderer.send('receiveOnlineArt', artURL),
@@ -19,5 +19,6 @@ contextBridge.exposeInMainWorld('electronAPI', {
   onDownloadError: (callback) => ipcRenderer.on('sendDownloadError', callback),
   onRecieveDirectory: (callback) => ipcRenderer.on('sendDirectory', callback),
   onRecieveMetadata: (callback) => ipcRenderer.on('sendMetadata', callback),
+	onRecieveProgress: (callback) => ipcRenderer.on('sendProgress', callback),
   onRecieveArt: (callback) => ipcRenderer.on('sendArt', callback),
 })

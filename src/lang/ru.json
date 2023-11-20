@@ -15,5 +15,7 @@
   "language": "Язык",
   "url": "Введите URL",
 	"genre": "Жанр",
-	"albumartist": "Исполнитель альбома"
+	"albumartist": "Исполнитель альбома",
+	"extension": "Расширение",
+	"order": "Порядок"
 }
