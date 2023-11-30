@@ -65,7 +65,7 @@ app.whenReady().then(() => {
 		}).then((e) => { if (!e.canceled) { MainWin.webContents.send('sendDirectory', e.filePaths[0]) } })
 	})
 
-	ipcMain.on('reloadMetadata', () => { SetWin.webContents.send('sendMetadata', metadata) })
+	ipcMain.on('reloadMetadata', () => { SetWin.webContents.send('sendMetadata', metadata); customArt = null })
 	ipcMain.handle('getLanguage', () => { return language })
 	ipcMain.on('openAbout', createAbout)
 
@@ -184,6 +184,7 @@ const createMain = () => {
 			symbolColor: '#bac2de',
 			height: 45,
 		},
+		menuBarVisible: false,
 		show: false,
 		icon: path.join(__dirname, 'images/icon.ico'),
 		webPreferences: {
@@ -191,6 +192,7 @@ const createMain = () => {
 		}
 	})
 
+	MainWin.removeMenu()
 	MainWin.loadFile('src/screens/index.html')
 	MainWin.on('ready-to-show', () => { MainWin.show() })
 }
@@ -200,6 +202,7 @@ const createSettings = (_event, videoURL, type) => {
 		width: 600,
 		height: 800,
 		resizable: false,
+		title: language.edit,
 		titleBarStyle: 'hidden',
 		titleBarOverlay: {
 			color: '#181825',
@@ -215,6 +218,7 @@ const createSettings = (_event, videoURL, type) => {
 		}
 	})
 
+	SetWin.removeMenu()
 	SetWin.loadFile('src/screens/settings.html')
 	SetWin.on('ready-to-show', () => { SetWin.show(); getMetadata(videoURL, type) })
 	SetWin.on('minimize', () => { MainWin.minimize() })
@@ -225,6 +229,7 @@ const createUrl = () => {
 		width: 450,
 		height: 150,
 		resizable: false,
+		title: language.url,
 		titleBarStyle: 'hidden',
 		titleBarOverlay: {
 			color: '#181825',
@@ -240,6 +245,7 @@ const createUrl = () => {
 		}
 	})
 
+	UrlWin.removeMenu()
 	UrlWin.loadFile('src/screens/url.html')
 	UrlWin.on('ready-to-show', () => { UrlWin.show() })
 }
@@ -249,6 +255,7 @@ const createAbout = () => {
 		width: 450,
 		height: 600,
 		resizable: false,
+		title: language.about,
 		titleBarStyle: 'hidden',
 		titleBarOverlay: {
 			color: '#181825',
@@ -264,6 +271,7 @@ const createAbout = () => {
 		}
 	})
 
+	AboutWin.removeMenu()
 	AboutWin.loadFile('src/screens/about.html')
 	AboutWin.on('ready-to-show', () => { AboutWin.show() })
 }
