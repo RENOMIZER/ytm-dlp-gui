@@ -13,7 +13,7 @@ module.exports = {
         authors: "RENOMIZER",
         copyright: "RENOMIZER",
         description: "An ElectronJS app for downloading music off Youtube Music",
-        exe: "YTM-DLP.exe",
+        exe: "YTM-DLP-GUI.exe",
         name: "YTM-DLP",
         setupExe: "YTM-DLP-GUI.exe",
         setupIcon: 'src/images/icon.ico',
@@ -25,7 +25,7 @@ module.exports = {
       name: '@electron-forge/maker-wix',
       config: {
         description: "An ElectronJS app for downloading music off Youtube Music",
-        exe: "YTM-DLP",
+        exe: "YTM-DLP-GUI",
         icon: 'src/images/icon.ico',
         language: 1033,
         manufacturer: "RENOMIZER",
