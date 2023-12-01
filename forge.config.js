@@ -1,7 +1,9 @@
 module.exports = {
   packagerConfig: {
     asar: true,
-    icon: 'src/images/icon'
+    icon: 'src/images/icon',
+		executableName: "ytm-dlp-gui",
+		name: "YTM-DLP-GUI",
   },
   rebuildConfig: {},
   makers: [
@@ -11,7 +13,7 @@ module.exports = {
         authors: "RENOMIZER",
         copyright: "RENOMIZER",
         description: "An ElectronJS app for downloading music off Youtube Music",
-        exe: "YTM-DLP-GUI.exe",
+        exe: "YTM-DLP.exe",
         name: "YTM-DLP",
         setupExe: "YTM-DLP-GUI.exe",
         setupIcon: 'src/images/icon.ico',
@@ -23,7 +25,7 @@ module.exports = {
       name: '@electron-forge/maker-wix',
       config: {
         description: "An ElectronJS app for downloading music off Youtube Music",
-        exe: "YTM-DLP-GUI",
+        exe: "YTM-DLP",
         icon: 'src/images/icon.ico',
         language: 1033,
         manufacturer: "RENOMIZER",
@@ -44,7 +46,7 @@ module.exports = {
       name: '@electron-forge/maker-deb',
       config: {
 				options: {
-					categories: ["Audio", "Utility"],
+					categories: ["Audio"],
 					depends: ["libgtk-3-0", "libnotify4", "libnss3", "libatspi2.0-0"],
 					description: "An app for downloading music off YouTube Music",
 					homepage: "https://github.com/RENOMIZER/ytm-dlp-gui",
@@ -53,7 +55,7 @@ module.exports = {
 					name: "ytm-dlp",
 					priority: "optional",
 					productName: "YTM-DLP",
-					section: ["sound", "misc"],
+					section: ["misc"],
 					size: "70MB",
 					version: "1.0.4"
 				},

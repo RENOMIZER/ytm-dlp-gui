@@ -186,7 +186,7 @@ const createMain = () => {
 		},
 		menuBarVisible: false,
 		show: false,
-		icon: path.join(__dirname, 'images/icon.ico'),
+		icon: path.join(__dirname, 'images/icon.png'),
 		webPreferences: {
 			preload: path.join(__dirname, '/preload.js')
 		}
@@ -212,7 +212,7 @@ const createSettings = (_event, videoURL, type) => {
 		parent: MainWin,
 		modal: true,
 		show: false,
-		icon: path.join(__dirname, 'images/icon.ico'),
+		icon: path.join(__dirname, 'images/icon.png'),
 		webPreferences: {
 			preload: path.join(__dirname, '/preload.js')
 		}
@@ -239,7 +239,7 @@ const createUrl = () => {
 		parent: SetWin,
 		modal: true,
 		show: false,
-		icon: path.join(__dirname, 'images/icon.ico'),
+		icon: path.join(__dirname, 'images/icon.png'),
 		webPreferences: {
 			preload: path.join(__dirname, '/preload.js')
 		}
@@ -265,7 +265,7 @@ const createAbout = () => {
 		parent: MainWin,
 		modal: true,
 		show: false,
-		icon: path.join(__dirname, 'images/icon.ico'),
+		icon: path.join(__dirname, 'images/icon.png'),
 		webPreferences: {
 			preload: path.join(__dirname, '/preload.js')
 		}
