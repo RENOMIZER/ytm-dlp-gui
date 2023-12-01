@@ -42,7 +42,22 @@ module.exports = {
     },
     {
       name: '@electron-forge/maker-deb',
-      config: {},
+      config: {
+				options: {
+					categories: ["Audio", "Utility"],
+					depends: ["libgtk-3-0", "libnotify4", "libnss3", "libatspi2.0-0"],
+					description: "An app for downloading music off YouTube Music",
+					homepage: "https://github.com/RENOMIZER/ytm-dlp-gui",
+					icon: "src/images/icon.ico",
+					maintainer: "RENOMIZER",
+					name: "ytm-dlp",
+					priority: "optional",
+					productName: "YTM-DLP",
+					section: ["sound", "misc"],
+					size: "70MB",
+					version: "1.0.4"
+				},
+			},
     },
   ],
   plugins: [

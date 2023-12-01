@@ -1,6 +1,6 @@
 {
   "name": "ytm-dlp-gui",
-  "version": "1.0.4",
+  "version": "1.0.5",
   "description": "An ElectronJS app for downloading music off Youtube Music",
   "main": "src/main.js",
   "scripts": {
