@@ -1,6 +1,6 @@
 {
   "name": "ytm-dlp-gui",
-  "version": "1.0.5",
+  "version": "1.1.0",
   "description": "An ElectronJS app for downloading music off Youtube Music",
   "main": "src/main.js",
   "scripts": {
@@ -27,7 +27,7 @@
     "appdata-path": "^1.0.0",
     "electron-fetch": "^1.9.1",
     "electron-squirrel-startup": "^1.0.0",
-    "ffbinaries": "^1.1.5",
+    "ffbinaries-plus": "^1.2.1",
     "fs-extra": "^11.1.1",
     "yt-dlp-wrap": "^2.3.11"
   }

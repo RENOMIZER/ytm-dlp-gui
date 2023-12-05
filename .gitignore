@@ -1,3 +1,4 @@
-out/
-node_modules/
-ytm-dlp/
+out
+node_modules
+ytm-dlp
+*.code-workspace

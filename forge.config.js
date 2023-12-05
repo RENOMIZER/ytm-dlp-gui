@@ -17,6 +17,7 @@ module.exports = {
         name: "YTM-DLP",
         setupExe: "YTM-DLP-GUI.exe",
         setupIcon: 'src/images/icon.ico',
+				iconUrl: 'https://raw.githubusercontent.com/RENOMIZER/ytm-dlp-gui/main/src/images/icon.png',
         loadingGif: 'src/images/loading.gif',
         title: 'YTM-DLP',
       },
@@ -57,7 +58,7 @@ module.exports = {
 					productName: "YTM-DLP",
 					section: ["misc"],
 					size: "70MB",
-					version: "1.0.4"
+					version: "1.1.0"
 				},
 			},
     },
