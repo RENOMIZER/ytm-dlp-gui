@@ -2,8 +2,8 @@ module.exports = {
   packagerConfig: {
     asar: true,
     icon: 'src/images/icon',
-		executableName: "ytm-dlp-gui",
-		name: "YTM-DLP-GUI",
+    executableName: "ytm-dlp-gui",
+    name: "YTM-DLP-GUI",
   },
   rebuildConfig: {},
   makers: [
@@ -17,7 +17,7 @@ module.exports = {
         name: "YTM-DLP",
         setupExe: "YTM-DLP-GUI.exe",
         setupIcon: 'src/images/icon.ico',
-				iconUrl: 'https://raw.githubusercontent.com/RENOMIZER/ytm-dlp-gui/main/src/images/icon.png',
+        iconUrl: 'https://raw.githubusercontent.com/RENOMIZER/ytm-dlp-gui/main/src/images/icon.ico',
         loadingGif: 'src/images/loading.gif',
         title: 'YTM-DLP',
       },
@@ -46,21 +46,38 @@ module.exports = {
     {
       name: '@electron-forge/maker-deb',
       config: {
-				options: {
-					categories: ["Audio"],
-					depends: ["libgtk-3-0", "libnotify4", "libnss3", "libatspi2.0-0"],
-					description: "An app for downloading music off YouTube Music",
-					homepage: "https://github.com/RENOMIZER/ytm-dlp-gui",
-					icon: "src/images/icon.ico",
-					maintainer: "RENOMIZER",
-					name: "ytm-dlp",
-					priority: "optional",
-					productName: "YTM-DLP",
-					section: ["misc"],
-					size: "70MB",
-					version: "1.1.0"
-				},
-			},
+        options: {
+          categories: ["Audio"],
+          depends: ["libgtk-3-0", "libnotify4", "libnss3", "libatspi2.0-0"],
+          description: "An app for downloading music off YouTube Music",
+          homepage: "https://github.com/RENOMIZER/ytm-dlp-gui",
+          icon: "src/images/icon.ico",
+          maintainer: "RENOMIZER",
+          name: "ytm-dlp",
+          priority: "optional",
+          productName: "YTM-DLP",
+          section: ["misc"],
+          size: "70MB",
+          version: "1.1.0"
+        },
+      },
+    },
+    {
+      name: "@electron-forge/maker-rpm",
+      config: {
+        options: {
+          categories: ["Audio", "Utility"],
+          description: "An app for downloading music off YouTube Music",
+          genericName: "Download Utility",
+          homepage: "https://github.com/RENOMIZER/ytm-dlp-gui",
+          icon: "src/images/icon.ico",
+          license: "UNLICENSED",
+          name: "ytm-dlp",
+          productDescription: "An app for downloading music off YouTube Music",
+          productName: "YTM-DLP",
+          version: "1.1.0"
+        }
+      }
     },
   ],
   plugins: [
