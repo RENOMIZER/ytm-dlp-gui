@@ -4,6 +4,7 @@ const YTDlpWrap = require('yt-dlp-wrap').default;
 const fetch = require("electron-fetch").default;
 const getAppDataPath = require("appdata-path");
 const ffbinaries = require('ffbinaries-plus');
+const { exec } = require('child_process');
 const fs = require('fs-extra');
 const path = require('path');
 const os = require('os');
@@ -82,7 +83,7 @@ app.whenReady().then(() => {
 
 	ipcMain.on('getArt', createUrl)
 
-	getYTDlp()
+	getExecs()
 	getLang()
 	createMain()
 })
@@ -317,15 +318,22 @@ const getMetadata = async (videoURL) => {
 	SetWin.webContents.send('sendMetadata', metadata)
 }
 
-const getYTDlp = async () => {
-	if (!fs.existsSync(getAppDataPath("ytm-dlp"))) {
-		fs.mkdir(getAppDataPath("ytm-dlp"), (err) => { if (err) { console.error(err) } })
+const getExecs = async () => {
+  if (!fs.existsSync(path.join(getAppDataPath("ytm-dlp"), "yt-dlp"))) {
+		fs.mkdir(path.join(getAppDataPath("ytm-dlp"), "yt-dlp"), { recursive: true } , (err) => { if (err) { console.error(err) } })
 	}
 
 	if (!fs.existsSync(path.join(getAppDataPath("ytm-dlp"), "yt-dlp/yt-dlp.exe"))) {
-		fs.mkdir(path.join(getAppDataPath("ytm-dlp"), "yt-dlp"), (err) => { if (err) { console.error(err) } })
 		await YTDlpWrap.downloadFromGithub(path.join(getAppDataPath("ytm-dlp"), "yt-dlp/yt-dlp.exe"))
-	}
+	} else {
+    exec(path.join(getAppDataPath("ytm-dlp"), "yt-dlp/yt-dlp.exe"), async (_error, _stdout, stderr) => {
+      if (!stderr.includes('Usage:')) {
+        console.log('yt-dlp executable error')
+        fs.unlinkSync(path.join(getAppDataPath("ytm-dlp"), "yt-dlp/yt-dlp.exe"))
+        await YTDlpWrap.downloadFromGithub(path.join(getAppDataPath("ytm-dlp"), "yt-dlp/yt-dlp.exe"))
+      }
+    })
+  }
 
 	if (!fs.existsSync(path.join(getAppDataPath("ytm-dlp"), "yt-dlp/arguments.list"))) {
 		fs.writeFile(path.join(getAppDataPath("ytm-dlp"), "yt-dlp/arguments.list"), `-o
@@ -362,7 +370,46 @@ const getYTDlp = async () => {
 			(err) => { if (err) { console.error(err) } })
 	}
 
-	if (!fs.existsSync(path.join(getAppDataPath("ytm-dlp"), "ffmpeg/ffmpeg.exe")) || !fs.existsSync(path.join(getAppDataPath("ytm-dlp"), "ffmpeg/ffprobe.exe"))) {
-		ffbinaries.downloadBinaries(['ffmpeg', 'ffprobe'], { destination: path.join(getAppDataPath("ytm-dlp"), "/ffmpeg/") }, (err) => { if (err) { console.error(err) } })
-	}
+  if (os.platform() === 'win32') {
+    if (!fs.existsSync(path.join(getAppDataPath("ytm-dlp"), "ffmpeg/ffmpeg.exe")) || !fs.existsSync(path.join(getAppDataPath("ytm-dlp"), "ffmpeg/ffprobe.exe"))) {
+      var ffmpegExec = false
+    } else {
+      var ffmpegExec = true
+    }
+  } else {
+    if (!fs.existsSync(path.join(getAppDataPath("ytm-dlp"), "ffmpeg/ffmpeg")) || !fs.existsSync(path.join(getAppDataPath("ytm-dlp"), "ffmpeg/ffprobe"))) {
+      var ffmpegExec = false
+    } else {
+      var ffmpegExec = true
+    }
+  }
+
+  if (!ffmpegExec) {
+    ffbinaries.downloadBinaries(['ffmpeg', 'ffprobe'], { destination: path.join(getAppDataPath("ytm-dlp"), "/ffmpeg/") }, (err) => { if (err) { console.error(err) } })
+  } else {
+    exec(path.join(getAppDataPath("ytm-dlp"), "ffmpeg/ffmpeg"), async (_error, _stdout, stderr) => {
+      if (!stderr.includes('ffmpeg version')) {
+        console.log('ffmpeg executable error')
+        if (os.platform() === 'win32') {
+          fs.unlinkSync(path.join(getAppDataPath("ytm-dlp"), "ffmpeg/ffmpeg.exe"))
+        }
+        else {
+          fs.unlinkSync(path.join(getAppDataPath("ytm-dlp"), "ffmpeg/ffmpeg"))
+        }
+        ffbinaries.downloadBinaries(['ffmpeg'], { destination: path.join(getAppDataPath("ytm-dlp"), "/ffmpeg/") }, (err) => { if (err) { console.error(err) } })
+      }
+    })
+    exec(path.join(getAppDataPath("ytm-dlp"), "ffmpeg/ffprobe"), async (_error, _stdout, stderr) => {
+      if (!stderr.includes('ffprobe version')) {
+        console.log('ffprobe executable error')
+        if (os.platform() === 'win32') {
+          fs.unlinkSync(path.join(getAppDataPath("ytm-dlp"), "ffmpeg/ffprobe.exe"))
+        }
+        else {
+          fs.unlinkSync(path.join(getAppDataPath("ytm-dlp"), "ffmpeg/ffprobe"))
+        }
+        ffbinaries.downloadBinaries(['ffprobe'], { destination: path.join(getAppDataPath("ytm-dlp"), "/ffmpeg/") }, (err) => { if (err) { console.error(err) } })
+      }
+    })
+  }
 }
