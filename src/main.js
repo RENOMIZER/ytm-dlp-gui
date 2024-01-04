@@ -11,9 +11,13 @@ const os = require('os');
 
 /* Classes */
 const YtDlpWrap = new YTDlpWrap(path.join(getAppDataPath("ytm-dlp"), "yt-dlp/yt-dlp.exe"));
-Date.prototype.timeNow = function () {
-  return ((this.getHours() < 10)?"0":"") + this.getHours() +":"+ ((this.getMinutes() < 10)?"0":"") + this.getMinutes() +":"+ ((this.getSeconds() < 10)?"0":"") + this.getSeconds();
+Date.prototype.dateNow = function () {
+  return ((this.getUTCDate() < 10)?"0":"") + this.getUTCDate() +"-"+ this.getUTCMonth()+1 +"-"+ this.getUTCFullYear();
 }
+Date.prototype.timeNow = function () {
+  return ((this.getHours() < 10)?"0":"") + this.getHours() +"-"+ ((this.getMinutes() < 10)?"0":"") + this.getMinutes() +"-"+ ((this.getSeconds() < 10)?"0":"") + this.getSeconds();
+}
+const date = new Date()
 
 /* DO NOT CHANGE */
 let MainWin
@@ -32,7 +36,7 @@ let language
 /* Initialisation */
 if (require('electron-squirrel-startup')) return;
 
-let logStream = fs.createWriteStream(path.join(getAppDataPath("ytm-dlp"), "log.txt"))
+let logStream = fs.createWriteStream(path.join(os.tmpdir(), `ytm-dlp-log-${date.timeNow()}-${date.dateNow()}.txt`))
 
 app.whenReady().then(() => {
   ipcMain.on('startDownload', startDownload)
@@ -93,7 +97,7 @@ app.whenReady().then(() => {
   createMain()
 
   app.on('window-all-closed', () => {
-    logStream.end(`[${new Date().timeNow()}] Log end.`)
+    logStream.end(`[info] Log end.`)
     app.quit()
   })
 })
@@ -166,6 +170,7 @@ const startDownload = (_event, videoURL, dirPath, ext, order) => {
   YtDlpWrap.exec(arguments)
     .on('ytDlpEvent', (eType, eData) => {
       console.log('[' + eType + ']', eData)
+      logStream.write(`[${eType}] ${eData}\n`)
 
       if (eType == 'download' && eData.slice(1, 4) != 'Des' && eData.slice(4, 5) == '.') {
         MainWin.webContents.send('sendProgress', eData.slice(1, 4))
@@ -173,6 +178,8 @@ const startDownload = (_event, videoURL, dirPath, ext, order) => {
     })
     .on('error', (err) => { MainWin.webContents.send('sendDownloadError'); throwErr(err) })
     .on('close', () => {
+      logStream.write('\n')
+
       MainWin.webContents.send('sendDownloadFinished');
       if (fs.existsSync(path.join(os.tmpdir(), '/ytm-dlp-images/art'))) {
         fs.unlink(path.join(os.tmpdir(), '/ytm-dlp-images/art'), (err) => { if (err) { throwErr(err) } })
@@ -416,5 +423,5 @@ const getExecs = async () => {
 
 const throwErr = (err) => {
   console.error(err)
-  logStream.write(`[${new Date().timeNow()}] ` + err + '\n\n')
+  logStream.write(`[error] ` + err + '\n\n')
 }
