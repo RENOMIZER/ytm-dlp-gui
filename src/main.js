@@ -1,5 +1,5 @@
 /* Modules */
-const { app, BrowserWindow, ipcMain, dialog } = require('electron');
+const { app, BrowserWindow, ipcMain, dialog, shell } = require('electron');
 const YTDlpWrap = require('yt-dlp-wrap').default;
 const fetch = require("electron-fetch").default;
 const getAppDataPath = require("appdata-path");
@@ -292,6 +292,10 @@ const createAbout = () => {
   AboutWin.removeMenu()
   AboutWin.loadFile('src/screens/about.html')
   AboutWin.on('ready-to-show', () => { AboutWin.show() })
+  AboutWin.webContents.setWindowOpenHandler(({ url }) => {
+    shell.openExternal(url);
+    return { action: 'deny' };
+  })
 }
 
 const getLang = () => {

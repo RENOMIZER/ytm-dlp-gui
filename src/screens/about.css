@@ -53,6 +53,11 @@ body {
   font-size: smaller;
 }
 
+.container>span>a {
+  text-decoration: none;
+  color: #ced5f3;
+}
+
 .lang-container {
   display: flex;
   justify-content: center;
