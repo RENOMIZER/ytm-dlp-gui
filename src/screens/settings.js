@@ -61,5 +61,4 @@ function applyMetadata() {
 
 function createArtButtons() {
   document.getElementById('artButtonContainer').style.display = artButtonContainer.style.display === "flex" ? "none" : "flex"
-  args.style.maxHeight = args.style.maxHeight === "75px" ? "95px" : "75px"
 }
