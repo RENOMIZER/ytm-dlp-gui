@@ -57,7 +57,6 @@ module.exports = {
           productName: "YTM-DLP",
           section: ["misc"],
           size: "70MB",
-          version: "1.1.0"
         },
       },
     },
@@ -74,7 +73,6 @@ module.exports = {
           name: "ytm-dlp",
           productDescription: "An app for downloading music off YouTube Music",
           productName: "YTM-DLP",
-          version: "1.1.0"
         }
       }
     },

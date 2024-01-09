@@ -1,0 +1,30 @@
+:root {
+  --background-color: hsl(220, 23%, 95%);
+  --background-color-darker: hsl(220, 23%, 90%);
+  --background-color-lighter: hsl(220, 23%, 100%);
+  --header-color: hsl(220, 22%, 92%);
+  --header-text: hsl(0, 0%, 0%);
+  --text: hsl(0, 0%, 0%);
+  --label-color: hsl(234, 16%, 35%);
+  --light-text-color: hsl(233, 13%, 41%);
+  --dark-text-color: hsl(233, 13%, 25%);
+  --darker-text-color: hsl(220, 22%, 92%);
+  --default-button-color: hsl(227, 12%, 71%);
+  --default-button-color-darker: hsl(227, 12%, 66%);
+  --default-button-color-lighter: hsl(227, 12%, 76%);
+  --decline-button-color: hsl(347, 87%, 44%);
+  --decline-button-color-darker: hsl(347, 87%, 39%);
+  --decline-button-color-lighter: hsl(347, 87%, 49%);
+  --decline-button-color-glow-hover: hsla(347, 87%, 49%, 0.157);
+  --decline-button-color-glow-active: hsla(347, 87%, 49%, 0.047);
+  --accept-button-color: hsl(109, 58%, 40%);
+  --accept-button-color-darker: hsl(109, 58%, 35%);
+  --accept-button-color-lighter: hsl(109, 58%, 45%);
+  --accept-button-color-glow-hover: hsla(109, 58%, 35%, 0.157);
+  --accept-button-color-glow-active: hsla(109, 58%, 35%, 0.047);
+  --reload-button-color: hsl(233, 13%, 41%);
+  --reload-button-color-darker: hsl(233, 13%, 36%);
+  --reload-button-color-lighter: hsl(233, 13%, 46%);
+  --reload-button-color-glow-hover: hsla(233, 13%, 46%, 0.157);
+  --reload-button-color-glow-active: hsla(233, 13%, 46%, 0.047);
+}
