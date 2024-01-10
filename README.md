@@ -39,7 +39,7 @@ and click the download button
 After that you will get your desired song with all metadata inplace
 
 ## How to build it?
-_Make sure you have NodeJS and [WiX v3](https://wixtoolset.org/docs/wix3/) installed_
+_Make sure you have NodeJS and [WiX v3 build tools](https://github.com/wixtoolset/wix3/releases/latest) installed if you are building for Windows_
 
 1. Clone the repo
 2. Open cloned repo in terminal and run `npm install`
