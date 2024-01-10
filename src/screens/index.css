@@ -3,6 +3,7 @@
 
 :root {
 	--fallback-title-bar-height: 40px;
+  background-color: black;
 }
 
 html,
@@ -14,7 +15,7 @@ body {
 body {
 	height: 100vh;
 	width: 100vw;
-	background: #1e1e2e;
+	background: var(--background-color);
 }
 
 * {
@@ -41,7 +42,7 @@ body {
 	padding-bottom: 7.5vmin;
 	font-size: 4.25vmin;
 	font-family: "AKONY Bold", system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
-	color: #cdd6f4;
+	color: var(--label-color);
 	user-select: none;
 }
 
@@ -50,22 +51,22 @@ body {
 	width: 6vmin;
 	border: none;
 	border-radius: 0.6vmin;
-	color: #bac2de;
+	color: var(--light-text-color);
 	font-size: 2.75vmin;
 	text-align: center;
-	background-color: #585b70;
+	background-color: var(--default-button-color);
 	transition: 0.2s;
 	user-select: none;
 	cursor: pointer;
 }
 
 .act-button:hover {
-	background-color: #676a83;
+	background-color: var(--default-button-color-lighter);
 	transition: 0.2s;
 }
 
 .act-button:active {
-	background-color: #4c4f61;
+	background-color: var(--default-button-color-darker);
 	transition: 0.2s;
 }
 
@@ -81,8 +82,8 @@ body {
 	font-size: 2.75vmin;
 	font-weight: bold;
 	font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
-	color: #181825;
-	background-color: #bac2de;
+	color: var(--darker-text-color);
+	background-color: var(--light-text-color);
 	user-select: none;
 }
 
@@ -104,7 +105,7 @@ body {
 
 .txt {
 	margin: auto 2vmin auto 2vmin;
-	color: #FFFFFF;
+	color: var(--text);
 	font-size: 3vmin;
 	font-weight: bold;
 	font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
@@ -122,8 +123,8 @@ body {
 	font-size: 2.75vmin;
 	font-weight: bold;
 	font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
-	color: #181825;
-	background-color: #bac2de;
+	color: var(--darker-text-color);
+	background-color: var(--light-text-color);
 	user-select: none;
 }
 
@@ -131,7 +132,7 @@ body {
 	height: 5vmin;
 	font-weight: bold;
 	font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
-	color: #181825;
+	color: var(--darker-text-color);
 	user-select: none;
 }
 
@@ -147,8 +148,8 @@ body {
 	font-size: 2.75vmin;
 	font-weight: bold;
 	font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
-	color: #181825;
-	background-color: #bac2de;
+	color: var(--darker-text-color);
+	background-color: var(--light-text-color);
 	user-select: none;
 }
 
@@ -156,7 +157,7 @@ body {
 	height: 5vmin;
 	font-weight: bold;
 	font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
-	color: #181825;
+	color: var(--darker-text-color);
 	user-select: none;
 }
 
@@ -177,8 +178,8 @@ body {
 	font-size: 2.75vmin;
 	font-weight: bold;
 	font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
-	color: #181825;
-	background-color: #bac2de;
+	color: var(--darker-text-color);
+	background-color: var(--light-text-color);
 	user-select: none;
 }
 
@@ -195,7 +196,7 @@ body {
 	top: env(titlebar-area-y, 0);
 	height: env(titlebar-area-height, var(--fallback-title-bar-height));
 	width: 100%;
-	background-color: #181825;
+	background-color: var(--header-color);
 }
 
 #titleBar {
@@ -206,7 +207,7 @@ body {
 	height: 100%;
 	left: env(titlebar-area-x, 0);
 	width: 100%;
-	color: #FFFFFF;
+	color: var(--header-text);
 	font-weight: bold;
 	text-align: center;
 }
@@ -225,17 +226,17 @@ body {
 	margin: auto 10px;
 	height: 30px;
 	width: 30px;
-	color: #a6adc8;
-	background-color: #1e1e2e;
+	color: var(--light-text-color);
+	background-color: var(--background-color);
 	font-size: small;
 }
 
 .about-button:hover {
-	background-color: #252538;
+	background-color: var(--background-color-lighter);
 	transition: 0.2s;
 }
 
 .about-button:active {
-	background-color: #151520;
+	background-color: var(--background-color-darker);
 	transition: 0.2s;
 }

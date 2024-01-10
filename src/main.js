@@ -12,10 +12,10 @@ const os = require('os');
 /* Classes */
 const YtDlpWrap = new YTDlpWrap(path.join(getAppDataPath("ytm-dlp"), "yt-dlp/yt-dlp.exe"));
 Date.prototype.dateNow = function () {
-  return ((this.getUTCDate() < 10)?"0":"") + this.getUTCDate() +"-"+ this.getUTCMonth()+1 +"-"+ this.getUTCFullYear();
+  return ((this.getDate() < 10) ? "0" : "") + this.getDate() + "-" + this.getMonth() + 1 + "-" + this.getFullYear();
 }
 Date.prototype.timeNow = function () {
-  return ((this.getHours() < 10)?"0":"") + this.getHours() +"-"+ ((this.getMinutes() < 10)?"0":"") + this.getMinutes() +"-"+ ((this.getSeconds() < 10)?"0":"") + this.getSeconds();
+  return ((this.getHours() < 10) ? "0" : "") + this.getHours() + "-" + ((this.getMinutes() < 10) ? "0" : "") + this.getMinutes() + "-" + ((this.getSeconds() < 10) ? "0" : "") + this.getSeconds();
 }
 const date = new Date()
 
@@ -38,7 +38,7 @@ if (require('electron-squirrel-startup')) return;
 
 let logStream = fs.createWriteStream(path.join(os.tmpdir(), `ytm-dlp-log-${date.timeNow()}-${date.dateNow()}.txt`))
 
-app.whenReady().then(() => {
+app.whenReady().then(async () => {
   ipcMain.on('startDownload', startDownload)
   ipcMain.on('clickedSettings', createSettings)
   ipcMain.on('recieveMetadata', (_event, metadata) => { changedMetadata = metadata })
@@ -59,9 +59,13 @@ app.whenReady().then(() => {
       });
   })
 
+  ipcMain.on('changeStyle', changeStyle)
+
   ipcMain.on('recieveLanguage', (_event, lang) => {
     if (lang !== language.current) {
-      fs.writeFileSync(path.join(getAppDataPath("ytm-dlp"), "config.json"), `{\n\t"lang": "${lang}"\n}`)
+      let config = JSON.parse(fs.readFileSync(path.join(getAppDataPath("ytm-dlp"), "config.json")))
+      config.lang = lang
+      fs.writeFileSync(path.join(getAppDataPath("ytm-dlp"), "config.json"), JSON.stringify(config))
       app.relaunch()
       app.quit()
     }
@@ -77,6 +81,7 @@ app.whenReady().then(() => {
 
   ipcMain.on('reloadMetadata', () => { SetWin.webContents.send('sendMetadata', metadata); customArt = null })
   ipcMain.handle('getLanguage', () => { return language })
+  ipcMain.handle('getStyles', getStyles)
   ipcMain.on('openAbout', createAbout)
 
   ipcMain.on('openArt', () => {
@@ -92,7 +97,7 @@ app.whenReady().then(() => {
 
   ipcMain.on('getArt', createUrl)
 
-  getExecs()
+  await getDeps()
   getLang()
   createMain()
 
@@ -198,8 +203,8 @@ const createMain = () => {
     minHeight: 300,
     titleBarStyle: 'hidden',
     titleBarOverlay: {
-      color: '#181825',
-      symbolColor: '#bac2de',
+      color: '#00000000',
+      symbolColor: '#707070',
       height: 45,
     },
     menuBarVisible: false,
@@ -215,7 +220,7 @@ const createMain = () => {
   MainWin.on('ready-to-show', () => { MainWin.show() })
 }
 
-const createSettings = (_event, videoURL, type) => {
+const createSettings = (_event, videoURL) => {
   SetWin = new BrowserWindow({
     width: 600,
     height: 800,
@@ -223,8 +228,8 @@ const createSettings = (_event, videoURL, type) => {
     title: language.edit,
     titleBarStyle: 'hidden',
     titleBarOverlay: {
-      color: '#181825',
-      symbolColor: '#bac2de',
+      color: '#00000000',
+      symbolColor: '#707070',
       height: 45,
     },
     parent: MainWin,
@@ -238,7 +243,7 @@ const createSettings = (_event, videoURL, type) => {
 
   SetWin.removeMenu()
   SetWin.loadFile('src/screens/settings.html')
-  SetWin.on('ready-to-show', () => { SetWin.show(); getMetadata(videoURL, type) })
+  SetWin.on('ready-to-show', () => { SetWin.show(); getMetadata(videoURL) })
   SetWin.on('minimize', () => { MainWin.minimize() })
 }
 
@@ -250,8 +255,8 @@ const createUrl = () => {
     title: language.url,
     titleBarStyle: 'hidden',
     titleBarOverlay: {
-      color: '#181825',
-      symbolColor: '#bac2de',
+      color: '#00000000',
+      symbolColor: '#707070',
       height: 45,
     },
     parent: SetWin,
@@ -276,8 +281,8 @@ const createAbout = () => {
     title: language.about,
     titleBarStyle: 'hidden',
     titleBarOverlay: {
-      color: '#181825',
-      symbolColor: '#bac2de',
+      color: '#00000000',
+      symbolColor: '#707070',
       height: 45,
     },
     parent: MainWin,
@@ -299,12 +304,54 @@ const createAbout = () => {
 }
 
 const getLang = () => {
-  if (!fs.existsSync(path.join(getAppDataPath("ytm-dlp"), "config.json"))) {
-    fs.writeFileSync(path.join(getAppDataPath("ytm-dlp"), "config.json"), `{\n\t"lang": "en"\n}`)
+  if (!fs.existsSync(path.join(getAppDataPath("ytm-dlp"), "config.json")) || fs.readFileSync(path.join(getAppDataPath("ytm-dlp"), "config.json")) === '') {
+    fs.writeFileSync(path.join(getAppDataPath("ytm-dlp"), "config.json"), `{"lang": "en", "style": "mocha"}`)
   }
 
   let local = JSON.parse(fs.readFileSync(path.join(getAppDataPath("ytm-dlp"), "config.json")))
   language = JSON.parse(fs.readFileSync(path.join(__dirname, '/lang/', local.lang + '.json')))
+}
+
+const throwErr = (err) => {
+  console.error(err)
+  logStream.write(`[error] ` + err + '\n\n')
+}
+
+const getStyles = () => {
+  if (!fs.existsSync(path.join(getAppDataPath(), 'ytm-dlp/styles/mocha.css'))) {
+    fs.copyFile(path.join(__dirname, 'styles/mocha.css'), path.join(getAppDataPath(), 'ytm-dlp/styles/mocha.css'))
+  }
+
+  let files = fs.readdirSync(path.join(getAppDataPath(), 'ytm-dlp/styles'), { withFileTypes: false })
+  files = files.filter(e => { return e.search(/\.css/) != -1 })
+  let styles = files.map(e => { return e.replace(/\.css/, '') })
+
+  let data = fs.readFileSync(path.join(getAppDataPath("ytm-dlp"), "config.json"), 'utf-8')
+  let currentStyle = JSON.parse(data).style
+
+  if (fs.existsSync(path.join(getAppDataPath(), 'ytm-dlp/styles', currentStyle + '.css'))) {
+    var currentStylePath = path.join(getAppDataPath(), 'ytm-dlp/styles', currentStyle + '.css')
+  } else {
+    var currentStylePath = path.join(getAppDataPath(), 'ytm-dlp/styles/mocha.css')
+    currentStyle = "mocha"
+  }
+
+  return [currentStyle, styles, currentStylePath]
+}
+
+const changeStyle = (_event, style) => {
+  fs.readFile(path.join(getAppDataPath("ytm-dlp"), "config.json"), 'utf-8', (err, data) => {
+    if (err) { throwErr(err) }
+
+    let config = JSON.parse(data)
+    config.style = style
+    config = JSON.stringify(config)
+
+    fs.writeFile(path.join(getAppDataPath("ytm-dlp"), "config.json"), config, 'utf-8', (err) => { if (err) { throwErr(err) } })
+  })
+
+  MainWin.reload()
+  AboutWin.reload()
 }
 
 /* Async functions */
@@ -339,7 +386,7 @@ const getMetadata = async (videoURL) => {
   SetWin.webContents.send('sendMetadata', metadata)
 }
 
-const getExecs = async () => {
+const getDeps = async () => {
   if (!fs.existsSync(path.join(getAppDataPath("ytm-dlp"), "yt-dlp"))) {
     fs.mkdir(path.join(getAppDataPath("ytm-dlp"), "yt-dlp"), { recursive: true }, (err) => { if (err) { throwErr(err) } })
   }
@@ -358,38 +405,11 @@ const getExecs = async () => {
   }
 
   if (!fs.existsSync(path.join(getAppDataPath("ytm-dlp"), "yt-dlp/arguments.list"))) {
-    fs.writeFile(path.join(getAppDataPath("ytm-dlp"), "yt-dlp/arguments.list"), `-o
-			"./ytm-dlp/%(artist,uploader)s - %(title)s.%(ext)s"
-			-x
-			-f
-			bestaudio
-			--embed-thumbnail
-			--embed-metadata
-			--parse-metadata
-			":(?P<meta_synopsis>)"
-			--parse-metadata
-			":(?P<meta_purl>)"
-			--parse-metadata
-			":(?P<meta_comment>)"
-			--parse-metadata
-			":(?P<meta_description>)"
-			--sponsorblock-remove
-			all
-			--ffmpeg-location
-			${path.join(getAppDataPath("ytm-dlp"), "ffmpeg")}
-			--ppa
-			"ThumbnailsConvertor+ffmpeg_o:-c:v png -vf crop='ih'"
-			--parse-metadata
-			"upload_date:(?P<meta_date>^[0-9]{4})"
-			--parse-metadata
-			"description:(?P<meta_date>(?<=Released on: )[0-9]{4}")
-			--parse-metadata
-			"%(album_artist,artist,uploader)s:%(album_artist)s"
-			--replace-in-metadata
-			"artist"
-			"(,[a-zа-яА-ЯA-Z0-9_ ]).*"
-			""`.replace(/\t/gm, ''),
-      (err) => { if (err) { throwErr(err) } })
+    fs.copyFile(path.join(__dirname, 'arguments.list'), path.join(getAppDataPath(), 'ytm-dlp/yt-dlp/arguments.list'))
+  }
+
+  if (!fs.existsSync(path.join(getAppDataPath(), 'ytm-dlp/styles')) || fs.readdirSync(path.join(getAppDataPath(), 'ytm-dlp/styles')) == '') {
+    fs.copy(path.join(__dirname, 'styles'), path.join(getAppDataPath(), 'ytm-dlp/styles'), { recursive: true }, (err) => { if (err) { throwErr(err) } })
   }
 
   ffbinaries.downloadBinaries(['ffmpeg', 'ffprobe'], { destination: path.join(getAppDataPath("ytm-dlp"), "/ffmpeg/") }, (err) => {
@@ -423,9 +443,4 @@ const getExecs = async () => {
       }
     })
   })
-}
-
-const throwErr = (err) => {
-  console.error(err)
-  logStream.write(`[error] ` + err + '\n\n')
 }
