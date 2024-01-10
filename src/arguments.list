@@ -1,0 +1,31 @@
+-o
+"./ytm-dlp/%(artist,uploader)s - %(title)s.%(ext)s"
+-x
+-f
+bestaudio
+--embed-thumbnail
+--embed-metadata
+--parse-metadata
+":(?P<meta_synopsis>)"
+--parse-metadata
+":(?P<meta_purl>)"
+--parse-metadata
+":(?P<meta_comment>)"
+--parse-metadata
+":(?P<meta_description>)"
+--sponsorblock-remove
+all
+--ffmpeg-location
+C:\Users\Konstantin\AppData\Roaming\ytm-dlp\ffmpeg
+--ppa
+"ThumbnailsConvertor+ffmpeg_o:-c:v png -vf crop='ih'"
+--parse-metadata
+"upload_date:(?P<meta_date>^[0-9]{4})"
+--parse-metadata
+"description:(?P<meta_date>(?<=Released on: )[0-9]{4}")
+--parse-metadata
+"%(album_artist,artist,uploader)s:%(album_artist)s"
+--replace-in-metadata
+"artist"
+"(,[a-zа-яА-ЯA-Z0-9_ ]).*"
+""

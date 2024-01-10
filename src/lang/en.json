@@ -17,5 +17,6 @@
 	"genre": "Genre",
 	"albumartist": "Album artist",
 	"extension": "Extension",
-	"order": "Order"
+	"order": "Order",
+  "style": "Style"
 }

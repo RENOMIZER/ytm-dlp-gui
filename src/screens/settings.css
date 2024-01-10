@@ -2,6 +2,7 @@
 
 :root {
   --fallback-title-bar-height: 40px;
+  background-color: black;
 }
 
 html,
@@ -13,7 +14,7 @@ body {
 body {
   height: 100vh;
   width: 100vw;
-  background: #1e1e2e;
+  background: var(--background-color);
 }
 
 * {
@@ -59,7 +60,9 @@ body {
 
 .button-container {
   align-self: baseline;
-  padding: 35px 15% 0px 15%;
+  padding-top: 35px;
+  padding-right: 15%;
+  padding-left: 15%;
   display: flex;
   width: 100vw;
   justify-content: end;
@@ -69,7 +72,7 @@ body {
   height: 256px;
   width: 256px;
   margin-top: 100px;
-  background-color: #181825;
+  background-color: var(--darker-text-color);
   object-fit: cover;
   user-select: none;
 }
@@ -114,8 +117,8 @@ body {
   border-radius: 0.625vh;
   font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
   font-weight: bold;
-  color: #bac1dd;
-  background-color: #585b6f;
+  color: var(--light-text-color);
+  background-color: var(--default-button-color);
   transition: 0.2s;
   text-align: center;
   user-select: none;
@@ -123,18 +126,18 @@ body {
 }
 
 .art-buttons:hover {
-  background-color: #656980;
+  background-color: var(--default-button-color-lighter);
   transition: 0.2s;
 }
 
 .art-buttons:active {
-  background-color: #47495a;
+  background-color: var(--default-button-color-darker);
   transition: 0.2s;
 }
 
 .txt {
   margin-right: 15px;
-  color: #FFFFFF;
+  color: var(--text);
   font-size: larger;
   font-weight: bold;
   font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
@@ -150,48 +153,9 @@ body {
   height: 26px;
   font-weight: bold;
   font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
-  color: #181825;
-  background-color: #bac2de;
+  color: var(--darker-text-color);
+  background-color: var(--light-text-color);
   user-select: none;
-}
-
-.args {
-  word-wrap: break-word;
-  word-break: break-all;
-  max-height: 95px;
-  max-width: max-content;
-  min-height: 26px;
-  min-width: 100%;
-}
-
-.info {
-  color: #636363;
-  font-size: 10px;
-  bottom: auto;
-  user-select: none;
-  position: relative;
-}
-
-.info .info-content {
-  display: none;
-  position: absolute;
-  bottom: 150%;
-  left: 100%;
-  padding: 0.5em;
-  min-width: 10rem;
-  width: fit-content;
-  border: none;
-  border-radius: 0.625vh;
-  color: #cdd6f4;
-  background-color: #6c7086;
-  font-size: larger;
-  font-weight: normal;
-  font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
-  user-select: none;
-}
-
-.info:hover .info-content {
-  display: block;
 }
 
 .act-button {
@@ -200,87 +164,72 @@ body {
   height: 30px;
   border: none;
   border-radius: 0.625vh;
-  color: #1e1e2d;
+  color: var(--background-color);
   text-align: center;
   user-select: none;
 }
 
 .dec-button {
   font-size: medium;
-  background-color: #f38ba8;
+  background-color: var(--decline-button-color);
   cursor: pointer;
   transition: 0.2s;
 }
 
 .dec-button:hover {
-  background-color: #ff739b;
-  box-shadow: 0 0 10px 10px #f38ba828;
+  background-color: var(--decline-button-color-lighter);
+  box-shadow: 0 0 10px 10px var(--decline-button-color-glow-hover);
   transition: 0.2s;
 }
 
 .dec-button:active {
-  background-color: #e07895;
-  box-shadow: 0 0 5px 5px #f38ba80c;
+  background-color: var(--decline-button-color-darker);
+  box-shadow: 0 0 5px 5px var(--decline-button-color-glow-active);
   transition: 0.2s;
 }
 
 .acc-button {
-  background-color: #a6e3a1;
+  background-color: var(--accept-button-color);
   cursor: pointer;
   transition: 0.2s;
 }
 
 .acc-button:hover {
-  background-color: #9ff597;
-  box-shadow: 0 0 10px 10px #a6e3a128;
+  background-color: var(--accept-button-color-lighter);
+  box-shadow: 0 0 10px 10px var(--accept-button-color-glow-hover);
   transition: 0.2s;
 }
 
 .acc-button:active {
-  background-color: #90ce8a;
-  box-shadow: 0 0 5px 5px #a6e3a10c;
+  background-color: var(--accept-button-color-darker);
+  box-shadow: 0 0 5px 5px var(--accept-button-color-glow-active);
   transition: 0.2s;
 }
 
 .rel-button {
   font-size: medium;
-  background-color: #bac2de;
+  background-color: var(--reload-button-color);
   cursor: pointer;
   transition: 0.2s;
 }
 
 .rel-button:hover {
-  background-color: #bec8ec;
-  box-shadow: 0 0 10px 10px #bac2de28;
+  background-color: var(--reload-button-color-lighter);
+  box-shadow: 0 0 10px 10px var(--reload-button-color-glow-hover);
   transition: 0.2s;
 }
 
 .rel-button:active {
-  background-color: #9ea6c7;
-  box-shadow: 0 0 5px 5px #bac2de0c;
+  background-color: var(--reload-button-color-darker);
+  box-shadow: 0 0 5px 5px var(--reload-button-color-glow-active);
   transition: 0.2s;
 }
 
-.mp3-check {
-  margin: auto auto auto 5%;
-  height: 20px;
-  width: 20px;
-  border: none;
-  background-color: #bac1dd;
-}
-
-.mp3-txt {
-  margin-top: auto;
-  margin-bottom: auto;
-}
-
 .draggable {
-
   -webkit-app-region: drag;
 }
 
 .non-draggable {
-
   -webkit-app-region: no-drag;
 }
 
@@ -289,7 +238,7 @@ body {
   top: env(titlebar-area-y, 0);
   height: env(titlebar-area-height, var(--fallback-title-bar-height));
   width: 100%;
-  background-color: #181825;
+  background-color: var(--header-color);
 }
 
 #titleBar {
@@ -300,7 +249,7 @@ body {
   height: 100%;
   left: env(titlebar-area-x, 0);
   width: 100%;
-  color: #FFFFFF;
+  color: var(--header-text);
   font-weight: bold;
   text-align: center;
 }

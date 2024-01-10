@@ -3,7 +3,6 @@ let title = document.getElementById('title')
 let artist = document.getElementById('artist')
 let album = document.getElementById('album')
 let year = document.getElementById('year')
-let args = document.getElementById('args')
 let language
 
 document.getElementById('accButton').addEventListener('click', applyMetadata)
@@ -15,6 +14,13 @@ document.getElementById('relButton').addEventListener('click', () => { window.el
 
 window.onload = async () => {
   language = await window.electronAPI.sendGetLanguage()
+
+  let [_currentStyle, _styles, currentStylePath] = await window.electronAPI.sendGetStyles()
+
+  const node = document.createElement("link");
+  node.setAttribute('rel', 'stylesheet')
+  node.setAttribute('href', currentStylePath)
+  document.querySelector("head").appendChild(node)
 
   document.getElementById('header').textContent = language.loading
   document.getElementById('urlButton').textContent = language.loadurl
@@ -33,9 +39,9 @@ window.electronAPI.onRecieveMetadata((_event, metadata) => {
   artist.value = metadata.artist ? metadata.artist : ""
   album.value = metadata.album ? metadata.album : ""
   year.value = metadata.upload_year ? metadata.upload_year : ""
-	genre.value = metadata.genre ? metadata.genre : ""
-	albumArtist.value = metadata.album_artist ? metadata.album_artist : ""
-  document.getElementById('header').textContent = language.edit
+  genre.value = metadata.genre ? metadata.genre : ""
+  albumArtist.value = metadata.album_artist ? metadata.album_artist : ""
+  setTimeout(() => { document.getElementById('header').textContent = language.edit }, 1)
   document.getElementById('accButton').removeAttribute('disabled')
   document.getElementById('relButton').removeAttribute('disabled')
   document.getElementById('artButton').removeAttribute('disabled')
@@ -51,8 +57,8 @@ function applyMetadata() {
     "artist": artist.value,
     "album": album.value,
     "upload_year": year.value,
-		"genre": genre.value,
-		"album_artist": albumArtist.value,
+    "genre": genre.value,
+    "album_artist": albumArtist.value,
     "art": art.getAttribute('src'),
   })
 
@@ -61,5 +67,5 @@ function applyMetadata() {
 
 function createArtButtons() {
   document.getElementById('artButtonContainer').style.display = artButtonContainer.style.display === "flex" ? "none" : "flex"
-  args.style.maxHeight = args.style.maxHeight === "75px" ? "95px" : "75px"
+  document.getElementById('buttonContainer').style.paddingTop = buttonContainer.style.paddingTop === "0px" ? "35px" : "0px"
 }
