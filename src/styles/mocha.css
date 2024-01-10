@@ -1,0 +1,30 @@
+:root {
+  --background-color: #1e1e2e;
+  --background-color-darker: #151520;
+  --background-color-lighter: #252538;
+  --header-color: #181825;
+  --header-text: #ffffff;
+  --text: #ffffff;
+  --label-color: #cdd6f4;
+  --light-text-color: #bac2de;
+  --dark-text-color: #616574;
+  --darker-text-color: #181825;
+  --default-button-color: #585b70;
+  --default-button-color-darker: #4c4f61;
+  --default-button-color-lighter: #676a83;
+  --decline-button-color: #f38ba8;
+  --decline-button-color-darker: #e07895;
+  --decline-button-color-lighter: #ff739b;
+  --decline-button-color-glow-hover: #f38ba828;
+  --decline-button-color-glow-active: #f38ba80c;
+  --accept-button-color: #a6e3a1;
+  --accept-button-color-darker: #90ce8a;
+  --accept-button-color-lighter: #9ff597;
+  --accept-button-color-glow-hover: #a6e3a128;
+  --accept-button-color-glow-active: #a6e3a10c;
+  --reload-button-color: #bac2de;
+  --reload-button-color-darker: #9ea6c7;
+  --reload-button-color-lighter: #bec8ec;
+  --reload-button-color-glow-hover: #bac2de28;
+  --reload-button-color-glow-active: #bac2de0c;
+}
