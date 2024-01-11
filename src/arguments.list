@@ -16,7 +16,7 @@ bestaudio
 --sponsorblock-remove
 all
 --ffmpeg-location
-C:\Users\Konstantin\AppData\Roaming\ytm-dlp\ffmpeg
+<ffmpeg_directory>
 --ppa
 "ThumbnailsConvertor+ffmpeg_o:-c:v png -vf crop='ih'"
 --parse-metadata

@@ -405,11 +405,21 @@ const getDeps = async () => {
   }
 
   if (!fs.existsSync(path.join(getAppDataPath("ytm-dlp"), "yt-dlp/arguments.list"))) {
-    fs.copyFile(path.join(__dirname, 'arguments.list'), path.join(getAppDataPath(), 'ytm-dlp/yt-dlp/arguments.list'))
+    fs.readFile(path.join(__dirname, 'arguments.list'), 'utf-8', (err, data) => {
+      if (err) { throwErr(err) }
+
+      data = data.replace(/<ffmpeg_directory>/, path.join(getAppDataPath("ytm-dlp"), "/ffmpeg/"))
+
+      fs.writeFile(path.join(getAppDataPath(), 'ytm-dlp/yt-dlp/arguments.list'), data, (err) => { if (err) { throwErr(err) } })
+    })
   }
 
   if (!fs.existsSync(path.join(getAppDataPath(), 'ytm-dlp/styles')) || fs.readdirSync(path.join(getAppDataPath(), 'ytm-dlp/styles')) == '') {
-    fs.copy(path.join(__dirname, 'styles'), path.join(getAppDataPath(), 'ytm-dlp/styles'), { recursive: true }, (err) => { if (err) { throwErr(err) } })
+    fs.copy(path.join(__dirname, 'styles'), path.join(getAppDataPath(), 'ytm-dlp/styles'), { recursive: true }, (err) => {
+      if (err) { throwErr(err) }
+
+      fs.chmod(path.join(getAppDataPath(), 'ytm-dlp/styles'), '755')
+    })
   }
 
   ffbinaries.downloadBinaries(['ffmpeg', 'ffprobe'], { destination: path.join(getAppDataPath("ytm-dlp"), "/ffmpeg/") }, (err) => {
