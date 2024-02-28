@@ -16,6 +16,10 @@ window.onload = async () => {
   node.setAttribute('href', currentStylePath)
   document.querySelector("head").appendChild(node)
 
+  document.getElementById('aboutButton').title = language.about
+  document.getElementById('dlButton').title = language.download
+  document.getElementById('setButton').title = language.settings
+  document.getElementById('locButton').title = language.dlfolder
   document.getElementById('waitingLabel').textContent = language.waiting
   document.getElementById('extTitle').textContent = language.extension
   document.getElementById('ordTitle').textContent = language.order

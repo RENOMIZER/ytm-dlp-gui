@@ -31,6 +31,9 @@ window.onload = async () => {
   document.getElementById('yearTxt').textContent = language.year + ':'
   document.getElementById('genreTxt').textContent = language.genre + ':'
   document.getElementById('albumArtistTxt').textContent = language.albumartist + ':'
+  document.getElementById('accButton').title = language.accept
+  document.getElementById('relButton').title = language.reset
+  document.getElementById('decButton').title = language.decline
 }
 
 window.electronAPI.onRecieveMetadata((_event, metadata) => {
@@ -41,7 +44,7 @@ window.electronAPI.onRecieveMetadata((_event, metadata) => {
   year.value = metadata.upload_year ? metadata.upload_year : ""
   genre.value = metadata.genre ? metadata.genre : ""
   albumArtist.value = metadata.album_artist ? metadata.album_artist : ""
-  setTimeout(() => { document.getElementById('header').textContent = language.edit }, 1)
+  setTimeout(() => { document.getElementById('header').textContent = language.edit }, 1) // it works only this way and I don't know why
   document.getElementById('accButton').removeAttribute('disabled')
   document.getElementById('relButton').removeAttribute('disabled')
   document.getElementById('artButton').removeAttribute('disabled')
