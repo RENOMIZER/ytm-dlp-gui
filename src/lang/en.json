@@ -18,5 +18,15 @@
 	"albumartist": "Album artist",
 	"extension": "Extension",
 	"order": "Order",
-  "style": "Style"
+  "style": "Style",
+  "resdep": "Reinstall dependencies",
+  "download": "Download",
+  "settings": "Edit",
+  "dlfolder": "Download folder",
+  "seldlfolder": "Select download folder",
+  "select": "Select",
+  "reset": "Reset",
+  "accept": "Accept",
+  "decline": "Decline",
+  "selalbumart": "Select album cover"
 }
