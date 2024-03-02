@@ -1,3 +1,5 @@
+@import "https://www.nerdfonts.com/assets/css/webfont.css";
+
 :root {
   --fallback-title-bar-height: 40px;
   background-color: black;
@@ -35,6 +37,30 @@ body {
   align-content: center;
   width: 100%;
   height: calc(100% - env(titlebar-area-height, var(--fallback-title-bar-height)));
+}
+
+.act-button {
+	height: 6vmin;
+	width: 6vmin;
+	border: none;
+	border-radius: 0.6vmin;
+	color: var(--light-text-color);
+	font-size: 2.75vmin;
+	text-align: center;
+	background-color: var(--default-button-color);
+	transition: 0.2s;
+	user-select: none;
+	cursor: pointer;
+}
+
+.act-button:hover {
+	background-color: var(--default-button-color-lighter);
+	transition: 0.2s;
+}
+
+.act-button:active {
+	background-color: var(--default-button-color-darker);
+	transition: 0.2s;
 }
 
 .container>img {
@@ -121,8 +147,31 @@ body {
   text-align: center;
 }
 
-#titleBar>span {
-  margin: auto;
-  padding: 0px 16px 0px 16px;
-  font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
+#titleBar .header {
+	top: 50%;
+	left: 50%;
+	transform: translate(-50%, -50%);
+	position: absolute;
+	align-self: center;
+	padding: 0px 16px 0px 16px;
+	font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
+}
+
+.reset-button {
+	margin: auto 10px;
+	height: 30px;
+	width: 30px;
+	color: var(--light-text-color);
+	background-color: var(--background-color);
+	font-size: small;
+}
+
+.reset-button:hover {
+	background-color: var(--background-color-lighter);
+	transition: 0.2s;
+}
+
+.reset-button:active {
+	background-color: var(--background-color-darker);
+	transition: 0.2s;
 }
