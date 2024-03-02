@@ -28,5 +28,7 @@
   "reset": "Reset",
   "accept": "Accept",
   "decline": "Decline",
-  "selalbumart": "Select album cover"
+  "selalbumart": "Select album cover",
+  "lyrics": "Lyrics",
+  "lrcwarn": "Works only if extension isn't set to MP3"
 }
