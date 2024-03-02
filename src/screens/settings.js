@@ -3,6 +3,7 @@ let title = document.getElementById('title')
 let artist = document.getElementById('artist')
 let album = document.getElementById('album')
 let year = document.getElementById('year')
+let lyrics = document.getElementById('lrcSelect')
 let language
 
 document.getElementById('accButton').addEventListener('click', applyMetadata)
@@ -31,6 +32,11 @@ window.onload = async () => {
   document.getElementById('yearTxt').textContent = language.year + ':'
   document.getElementById('genreTxt').textContent = language.genre + ':'
   document.getElementById('albumArtistTxt').textContent = language.albumartist + ':'
+  document.getElementById('lrcTxt').textContent = language.lyrics + ':'
+  document.getElementById('accButton').title = language.accept
+  document.getElementById('relButton').title = language.reset
+  document.getElementById('decButton').title = language.decline
+  lyrics.title = language.lrcwarn
 }
 
 window.electronAPI.onRecieveMetadata((_event, metadata) => {
@@ -41,7 +47,9 @@ window.electronAPI.onRecieveMetadata((_event, metadata) => {
   year.value = metadata.upload_year ? metadata.upload_year : ""
   genre.value = metadata.genre ? metadata.genre : ""
   albumArtist.value = metadata.album_artist ? metadata.album_artist : ""
-  setTimeout(() => { document.getElementById('header').textContent = language.edit }, 1)
+  lyrics.value = metadata.lyrics ? metadata.lyrics : "none"
+  lyrics.removeAttribute('disabled')
+  setTimeout(() => { document.getElementById('header').textContent = language.edit }, 1) // it works only this way and I don't know why
   document.getElementById('accButton').removeAttribute('disabled')
   document.getElementById('relButton').removeAttribute('disabled')
   document.getElementById('artButton').removeAttribute('disabled')
@@ -60,6 +68,7 @@ function applyMetadata() {
     "genre": genre.value,
     "album_artist": albumArtist.value,
     "art": art.getAttribute('src'),
+    "lyrics": lyrics.value
   })
 
   window.close()

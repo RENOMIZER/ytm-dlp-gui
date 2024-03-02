@@ -3,8 +3,11 @@
 -x
 -f
 bestaudio
+--audio-quality
+0
 --embed-thumbnail
 --embed-metadata
+--force-overwrites
 --parse-metadata
 ":(?P<meta_synopsis>)"
 --parse-metadata
@@ -22,7 +25,9 @@ all
 --parse-metadata
 "upload_date:(?P<meta_date>^[0-9]{4})"
 --parse-metadata
-"description:(?P<meta_date>(?<=Released on: )[0-9]{4}")
+"description:(?P<meta_date>(?<=℗ )[0-9]{4})"
+--parse-metadata
+"description:(?P<meta_date>(?<=Released on: )[0-9]{4})"
 --parse-metadata
 "%(album_artist,artist,uploader)s:%(album_artist)s"
 --replace-in-metadata

@@ -1,9 +1,10 @@
 /* Modules */
 const { app, BrowserWindow, ipcMain, dialog, shell } = require('electron');
 const YTDlpWrap = require('yt-dlp-wrap').default;
-const fetch = require("electron-fetch").default;
+const fetch = require("node-fetch-commonjs");
 const getAppDataPath = require("appdata-path");
 const ffbinaries = require('ffbinaries-plus');
+const getLyrics = require('lyrics-snatcher');
 const { exec } = require('child_process');
 const fs = require('fs-extra');
 const path = require('path');
@@ -26,7 +27,7 @@ let UrlWin
 /* DO NOT CHANGE */
 
 /* Variables */
-let changedMetadata = { "no": "data" }
+let changedMetadata = {}
 let metadata = {}
 let rawMetadata
 let currentVideo
@@ -38,10 +39,54 @@ if (require('electron-squirrel-startup')) return;
 
 let logStream = fs.createWriteStream(path.join(os.tmpdir(), `ytm-dlp-log-${date.timeNow()}-${date.dateNow()}.txt`))
 
+/* Main cycle */
 app.whenReady().then(async () => {
-  ipcMain.on('startDownload', startDownload)
+  ipcMain.on('getArt', createUrl)
+  ipcMain.on('openAbout', createAbout)
   ipcMain.on('clickedSettings', createSettings)
+  ipcMain.on('startDownload', startDownload)
+  ipcMain.handle('getStyles', getStyles)
+
+  ipcMain.handle('getLanguage', () => { return language })
   ipcMain.on('recieveMetadata', (_event, metadata) => { changedMetadata = metadata })
+  ipcMain.on('reloadMetadata', () => { SetWin.webContents.send('sendMetadata', metadata); customArt = null })
+
+  ipcMain.on('chooseDirectory', () => {
+    dialog.showOpenDialog(MainWin, {
+      title: language.seldlfolder,
+      buttonLabel: language.select,
+      properties: ['openDirectory']
+    }).then((e) => { if (!e.canceled) { MainWin.webContents.send('sendDirectory', e.filePaths[0]) } })
+  })
+
+  ipcMain.on('resetDeps', async () => {
+    fs.rmSync(path.join(getAppDataPath("ytm-dlp"), "yt-dlp"), { recursive: true, force: true })
+    fs.rmSync(path.join(getAppDataPath("ytm-dlp"), "ffmpeg"), { recursive: true, force: true })
+
+    await getDeps()
+  })
+
+  ipcMain.on('changeStyle', (_event, style) => {
+    let config = JSON.parse(fs.readFileSync(path.join(getAppDataPath("ytm-dlp"), "config.json"), 'utf-8'))
+    config.style = style
+
+    fs.writeFileSync(path.join(getAppDataPath("ytm-dlp"), "config.json"), JSON.stringify(config))
+
+    MainWin.reload()
+    AboutWin.reload()
+  })
+
+  ipcMain.on('recieveLanguage', (_event, lang) => {
+    if (lang !== language.current) {
+      let config = JSON.parse(fs.readFileSync(path.join(getAppDataPath("ytm-dlp"), "config.json")))
+      config.lang = lang
+
+      fs.writeFileSync(path.join(getAppDataPath("ytm-dlp"), "config.json"), JSON.stringify(config))
+
+      app.relaunch()
+      app.quit()
+    }
+  })
 
   ipcMain.on('receiveOnlineArt', (_event, artURL) => {
     fetch(artURL)
@@ -59,35 +104,10 @@ app.whenReady().then(async () => {
       });
   })
 
-  ipcMain.on('changeStyle', changeStyle)
-
-  ipcMain.on('recieveLanguage', (_event, lang) => {
-    if (lang !== language.current) {
-      let config = JSON.parse(fs.readFileSync(path.join(getAppDataPath("ytm-dlp"), "config.json")))
-      config.lang = lang
-      fs.writeFileSync(path.join(getAppDataPath("ytm-dlp"), "config.json"), JSON.stringify(config))
-      app.relaunch()
-      app.quit()
-    }
-  })
-
-  ipcMain.on('chooseDirectory', () => {
-    dialog.showOpenDialog(MainWin, {
-      title: 'Select download folder',
-      buttonLabel: 'Select',
-      properties: ['openDirectory']
-    }).then((e) => { if (!e.canceled) { MainWin.webContents.send('sendDirectory', e.filePaths[0]) } })
-  })
-
-  ipcMain.on('reloadMetadata', () => { SetWin.webContents.send('sendMetadata', metadata); customArt = null })
-  ipcMain.handle('getLanguage', () => { return language })
-  ipcMain.handle('getStyles', getStyles)
-  ipcMain.on('openAbout', createAbout)
-
   ipcMain.on('openArt', () => {
     dialog.showOpenDialog(SetWin, {
-      title: 'Select album artwork',
-      buttonLabel: 'Select',
+      title: language.selalbumart,
+      buttonLabel: language.select,
       filters: [
         { name: 'Images', extensions: ['png', 'jpg', 'jpeg', 'webp'] }
       ],
@@ -95,7 +115,7 @@ app.whenReady().then(async () => {
     }).then((e) => { if (!e.canceled) { SetWin.webContents.send('sendArt', e.filePaths[0]); customArt = e.filePaths[0] } })
   })
 
-  ipcMain.on('getArt', createUrl)
+
 
   await getDeps()
   getLang()
@@ -107,94 +127,7 @@ app.whenReady().then(async () => {
   })
 })
 
-/* General functions */
-const startDownload = (_event, videoURL, dirPath, ext, order) => {
-  let arguments = fs.readFileSync(path.join(getAppDataPath("ytm-dlp"), "yt-dlp/arguments.list"), 'UTF-8').split(/\n/).map(e => { return e.replace(/"/g, '') })
-
-  if (!changedMetadata.no) {
-    for (let i = 0; i < 10; i++) {
-      arguments.pop()
-    }
-
-    if (customArt) {
-      for (let i = 0; i < 2; i++) {
-        arguments.pop()
-      }
-
-      arguments.push(
-        '--ppa', `ThumbnailsConvertor+ffmpeg_i: -i '${customArt}'`,
-        '--ppa', "ThumbnailsConvertor+ffmpeg_o: -map 0:0 -c:v png -vf crop='ih'"
-      )
-
-      customArt = null
-    }
-
-    arguments.push(
-      '--parse-metadata', "NA:%(meta_title)s",
-      '--parse-metadata', "NA:%(title)s",
-      '--parse-metadata', "NA:%(meta_artist)s",
-      '--parse-metadata', "NA:%(artist)s",
-      '--parse-metadata', "NA:%(album_artist)s",
-      '--parse-metadata', "NA:%(meta_album)s",
-      '--parse-metadata', "NA:%(meta_date)s",
-      '--parse-metadata', "NA:%(genre)s",
-
-      '--replace-in-metadata', 'meta_title', 'NA', changedMetadata.track,
-      '--replace-in-metadata', 'title', 'NA', changedMetadata.track,
-      '--replace-in-metadata', 'meta_artist', 'NA', changedMetadata.artist,
-      '--replace-in-metadata', 'artist', 'NA', changedMetadata.artist,
-      '--replace-in-metadata', 'album_artist', 'NA', changedMetadata.album_artist,
-      '--replace-in-metadata', 'meta_album', 'NA', changedMetadata.album,
-      '--replace-in-metadata', 'meta_date', 'NA', changedMetadata.upload_year,
-      '--replace-in-metadata', 'genre', 'NA', changedMetadata.genre,
-    )
-  }
-
-  if (path && fs.existsSync(dirPath)) {
-    for (let i = 0; i < 2; i++) {
-      arguments.shift()
-    }
-
-    arguments.unshift(
-      '-o', `${dirPath}/%(artist,uploader)s - %(title,meta_title)s.%(ext)s`
-    )
-  }
-
-  if (order == 'strict') {
-    arguments.push(
-      '--parse-metadata', "playlist_index:%(track_number)s",
-    )
-  }
-
-  arguments.push(
-    '--audio-format', ext,
-    '--audio-quality', '0',
-    videoURL
-  )
-
-  YtDlpWrap.exec(arguments)
-    .on('ytDlpEvent', (eType, eData) => {
-      console.log('[' + eType + ']', eData)
-      logStream.write(`[${eType}] ${eData}\n`)
-
-      if (eType == 'download' && eData.slice(1, 4) != 'Des' && eData.slice(4, 5) == '.') {
-        MainWin.webContents.send('sendProgress', eData.slice(1, 4))
-      }
-    })
-    .on('error', (err) => { MainWin.webContents.send('sendDownloadError'); throwErr(err) })
-    .on('close', () => {
-      logStream.write('\n')
-
-      MainWin.webContents.send('sendDownloadFinished');
-      if (fs.existsSync(path.join(os.tmpdir(), '/ytm-dlp-images/art'))) {
-        fs.unlink(path.join(os.tmpdir(), '/ytm-dlp-images/art'), (err) => { if (err) { throwErr(err) } })
-      }
-    })
-
-  currentVideo = ''
-  changedMetadata = { "no": "data" }
-}
-
+/* Window creation */
 const createMain = () => {
   MainWin = new BrowserWindow({
     width: 800,
@@ -303,18 +236,14 @@ const createAbout = () => {
   })
 }
 
+/* Get info */
 const getLang = () => {
-  if (!fs.existsSync(path.join(getAppDataPath("ytm-dlp"), "config.json")) || fs.readFileSync(path.join(getAppDataPath("ytm-dlp"), "config.json")) === '') {
+  if (!fs.existsSync(path.join(getAppDataPath("ytm-dlp"), "config.json")) || fs.readFileSync(path.join(getAppDataPath("ytm-dlp"), "config.json"), 'utf-8') === '') {
     fs.writeFileSync(path.join(getAppDataPath("ytm-dlp"), "config.json"), `{"lang": "en", "style": "mocha"}`)
   }
 
   let local = JSON.parse(fs.readFileSync(path.join(getAppDataPath("ytm-dlp"), "config.json")))
   language = JSON.parse(fs.readFileSync(path.join(__dirname, '/lang/', local.lang + '.json')))
-}
-
-const throwErr = (err) => {
-  console.error(err)
-  logStream.write(`[error] ` + err + '\n\n')
 }
 
 const getStyles = () => {
@@ -339,22 +268,6 @@ const getStyles = () => {
   return [currentStyle, styles, currentStylePath]
 }
 
-const changeStyle = (_event, style) => {
-  fs.readFile(path.join(getAppDataPath("ytm-dlp"), "config.json"), 'utf-8', (err, data) => {
-    if (err) { throwErr(err) }
-
-    let config = JSON.parse(data)
-    config.style = style
-    config = JSON.stringify(config)
-
-    fs.writeFile(path.join(getAppDataPath("ytm-dlp"), "config.json"), config, 'utf-8', (err) => { if (err) { throwErr(err) } })
-  })
-
-  MainWin.reload()
-  AboutWin.reload()
-}
-
-/* Async functions */
 const getMetadata = async (videoURL) => {
   if (videoURL !== currentVideo) {
     rawMetadata = await YtDlpWrap.getVideoInfo(videoURL)
@@ -363,7 +276,7 @@ const getMetadata = async (videoURL) => {
       metadata.track = rawMetadata.track
       metadata.artist = rawMetadata.artist
       metadata.album = rawMetadata.album
-      metadata.upload_year = rawMetadata.description.match(/(?<=Released on: )[0-9]{4}/gm)
+      metadata.upload_year = rawMetadata.description.match(/(?<=Released on: )[0-9]{4}/gm) ? rawMetadata.description.match(/(?<=Released on: )[0-9]{4}/gm) : rawMetadata.description.match(/(?<=℗ )[0-9]{4}/gm)
       metadata.album_artist = rawMetadata.album_artist ? rawMetadata.album_artist : rawMetadata.artist
     }
     else {
@@ -453,4 +366,122 @@ const getDeps = async () => {
       }
     })
   })
+}
+
+/* General functions */
+const startDownload = async (_event, videoURL, dirPath, ext, order) => {
+  let arguments = fs.readFileSync(path.join(getAppDataPath("ytm-dlp"), "yt-dlp/arguments.list"), 'UTF-8').split(/\n/).map(e => { return e.replace(/"/g, '') })
+
+  if (Object.keys(changedMetadata).length != 0) {
+    for (let i = 0; i < 10; i++) {
+      arguments.pop()
+    }
+
+    if (customArt) {
+      for (let i = 0; i < 2; i++) {
+        arguments.pop()
+      }
+
+      arguments.push(
+        '--ppa', `ThumbnailsConvertor+ffmpeg_i: -i '${customArt}'`,
+        '--ppa', "ThumbnailsConvertor+ffmpeg_o: -map 0:0 -c:v png -vf crop='ih'"
+      )
+
+      customArt = null
+    }
+
+    if (changedMetadata.lyrics != 'none' && ext != 'mp3') {
+      let lrc = await getLyrics(changedMetadata.track, changedMetadata.artist.replace(/(,[a-zа-яА-ЯA-Z0-9_ ]).*/g, ''), changedMetadata.album, `${rawMetadata.duration}`)
+      if (lrc = 'null') {
+        lrc = await getLyrics(changedMetadata.track, changedMetadata.artist.replace(/(,[a-zа-яА-ЯA-Z0-9_ ]).*/g, ''), ' ', `${rawMetadata.duration}`)
+      }
+
+      if (lrc instanceof Error) {
+        throwErr(lrc)
+      }
+      else {
+        arguments.push(
+          "--parse-metadata", "NA:(?P<meta_lyrics>.*)",
+          "--replace-in-metadata", "meta_lyrics", "NA"
+        )
+
+        if (changedMetadata.lyrics == 'sync') {
+          arguments.push(lrc.synced)
+        }
+        else {
+          arguments.push(lrc.plain)
+        }
+      }
+    }
+
+    arguments.push(
+      '--parse-metadata', "NA:%(meta_title)s",
+      '--parse-metadata', "NA:%(title)s",
+      '--parse-metadata', "NA:%(meta_artist)s",
+      '--parse-metadata', "NA:%(artist)s",
+      '--parse-metadata', "NA:%(uploader)s",
+      '--parse-metadata', "NA:%(album_artist)s",
+      '--parse-metadata', "NA:%(meta_album)s",
+      '--parse-metadata', "NA:%(meta_date)s",
+      '--parse-metadata', "NA:%(genre)s",
+
+      '--replace-in-metadata', 'meta_title', 'NA', changedMetadata.track,
+      '--replace-in-metadata', 'title', 'NA', changedMetadata.track,
+      '--replace-in-metadata', 'meta_artist', 'NA', changedMetadata.artist,
+      '--replace-in-metadata', 'artist', 'NA', changedMetadata.artist,
+      '--replace-in-metadata', 'uploader', 'NA', changedMetadata.artist,
+      '--replace-in-metadata', 'album_artist', 'NA', changedMetadata.album_artist,
+      '--replace-in-metadata', 'meta_album', 'NA', changedMetadata.album,
+      '--replace-in-metadata', 'meta_date', 'NA', changedMetadata.upload_year,
+      '--replace-in-metadata', 'genre', 'NA', changedMetadata.genre
+    )
+  }
+
+  if (fs.existsSync(dirPath)) {
+    for (let i = 0; i < 2; i++) {
+      arguments.shift()
+    }
+
+    arguments.unshift(
+      '-o', `${dirPath}/%(artist,uploader)s - %(title,meta_title)s.%(ext)s`
+    )
+  }
+
+  if (order == 'strict') {
+    arguments.push(
+      '--parse-metadata', "playlist_index:%(track_number)s",
+    )
+  }
+
+  arguments.push(
+    '--audio-format', ext,
+    videoURL
+  )
+
+  YtDlpWrap.exec(arguments)
+    .on('ytDlpEvent', (eType, eData) => {
+      console.log('[' + eType + ']', eData)
+      logStream.write(`[${eType}] ${eData}\n`)
+
+      if (eType == 'download' && eData.slice(1, 4) != 'Des' && eData.slice(4, 5) == '.') {
+        MainWin.webContents.send('sendProgress', eData.slice(1, 4))
+      }
+    })
+    .on('error', (err) => { MainWin.webContents.send('sendDownloadError'); throwErr(err) })
+    .on('close', () => {
+      logStream.write('\n')
+
+      MainWin.webContents.send('sendDownloadFinished');
+      if (fs.existsSync(path.join(os.tmpdir(), '/ytm-dlp-images/art'))) {
+        fs.unlink(path.join(os.tmpdir(), '/ytm-dlp-images/art'), (err) => { if (err) { throwErr(err) } })
+      }
+    })
+
+  currentVideo = ''
+  changedMetadata = {}
+}
+
+const throwErr = (err) => {
+  console.error(err)
+  logStream.write(`[error] ` + err + '\n\n')
 }

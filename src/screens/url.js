@@ -11,9 +11,12 @@ window.onload = async () => {
   document.querySelector("head").appendChild(node)
 
   document.getElementById('urlTxt').textContent = language.url
+  document.getElementById('accButton').title = language.accept
 }
 
 function sendOnlineArt() {
-  window.electronAPI.sendOnlineArt(document.getElementById('urlInput').value)
-  window.close()
+  if (document.getElementById('urlInput').value !== '') {
+    window.electronAPI.sendOnlineArt(document.getElementById('urlInput').value)
+    window.close()
+  }
 }
