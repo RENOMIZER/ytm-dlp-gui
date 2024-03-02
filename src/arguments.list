@@ -3,8 +3,11 @@
 -x
 -f
 bestaudio
+--audio-quality
+0
 --embed-thumbnail
 --embed-metadata
+--force-overwrites
 --parse-metadata
 ":(?P<meta_synopsis>)"
 --parse-metadata
