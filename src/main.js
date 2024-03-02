@@ -115,8 +115,6 @@ app.whenReady().then(async () => {
     }).then((e) => { if (!e.canceled) { SetWin.webContents.send('sendArt', e.filePaths[0]); customArt = e.filePaths[0] } })
   })
 
-
-
   await getDeps()
   getLang()
   createMain()
@@ -269,32 +267,35 @@ const getStyles = () => {
 }
 
 const getMetadata = async (videoURL) => {
-  if (videoURL !== currentVideo) {
-    rawMetadata = await YtDlpWrap.getVideoInfo(videoURL)
-
-    if (rawMetadata.artist) {
-      metadata.track = rawMetadata.track
-      metadata.artist = rawMetadata.artist
-      metadata.album = rawMetadata.album
-      metadata.upload_year = rawMetadata.description.match(/(?<=Released on: )[0-9]{4}/gm) ? rawMetadata.description.match(/(?<=Released on: )[0-9]{4}/gm) : rawMetadata.description.match(/(?<=℗ )[0-9]{4}/gm)
-      metadata.album_artist = rawMetadata.album_artist ? rawMetadata.album_artist : rawMetadata.artist
-    }
-    else {
-      metadata.track = rawMetadata.title
-      metadata.artist = rawMetadata.uploader
-      metadata.album = ""
-      metadata.upload_year = rawMetadata.upload_date.match(/^\d{4}/gm)
-      metadata.album_artist = rawMetadata.album_artist ? rawMetadata.album_artist : rawMetadata.uploader
-    }
-
-    metadata.genre = rawMetadata.genre ? rawMetadata.genre : ""
-    metadata.art = rawMetadata['thumbnails'].pop()['url']
-    currentVideo = videoURL
+  if (videoURL === currentVideo && Object.keys(changedMetadata).length === 0) {
+    SetWin.webContents.send('sendMetadata', metadata)
+    return
   }
-  else if (!changedMetadata.no) {
+  else if (Object.keys(changedMetadata).length !== 0) {
     SetWin.webContents.send('sendMetadata', changedMetadata)
     return
   }
+
+  rawMetadata = await YtDlpWrap.getVideoInfo(videoURL)
+
+  if (rawMetadata.artist) {
+    metadata.track = rawMetadata.track
+    metadata.artist = rawMetadata.artist
+    metadata.album = rawMetadata.album
+    metadata.upload_year = rawMetadata.description.match(/(?<=Released on: )[0-9]{4}/gm) ? rawMetadata.description.match(/(?<=Released on: )[0-9]{4}/gm) : rawMetadata.description.match(/(?<=℗ )[0-9]{4}/gm)
+    metadata.album_artist = rawMetadata.album_artist ? rawMetadata.album_artist : rawMetadata.artist
+  }
+  else {
+    metadata.track = rawMetadata.title
+    metadata.artist = rawMetadata.uploader
+    metadata.album = ""
+    metadata.upload_year = rawMetadata.upload_date.match(/^\d{4}/gm)
+    metadata.album_artist = rawMetadata.album_artist ? rawMetadata.album_artist : rawMetadata.uploader
+  }
+
+  metadata.genre = rawMetadata.genre ? rawMetadata.genre : ""
+  metadata.art = rawMetadata['thumbnails'].pop()['url']
+  currentVideo = videoURL
 
   SetWin.webContents.send('sendMetadata', metadata)
 }
@@ -372,7 +373,7 @@ const getDeps = async () => {
 const startDownload = async (_event, videoURL, dirPath, ext, order) => {
   let arguments = fs.readFileSync(path.join(getAppDataPath("ytm-dlp"), "yt-dlp/arguments.list"), 'UTF-8').split(/\n/).map(e => { return e.replace(/"/g, '') })
 
-  if (Object.keys(changedMetadata).length != 0) {
+  if (Object.keys(changedMetadata).length !== 0) {
     for (let i = 0; i < 10; i++) {
       arguments.pop()
     }
@@ -390,9 +391,9 @@ const startDownload = async (_event, videoURL, dirPath, ext, order) => {
       customArt = null
     }
 
-    if (changedMetadata.lyrics != 'none' && ext != 'mp3') {
+    if (changedMetadata.lyrics !== 'none' && ext !== 'mp3') {
       let lrc = await getLyrics(changedMetadata.track, changedMetadata.artist.replace(/(,[a-zа-яА-ЯA-Z0-9_ ]).*/g, ''), changedMetadata.album, `${rawMetadata.duration}`)
-      if (lrc = 'null') {
+      if (lrc.plain === null) {
         lrc = await getLyrics(changedMetadata.track, changedMetadata.artist.replace(/(,[a-zа-яА-ЯA-Z0-9_ ]).*/g, ''), ' ', `${rawMetadata.duration}`)
       }
 
@@ -405,11 +406,14 @@ const startDownload = async (_event, videoURL, dirPath, ext, order) => {
           "--replace-in-metadata", "meta_lyrics", "NA"
         )
 
-        if (changedMetadata.lyrics == 'sync') {
+        if (changedMetadata.lyrics === 'sync' && lrc.synced !== null) {
           arguments.push(lrc.synced)
         }
-        else {
+        else if (lrc.plain !== null) {
           arguments.push(lrc.plain)
+        }
+        else {
+          arguments.push("")
         }
       }
     }
