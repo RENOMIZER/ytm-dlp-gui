@@ -11,7 +11,7 @@ const path = require('path');
 const os = require('os');
 
 /* Classes */
-const YtDlpWrap = new YTDlpWrap(path.join(getAppDataPath("ytm-dlp"), "yt-dlp/yt-dlp.exe"));
+const YtDlpWrap = new YTDlpWrap(path.join(getAppDataPath("ytm-dlp"), 'yt-dlp/yt-dlp' + (os.platform() === 'win32' ? '.exe' : '')));
 Date.prototype.dateNow = function () {
   return ((this.getDate() < 10) ? "0" : "") + this.getDate() + "-" + this.getMonth() + 1 + "-" + this.getFullYear();
 }
@@ -305,9 +305,10 @@ const getDeps = async () => {
     fs.mkdir(path.join(getAppDataPath("ytm-dlp"), "yt-dlp"), { recursive: true }, (err) => { if (err) { throwErr(err) } })
   }
 
-  if (!fs.existsSync(path.join(getAppDataPath("ytm-dlp"), "yt-dlp/yt-dlp.exe"))) {
-    await YTDlpWrap.downloadFromGithub(path.join(getAppDataPath("ytm-dlp"), "yt-dlp/yt-dlp.exe"))
-  } else {
+  if (!fs.existsSync(path.join(getAppDataPath("ytm-dlp"), 'yt-dlp/yt-dlp' + (os.platform() === 'win32' ? '.exe' : '')))) {
+    await YTDlpWrap.downloadFromGithub(path.join(getAppDataPath("ytm-dlp"), 'yt-dlp/yt-dlp' + (os.platform() === 'win32' ? '.exe' : '')))
+  } 
+  else {
     exec(path.join(getAppDataPath("ytm-dlp"), "yt-dlp/yt-dlp.exe"), async (_error, _stdout, stderr) => {
       if (!stderr.includes('Usage:')) {
         throwErr('YT-DLP executable error')
@@ -349,6 +350,7 @@ const getDeps = async () => {
         else {
           fs.unlinkSync(path.join(getAppDataPath("ytm-dlp"), "ffmpeg/ffmpeg"))
         }
+        
         ffbinaries.downloadBinaries(['ffmpeg'], { destination: path.join(getAppDataPath("ytm-dlp"), "/ffmpeg/") }, (err) => { if (err) { throwErr(err) } })
       }
     })
@@ -363,6 +365,7 @@ const getDeps = async () => {
         else {
           fs.unlinkSync(path.join(getAppDataPath("ytm-dlp"), "ffmpeg/ffprobe"))
         }
+        
         ffbinaries.downloadBinaries(['ffprobe'], { destination: path.join(getAppDataPath("ytm-dlp"), "/ffmpeg/") }, (err) => { if (err) { throwErr(err) } })
       }
     })
