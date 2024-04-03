@@ -309,12 +309,12 @@ const getDeps = async () => {
     await YTDlpWrap.downloadFromGithub(path.join(getAppDataPath("ytm-dlp"), 'yt-dlp/yt-dlp' + (os.platform() === 'win32' ? '.exe' : '')))
   }
   else {
-    exec(path.join(getAppDataPath("ytm-dlp"), "yt-dlp/yt-dlp.exe"), async (_error, _stdout, stderr) => {
+    exec(path.join(getAppDataPath("ytm-dlp"), "yt-dlp/yt-dlp"), async (_error, _stdout, stderr) => {
       if (!stderr.includes('Usage:')) {
         throwErr('YT-DLP executable error')
 
-        fs.unlinkSync(path.join(getAppDataPath("ytm-dlp"), "yt-dlp/yt-dlp.exe"))
-        await YTDlpWrap.downloadFromGithub(path.join(getAppDataPath("ytm-dlp"), "yt-dlp/yt-dlp.exe"))
+        fs.unlinkSync(path.join(getAppDataPath("ytm-dlp"), "yt-dlp/yt-dlp" + (os.platform() === 'win32' ? '.exe' : '')))
+        await YTDlpWrap.downloadFromGithub(path.join(getAppDataPath("ytm-dlp"), "yt-dlp/yt-dlp" + (os.platform() === 'win32' ? '.exe' : '')))
       }
     })
   }
@@ -344,12 +344,7 @@ const getDeps = async () => {
       if (!stderr.includes('ffmpeg version')) {
         throwErr('FFMpeg executable error')
 
-        if (os.platform() === 'win32') {
-          fs.unlinkSync(path.join(getAppDataPath("ytm-dlp"), "ffmpeg/ffmpeg.exe"))
-        }
-        else {
-          fs.unlinkSync(path.join(getAppDataPath("ytm-dlp"), "ffmpeg/ffmpeg"))
-        }
+        fs.unlinkSync(path.join(getAppDataPath("ytm-dlp"), "ffmpeg/ffmpeg" + (os.platform() === 'win32' ? '.exe' : '')))
 
         ffbinaries.downloadBinaries(['ffmpeg'], { destination: path.join(getAppDataPath("ytm-dlp"), "/ffmpeg/") }, (err) => { if (err) { throwErr(err) } })
       }
@@ -359,12 +354,7 @@ const getDeps = async () => {
       if (!stderr.includes('ffprobe version')) {
         throwErr('FFProbe executable error')
 
-        if (os.platform() === 'win32') {
-          fs.unlinkSync(path.join(getAppDataPath("ytm-dlp"), "ffmpeg/ffprobe.exe"))
-        }
-        else {
-          fs.unlinkSync(path.join(getAppDataPath("ytm-dlp"), "ffmpeg/ffprobe"))
-        }
+        fs.unlinkSync(path.join(getAppDataPath("ytm-dlp"), "ffmpeg/ffprobe" + (os.platform() === 'win32' ? '.exe' : '')))
 
         ffbinaries.downloadBinaries(['ffprobe'], { destination: path.join(getAppDataPath("ytm-dlp"), "/ffmpeg/") }, (err) => { if (err) { throwErr(err) } })
       }
