@@ -250,7 +250,7 @@ const getStyles = () => {
   }
 
   let files = fs.readdirSync(path.join(getAppDataPath(), 'ytm-dlp/styles'), { withFileTypes: false })
-  files = files.filter(e => { return e.search(/\.css/) != -1 })
+  files = files.filter(e => { return e.search(/\.css/) !== -1 })
   let styles = files.map(e => { return e.replace(/\.css/, '') })
 
   let data = fs.readFileSync(path.join(getAppDataPath("ytm-dlp"), "config.json"), 'utf-8')
@@ -307,7 +307,7 @@ const getDeps = async () => {
 
   if (!fs.existsSync(path.join(getAppDataPath("ytm-dlp"), 'yt-dlp/yt-dlp' + (os.platform() === 'win32' ? '.exe' : '')))) {
     await YTDlpWrap.downloadFromGithub(path.join(getAppDataPath("ytm-dlp"), 'yt-dlp/yt-dlp' + (os.platform() === 'win32' ? '.exe' : '')))
-  } 
+  }
   else {
     exec(path.join(getAppDataPath("ytm-dlp"), "yt-dlp/yt-dlp.exe"), async (_error, _stdout, stderr) => {
       if (!stderr.includes('Usage:')) {
@@ -329,7 +329,7 @@ const getDeps = async () => {
     })
   }
 
-  if (!fs.existsSync(path.join(getAppDataPath(), 'ytm-dlp/styles')) || fs.readdirSync(path.join(getAppDataPath(), 'ytm-dlp/styles')) == '') {
+  if (!fs.existsSync(path.join(getAppDataPath(), 'ytm-dlp/styles')) || fs.readdirSync(path.join(getAppDataPath(), 'ytm-dlp/styles')) === '') {
     fs.copy(path.join(__dirname, 'styles'), path.join(getAppDataPath(), 'ytm-dlp/styles'), { recursive: true }, (err) => {
       if (err) { throwErr(err) }
 
@@ -350,7 +350,7 @@ const getDeps = async () => {
         else {
           fs.unlinkSync(path.join(getAppDataPath("ytm-dlp"), "ffmpeg/ffmpeg"))
         }
-        
+
         ffbinaries.downloadBinaries(['ffmpeg'], { destination: path.join(getAppDataPath("ytm-dlp"), "/ffmpeg/") }, (err) => { if (err) { throwErr(err) } })
       }
     })
@@ -365,7 +365,7 @@ const getDeps = async () => {
         else {
           fs.unlinkSync(path.join(getAppDataPath("ytm-dlp"), "ffmpeg/ffprobe"))
         }
-        
+
         ffbinaries.downloadBinaries(['ffprobe'], { destination: path.join(getAppDataPath("ytm-dlp"), "/ffmpeg/") }, (err) => { if (err) { throwErr(err) } })
       }
     })
@@ -377,18 +377,13 @@ const startDownload = async (_event, videoURL, dirPath, ext, order) => {
   let arguments = fs.readFileSync(path.join(getAppDataPath("ytm-dlp"), "yt-dlp/arguments.list"), 'UTF-8').split(/\n/).map(e => { return e.replace(/"/g, '') })
 
   if (Object.keys(changedMetadata).length !== 0) {
-    for (let i = 0; i < 10; i++) {
+    for (let i = 0; i < 12; i++) {
       arguments.pop()
     }
 
     if (customArt) {
-      for (let i = 0; i < 2; i++) {
-        arguments.pop()
-      }
-
       arguments.push(
         '--ppa', `ThumbnailsConvertor+ffmpeg_i: -i '${customArt}'`,
-        '--ppa', "ThumbnailsConvertor+ffmpeg_o: -map 0:0 -c:v png -vf crop='ih'"
       )
 
       customArt = null
@@ -454,7 +449,7 @@ const startDownload = async (_event, videoURL, dirPath, ext, order) => {
     )
   }
 
-  if (order == 'strict') {
+  if (order === 'strict') {
     arguments.push(
       '--parse-metadata', "playlist_index:%(track_number)s",
     )
@@ -470,7 +465,7 @@ const startDownload = async (_event, videoURL, dirPath, ext, order) => {
       console.log('[' + eType + ']', eData)
       logStream.write(`[${eType}] ${eData}\n`)
 
-      if (eType == 'download' && eData.slice(1, 4) != 'Des' && eData.slice(4, 5) == '.') {
+      if (eType === 'download' && eData.slice(1, 4) !== 'Des' && eData.slice(4, 5) === '.') {
         MainWin.webContents.send('sendProgress', eData.slice(1, 4))
       }
     })

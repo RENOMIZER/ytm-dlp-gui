@@ -6,6 +6,8 @@ bestaudio
 --audio-quality
 0
 --embed-thumbnail
+--convert-thumbnails
+png
 --embed-metadata
 --force-overwrites
 --parse-metadata
