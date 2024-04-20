@@ -1,9 +1,9 @@
 /* Modules */
 const { app, BrowserWindow, ipcMain, dialog, shell } = require('electron');
+const getLocalPath = require("./local-path").default;
 const YTDlpWrap = require('yt-dlp-wrap').default;
-const fetch = require("node-fetch-commonjs");
-const getAppDataPath = require("appdata-path");
 const ffbinaries = require('ffbinaries-plus');
+const fetch = require("node-fetch-commonjs");
 const getLyrics = require('lyrics-snatcher');
 const { exec } = require('child_process');
 const fs = require('fs-extra');
@@ -11,12 +11,12 @@ const path = require('path');
 const os = require('os');
 
 /* Classes */
-const YtDlpWrap = new YTDlpWrap(path.join(getAppDataPath("ytm-dlp"), 'yt-dlp/yt-dlp' + (os.platform() === 'win32' ? '.exe' : '')));
+const YtDlpWrap = new YTDlpWrap(path.join(getLocalPath("ytm-dlp"), 'yt-dlp/yt-dlp' + (os.platform() === 'win32' ? '.exe' : '')));
 Date.prototype.dateNow = function () {
   return ((this.getDate() < 10) ? "0" : "") + this.getDate() + "-" + this.getMonth() + 1 + "-" + this.getFullYear();
 }
 Date.prototype.timeNow = function () {
-  return ((this.getHours() < 10) ? "0" : "") + this.getHours() + "-" + ((this.getMinutes() < 10) ? "0" : "") + this.getMinutes() + "-" + ((this.getSeconds() < 10) ? "0" : "") + this.getSeconds();
+  return ((this.getHours() < 10) ? "0" : "") + this.getHours() + ((this.getMinutes() < 10) ? "0" : "") + this.getMinutes() + ((this.getSeconds() < 10) ? "0" : "") + this.getSeconds();
 }
 const date = new Date()
 
@@ -37,7 +37,7 @@ let language
 /* Initialisation */
 if (require('electron-squirrel-startup')) return;
 
-let logStream = fs.createWriteStream(path.join(os.tmpdir(), `ytm-dlp-log-${date.timeNow()}-${date.dateNow()}.txt`))
+let logStream = fs.createWriteStream(path.join(os.tmpdir(), `ytm-dlp-log-${date.dateNow()}-${date.timeNow()}.log`))
 
 /* Main cycle */
 app.whenReady().then(async () => {
@@ -60,17 +60,17 @@ app.whenReady().then(async () => {
   })
 
   ipcMain.on('resetDeps', async () => {
-    fs.rmSync(path.join(getAppDataPath("ytm-dlp"), "yt-dlp"), { recursive: true, force: true })
-    fs.rmSync(path.join(getAppDataPath("ytm-dlp"), "ffmpeg"), { recursive: true, force: true })
+    fs.rmSync(path.join(getLocalPath("ytm-dlp"), "yt-dlp"), { recursive: true, force: true })
+    fs.rmSync(path.join(getLocalPath("ytm-dlp"), "ffmpeg"), { recursive: true, force: true })
 
     await getDeps()
   })
 
   ipcMain.on('changeStyle', (_event, style) => {
-    let config = JSON.parse(fs.readFileSync(path.join(getAppDataPath("ytm-dlp"), "config.json"), 'utf-8'))
+    let config = JSON.parse(fs.readFileSync(path.join(getLocalPath("ytm-dlp"), "config.json"), 'utf-8'))
     config.style = style
 
-    fs.writeFileSync(path.join(getAppDataPath("ytm-dlp"), "config.json"), JSON.stringify(config))
+    fs.writeFileSync(path.join(getLocalPath("ytm-dlp"), "config.json"), JSON.stringify(config))
 
     MainWin.reload()
     AboutWin.reload()
@@ -78,10 +78,10 @@ app.whenReady().then(async () => {
 
   ipcMain.on('recieveLanguage', (_event, lang) => {
     if (lang !== language.current) {
-      let config = JSON.parse(fs.readFileSync(path.join(getAppDataPath("ytm-dlp"), "config.json")))
+      let config = JSON.parse(fs.readFileSync(path.join(getLocalPath("ytm-dlp"), "config.json")))
       config.lang = lang
 
-      fs.writeFileSync(path.join(getAppDataPath("ytm-dlp"), "config.json"), JSON.stringify(config))
+      fs.writeFileSync(path.join(getLocalPath("ytm-dlp"), "config.json"), JSON.stringify(config))
 
       app.relaunch()
       app.quit()
@@ -236,30 +236,30 @@ const createAbout = () => {
 
 /* Get info */
 const getLang = () => {
-  if (!fs.existsSync(path.join(getAppDataPath("ytm-dlp"), "config.json")) || fs.readFileSync(path.join(getAppDataPath("ytm-dlp"), "config.json"), 'utf-8') === '') {
-    fs.writeFileSync(path.join(getAppDataPath("ytm-dlp"), "config.json"), `{"lang": "en", "style": "mocha"}`)
+  if (!fs.existsSync(path.join(getLocalPath("ytm-dlp"), "config.json")) || fs.readFileSync(path.join(getLocalPath("ytm-dlp"), "config.json"), 'utf-8') === '') {
+    fs.writeFileSync(path.join(getLocalPath("ytm-dlp"), "config.json"), `{"lang": "en", "style": "mocha"}`)
   }
 
-  let local = JSON.parse(fs.readFileSync(path.join(getAppDataPath("ytm-dlp"), "config.json")))
+  let local = JSON.parse(fs.readFileSync(path.join(getLocalPath("ytm-dlp"), "config.json")))
   language = JSON.parse(fs.readFileSync(path.join(__dirname, '/lang/', local.lang + '.json')))
 }
 
 const getStyles = () => {
-  if (!fs.existsSync(path.join(getAppDataPath(), 'ytm-dlp/styles/mocha.css'))) {
-    fs.copyFile(path.join(__dirname, 'styles/mocha.css'), path.join(getAppDataPath(), 'ytm-dlp/styles/mocha.css'))
+  if (!fs.existsSync(path.join(getLocalPath('ytm-dlp'), 'styles/mocha.css'))) {
+    fs.copyFile(path.join(__dirname, 'styles/mocha.css'), path.join(getLocalPath('ytm-dlp'), 'styles/mocha.css'))
   }
 
-  let files = fs.readdirSync(path.join(getAppDataPath(), 'ytm-dlp/styles'), { withFileTypes: false })
+  let files = fs.readdirSync(path.join(getLocalPath('ytm-dlp'), 'styles'), { withFileTypes: false })
   files = files.filter(e => { return e.search(/\.css/) !== -1 })
   let styles = files.map(e => { return e.replace(/\.css/, '') })
 
-  let data = fs.readFileSync(path.join(getAppDataPath("ytm-dlp"), "config.json"), 'utf-8')
+  let data = fs.readFileSync(path.join(getLocalPath("ytm-dlp"), "config.json"), 'utf-8')
   let currentStyle = JSON.parse(data).style
 
-  if (fs.existsSync(path.join(getAppDataPath(), 'ytm-dlp/styles', currentStyle + '.css'))) {
-    var currentStylePath = path.join(getAppDataPath(), 'ytm-dlp/styles', currentStyle + '.css')
+  if (fs.existsSync(path.join(getLocalPath('ytm-dlp'), 'styles', currentStyle + '.css'))) {
+    var currentStylePath = path.join(getLocalPath('ytm-dlp'), 'styles', currentStyle + '.css')
   } else {
-    var currentStylePath = path.join(getAppDataPath(), 'ytm-dlp/styles/mocha.css')
+    var currentStylePath = path.join(getLocalPath('ytm-dlp'), 'styles/mocha.css')
     currentStyle = "mocha"
   }
 
@@ -301,62 +301,62 @@ const getMetadata = async (videoURL) => {
 }
 
 const getDeps = async () => {
-  if (!fs.existsSync(path.join(getAppDataPath("ytm-dlp"), "yt-dlp"))) {
-    fs.mkdir(path.join(getAppDataPath("ytm-dlp"), "yt-dlp"), { recursive: true }, (err) => { if (err) { throwErr(err) } })
+  if (!fs.existsSync(path.join(getLocalPath("ytm-dlp"), "yt-dlp"))) {
+    fs.mkdir(path.join(getLocalPath("ytm-dlp"), "yt-dlp"), { recursive: true }, (err) => { if (err) { throwErr(err) } })
   }
 
-  if (!fs.existsSync(path.join(getAppDataPath("ytm-dlp"), 'yt-dlp/yt-dlp' + (os.platform() === 'win32' ? '.exe' : '')))) {
-    await YTDlpWrap.downloadFromGithub(path.join(getAppDataPath("ytm-dlp"), 'yt-dlp/yt-dlp' + (os.platform() === 'win32' ? '.exe' : '')))
+  if (!fs.existsSync(path.join(getLocalPath("ytm-dlp"), 'yt-dlp/yt-dlp' + (os.platform() === 'win32' ? '.exe' : '')))) {
+    await YTDlpWrap.downloadFromGithub(path.join(getLocalPath("ytm-dlp"), 'yt-dlp/yt-dlp' + (os.platform() === 'win32' ? '.exe' : '')))
   }
   else {
-    exec(path.join(getAppDataPath("ytm-dlp"), "yt-dlp/yt-dlp"), async (_error, _stdout, stderr) => {
+    exec(path.join(getLocalPath("ytm-dlp"), "yt-dlp/yt-dlp"), async (_error, _stdout, stderr) => {
       if (!stderr.includes('Usage:')) {
         throwErr('YT-DLP executable error')
 
-        fs.unlinkSync(path.join(getAppDataPath("ytm-dlp"), "yt-dlp/yt-dlp" + (os.platform() === 'win32' ? '.exe' : '')))
-        await YTDlpWrap.downloadFromGithub(path.join(getAppDataPath("ytm-dlp"), "yt-dlp/yt-dlp" + (os.platform() === 'win32' ? '.exe' : '')))
+        fs.unlinkSync(path.join(getLocalPath("ytm-dlp"), "yt-dlp/yt-dlp" + (os.platform() === 'win32' ? '.exe' : '')))
+        await YTDlpWrap.downloadFromGithub(path.join(getLocalPath("ytm-dlp"), "yt-dlp/yt-dlp" + (os.platform() === 'win32' ? '.exe' : '')))
       }
     })
   }
 
-  if (!fs.existsSync(path.join(getAppDataPath("ytm-dlp"), "yt-dlp/arguments.list"))) {
+  if (!fs.existsSync(path.join(getLocalPath("ytm-dlp"), "yt-dlp/arguments.list"))) {
     fs.readFile(path.join(__dirname, 'arguments.list'), 'utf-8', (err, data) => {
       if (err) { throwErr(err) }
 
-      data = data.replace(/<ffmpeg_directory>/, path.join(getAppDataPath("ytm-dlp"), "/ffmpeg/"))
+      data = data.replace(/<ffmpeg_directory>/, path.join(getLocalPath("ytm-dlp"), "ffmpeg"))
 
-      fs.writeFile(path.join(getAppDataPath(), 'ytm-dlp/yt-dlp/arguments.list'), data, (err) => { if (err) { throwErr(err) } })
+      fs.writeFile(path.join(getLocalPath('ytm-dlp'), 'yt-dlp/arguments.list'), data, (err) => { if (err) { throwErr(err) } })
     })
   }
 
-  if (!fs.existsSync(path.join(getAppDataPath(), 'ytm-dlp/styles')) || fs.readdirSync(path.join(getAppDataPath(), 'ytm-dlp/styles')) === '') {
-    fs.copy(path.join(__dirname, 'styles'), path.join(getAppDataPath(), 'ytm-dlp/styles'), { recursive: true }, (err) => {
+  if (!fs.existsSync(path.join(getLocalPath('ytm-dlp'), 'styles')) || fs.readdirSync(path.join(getLocalPath('ytm-dlp'), 'styles')) === '') {
+    fs.copy(path.join(__dirname, 'styles'), path.join(getLocalPath('ytm-dlp'), 'styles'), { recursive: true }, (err) => {
       if (err) { throwErr(err) }
 
-      fs.chmod(path.join(getAppDataPath(), 'ytm-dlp/styles'), '755')
+      fs.chmod(path.join(getLocalPath('ytm-dlp'), 'styles'), '755')
     })
   }
 
-  ffbinaries.downloadBinaries(['ffmpeg', 'ffprobe'], { destination: path.join(getAppDataPath("ytm-dlp"), "/ffmpeg/") }, (err) => {
+  ffbinaries.downloadBinaries(['ffmpeg', 'ffprobe'], { destination: path.join(getLocalPath("ytm-dlp"), "ffmpeg") }, (err) => {
     if (err) { throwErr(err) }
 
-    exec(path.join(getAppDataPath("ytm-dlp"), "ffmpeg/ffmpeg"), async (_error, _stdout, stderr) => {
+    exec(path.join(getLocalPath("ytm-dlp"), "ffmpeg/ffmpeg"), async (_error, _stdout, stderr) => {
       if (!stderr.includes('ffmpeg version')) {
         throwErr('FFMpeg executable error')
 
-        fs.unlinkSync(path.join(getAppDataPath("ytm-dlp"), "ffmpeg/ffmpeg" + (os.platform() === 'win32' ? '.exe' : '')))
+        fs.unlinkSync(path.join(getLocalPath("ytm-dlp"), "ffmpeg/ffmpeg" + (os.platform() === 'win32' ? '.exe' : '')))
 
-        ffbinaries.downloadBinaries(['ffmpeg'], { destination: path.join(getAppDataPath("ytm-dlp"), "/ffmpeg/") }, (err) => { if (err) { throwErr(err) } })
+        ffbinaries.downloadBinaries(['ffmpeg'], { destination: path.join(getLocalPath("ytm-dlp"), "ffmpeg") }, (err) => { if (err) { throwErr(err) } })
       }
     })
 
-    exec(path.join(getAppDataPath("ytm-dlp"), "ffmpeg/ffprobe"), async (_error, _stdout, stderr) => {
+    exec(path.join(getLocalPath("ytm-dlp"), "ffmpeg/ffprobe"), async (_error, _stdout, stderr) => {
       if (!stderr.includes('ffprobe version')) {
         throwErr('FFProbe executable error')
 
-        fs.unlinkSync(path.join(getAppDataPath("ytm-dlp"), "ffmpeg/ffprobe" + (os.platform() === 'win32' ? '.exe' : '')))
+        fs.unlinkSync(path.join(getLocalPath("ytm-dlp"), "ffmpeg/ffprobe" + (os.platform() === 'win32' ? '.exe' : '')))
 
-        ffbinaries.downloadBinaries(['ffprobe'], { destination: path.join(getAppDataPath("ytm-dlp"), "/ffmpeg/") }, (err) => { if (err) { throwErr(err) } })
+        ffbinaries.downloadBinaries(['ffprobe'], { destination: path.join(getLocalPath("ytm-dlp"), "ffmpeg") }, (err) => { if (err) { throwErr(err) } })
       }
     })
   })
@@ -364,7 +364,7 @@ const getDeps = async () => {
 
 /* General functions */
 const startDownload = async (_event, videoURL, dirPath, ext, order) => {
-  let arguments = fs.readFileSync(path.join(getAppDataPath("ytm-dlp"), "yt-dlp/arguments.list"), 'UTF-8').split(/\n/).map(e => { return e.replace(/"/g, '') })
+  let arguments = fs.readFileSync(path.join(getLocalPath("ytm-dlp"), "yt-dlp/arguments.list"), 'UTF-8').split(/\n/).map(e => { return e.replace(/"/g, '') })
 
   if (Object.keys(changedMetadata).length !== 0) {
     for (let i = 0; i < 12; i++) {
