@@ -1,4 +1,5 @@
 @import "https://www.nerdfonts.com/assets/css/webfont.css";
+@import "font/cantarell.css";
 
 :root {
   --fallback-title-bar-height: 40px;
@@ -110,12 +111,12 @@ body {
 
 .art-buttons {
   min-height: 30px;
-  height: fit-content;
+  height: auto;
   width: 50%;
   margin: 0% 1% 0% 1%;
   border: none;
   border-radius: 0.625vh;
-  font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
+  font-family: "Cantarell";
   font-weight: bold;
   color: var(--light-text-color);
   background-color: var(--default-button-color);
@@ -140,7 +141,7 @@ body {
   color: var(--text);
   font-size: larger;
   font-weight: bold;
-  font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
+  font-family: "Cantarell";
   user-select: none;
 }
 
@@ -152,7 +153,7 @@ body {
   width: 100%;
   height: 26px;
   font-weight: bold;
-  font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
+  font-family: "Cantarell";
   color: var(--darker-text-color);
   background-color: var(--light-text-color);
   user-select: none;
@@ -225,26 +226,26 @@ body {
   transition: 0.2s;
 }
 
-.lrcSelect {
+.lrc-select {
   margin-right: auto;
   padding-left: 1.5vh;
   padding-right: 1.5vh;
   border: none;
   border-radius: 0.625vh;
   font-weight: bold;
-  font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
+  font-family: "Cantarell";
   color: var(--darker-text-color);
   background-color: var(--light-text-color);
   user-select: none;
 }
 
-.lrcSelect>option {
+.lrc-select>option {
   padding-left: 1.5vh;
   padding-right: 1.5vh;
   border: none;
   border-radius: 0.625vh;
   font-weight: bold;
-  font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
+  font-family: "Cantarell";
   color: var(--darker-text-color);
   background-color: var(--light-text-color);
   user-select: none;
@@ -286,5 +287,5 @@ body {
   position: absolute;
   align-self: center;
   padding: 0px 16px 0px 16px;
-  font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
+  font-family: "Cantarell";
 }

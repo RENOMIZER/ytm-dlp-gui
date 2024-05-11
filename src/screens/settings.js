@@ -76,5 +76,5 @@ function applyMetadata() {
 
 function createArtButtons() {
   document.getElementById('artButtonContainer').style.display = artButtonContainer.style.display === "flex" ? "none" : "flex"
-  document.getElementById('buttonContainer').style.paddingTop = buttonContainer.style.paddingTop === "0px" ? "35px" : "0px"
+  document.getElementById('metaContainer').style.paddingTop = metaContainer.style.paddingTop === "0px" ? "5%" : "0px"
 }
