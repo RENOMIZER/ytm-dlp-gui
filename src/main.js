@@ -142,7 +142,7 @@ const createMain = () => {
     show: false,
     icon: path.join(__dirname, 'images/icon.png'),
     webPreferences: {
-      preload: path.join(__dirname, '/preload.js')
+      preload: path.join(__dirname, 'preload.js')
     }
   })
 
@@ -168,7 +168,7 @@ const createSettings = (_event, videoURL) => {
     show: false,
     icon: path.join(__dirname, 'images/icon.png'),
     webPreferences: {
-      preload: path.join(__dirname, '/preload.js')
+      preload: path.join(__dirname, 'preload.js')
     }
   })
 
@@ -195,7 +195,7 @@ const createUrl = () => {
     show: false,
     icon: path.join(__dirname, 'images/icon.png'),
     webPreferences: {
-      preload: path.join(__dirname, '/preload.js')
+      preload: path.join(__dirname, 'preload.js')
     }
   })
 
@@ -221,7 +221,7 @@ const createAbout = () => {
     show: false,
     icon: path.join(__dirname, 'images/icon.png'),
     webPreferences: {
-      preload: path.join(__dirname, '/preload.js')
+      preload: path.join(__dirname, 'preload.js')
     }
   })
 
@@ -435,7 +435,7 @@ const startDownload = async (_event, videoURL, dirPath, ext, order) => {
     }
 
     arguments.unshift(
-      '-o', `${dirPath}/%(artist,uploader)s - %(title,meta_title)s.%(ext)s`
+      '-o', `${dirPath}\\%(artist,uploader)s - %(title,meta_title)s.%(ext)s`
     )
   }
 

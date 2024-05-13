@@ -1,5 +1,5 @@
 -o
-"./ytm-dlp/%(artist,uploader)s - %(title)s.%(ext)s"
+".\\ytm-dlp\\%(artist,uploader)s - %(title)s.%(ext)s"
 -x
 -f
 bestaudio
@@ -23,7 +23,7 @@ all
 --ffmpeg-location
 <ffmpeg_directory>
 --ppa
-"ThumbnailsConvertor+ffmpeg_o:-c:v png -vf crop='ih'"
+"ThumbnailsConvertor+ffmpeg_o:-vf 'scale=iw:ih, crop=ih' -map 0:0"
 --parse-metadata
 "upload_date:(?P<meta_date>^[0-9]{4})"
 --parse-metadata
