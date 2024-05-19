@@ -49,13 +49,18 @@ After you've finished press on the green "accept" button.
 
 Press "download" button on the left of the URL input field.
 
-<!-- 
-## How to build it?
-_Make sure you have NodeJS and [WiX v3 build tools](https://github.com/wixtoolset/wix3/releases/latest) installed if you are building for Windows_
+## Build instructions
+- Install Node.js -> [Link](https://nodejs.org/en/download/package-manager)
 
-1. Clone the repo
-2. Open cloned repo in terminal and run `npm install`
-3. Run `npm run make` to build distributables or `npm run package` to build unzipped package
+* Windows:
+  - Install WiX v3 build tools necessary for building MSI packages -> [Link](https://github.com/wixtoolset/wix3/releases/latest)
+* Linux:
+  - Install dependencies:
+    * Debian: `# apt install dpkg fakeroot rpm binutils`
+    * Fedora: `# dnf install dpkg fakeroot rpm binutils`
 
-The output files will be available in 'out' directory
--->
+- Clone the repo using `git clone`
+- Open the repo directory and run `npm install`
+- Run `npm run make` to build distributables or `npm run package` to build an unzipped package
+
+Unzipped package can be found in the `out` directory and distributables in the `out/make` directory.
