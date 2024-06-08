@@ -63,4 +63,4 @@ Press "download" button on the left of the URL input field.
 - Open the repo directory and run `npm install`
 - Run `npm run make` to build distributables or `npm run package` to build an unzipped package
 
-Unzipped package can be found in the `out` directory and distributables in the `out/make` directory.
+Unzipped package can be found in `out` directory and distributables in `out/make` directory.
