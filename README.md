@@ -17,24 +17,21 @@ Paste a URL of a YouTube song, music video or a playlist in the field right unde
 Select the download directory by clicking on the folder icon in the bottom of the window
 or paste the directory path manualy in the field right next to the button.
 > [!NOTE]
-> If left empty, the file will be downloaded in the program installation directory.
+> If left empty, the file will be downloaded to the home directory.
 
 ### Step 3
 Select the preferable audio format:
-- MP3 - lightweight but lossy;
-- OPUS - weights more but quality loss is lower;
-- M4A - weights even more but quality is also better;
+- MP3 - worst quality but great compatibility;
+- OPUS - quality identical to MP3 but lower bitrate thus lower size;
+- M4A - weights more than the previous two but quality is also better;
 - FLAC - lossless format, best quality.
 
-### Step 3.5 (For downloading playlists)
+### Step 4.1 (For downloading playlists)
 Select the order of songs:
 - None - songs won't be ordered;
 - Strict - songs will be ordered according to their positions in playlist.
 
-### Step 4
-Press "download" button on the left of the URL input field.
-
-### Step 4.5 (For changing metadata)
+### Step 4.2 (For changing metadata)
 > [!NOTE]
 > Changing metadata unavailable if you are downloading a playlist.
 
@@ -47,6 +44,7 @@ Edit the metadata to your like.
 
 After you've finished press on the green "accept" button.
 
+### Step 5
 Press "download" button on the left of the URL input field.
 
 ## Build instructions
