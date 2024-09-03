@@ -405,39 +405,30 @@ const startDownload = async (_event, videoURL, dirPath, ext, order) => {
         }
       }
     }
-
-    arguments.push(
-      '--parse-metadata', "NA:%(meta_title)s",
-      '--parse-metadata', "NA:%(title)s",
-      '--parse-metadata', "NA:%(meta_artist)s",
-      '--parse-metadata', "NA:%(artist)s",
-      '--parse-metadata', "NA:%(uploader)s",
-      '--parse-metadata', "NA:%(album_artist)s",
-      '--parse-metadata', "NA:%(meta_album)s",
-      '--parse-metadata', "NA:%(meta_date)s",
-      '--parse-metadata', "NA:%(genre)s",
-
-      '--replace-in-metadata', 'meta_title', 'NA', changedMetadata.track,
-      '--replace-in-metadata', 'title', 'NA', changedMetadata.track,
-      '--replace-in-metadata', 'meta_artist', 'NA', changedMetadata.artist,
-      '--replace-in-metadata', 'artist', 'NA', changedMetadata.artist,
-      '--replace-in-metadata', 'uploader', 'NA', changedMetadata.artist,
-      '--replace-in-metadata', 'album_artist', 'NA', changedMetadata.album_artist,
-      '--replace-in-metadata', 'meta_album', 'NA', changedMetadata.album,
-      '--replace-in-metadata', 'meta_date', 'NA', changedMetadata.upload_year,
-      '--replace-in-metadata', 'genre', 'NA', changedMetadata.genre
-    )
-  }
-
-  if (fs.existsSync(dirPath)) {
-    for (let i = 0; i < 2; i++) {
-      arguments.shift()
+  
+    data = {
+      'meta_title': 'track',
+      'title': 'track',
+      'meta_artist': 'artist',
+      'artist': 'artist',
+      'uploader': 'artist',
+      'album_artist': 'album_artist',
+      'meta_album': 'album',
+      'meta_date': 'upload_year',
+      'genre': 'genre'
     }
 
-    arguments.unshift(
-      '-o', `${dirPath}\\%(artist,uploader)s - %(title,meta_title)s.%(ext)s`
-    )
+    for (const [key, value] of Object.entries(data)) {
+      arguments.push(
+        '--parse-metadata', `NA:%(${key})s`,
+        '--replace-in-metadata', key, 'NA', changedMetadata[value]
+      )
+    }
   }
+
+  arguments.unshift(
+    '-o', `${fs.existsSync(dirPath) ? dirPath : os.homedir()}${os.platform === "win32" ? "\\" : '/'}%(artist,uploader)s - %(title,meta_title)s.%(ext)s`
+  )
 
   if (order === 'strict') {
     arguments.push(

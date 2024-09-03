@@ -1,5 +1,3 @@
--o
-".\\ytm-dlp\\%(artist,uploader)s - %(title)s.%(ext)s"
 -x
 -f
 bestaudio
