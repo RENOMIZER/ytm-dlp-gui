@@ -13,6 +13,7 @@ contextBridge.exposeInMainWorld('electronAPI', {
   sendResetDependencies: () => ipcRenderer.send('resetDeps'),
   sendGetLanguage: () => ipcRenderer.invoke('getLanguage'),
   sendGetStyles: () => ipcRenderer.invoke('getStyles'),
+  sendClearCache: () => ipcRenderer.send('clearCache'),
   sendOpenAbout: () => ipcRenderer.send('openAbout'),
   sendOpenArt: () => ipcRenderer.send('openArt'),
   sendGetArt: () => ipcRenderer.send('getArt'),

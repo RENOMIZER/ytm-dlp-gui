@@ -1,4 +1,5 @@
 document.getElementById('resetButton').addEventListener('click', () => {window.electronAPI.sendResetDependencies()})
+document.getElementById('clearButton').addEventListener('click', () => {window.electronAPI.sendClearCache()})
 
 window.onload = async () => {
   let language = await window.electronAPI.sendGetLanguage()
