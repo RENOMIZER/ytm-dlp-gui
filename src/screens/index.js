@@ -1,8 +1,8 @@
 let language
 
 /* Listeners */
-document.getElementById('dlButton').addEventListener('click', downloadStart)
-document.getElementById('setButton').addEventListener('click', settingsOpen)
+document.getElementById('dlButton').addEventListener('click', () => { downloadStart() })
+document.getElementById('setButton').addEventListener('click', () => { settingsOpen() })
 document.getElementById('aboutButton').addEventListener('click', () => { window.electronAPI.sendOpenAbout() })
 document.getElementById('locButton').addEventListener('click', () => { window.electronAPI.sendChooseDirectory() })
 
@@ -49,7 +49,7 @@ window.electronAPI.onRecieveDirectory((_event, path) => {
 })
 
 /* Listeners' functions */
-function downloadStart() {
+const downloadStart = () => {
   let videoURL = document.getElementById('inputURL').value
 
   if (videoURL.search(/(youtube|youtu)\.(com|be)/gm) === -1) {
@@ -63,7 +63,7 @@ function downloadStart() {
   document.getElementById('inputURL').value = ''
 }
 
-function settingsOpen() {
+const settingsOpen = () => {
   let videoURL = document.getElementById('inputURL').value
 
   if (videoURL.search(/(youtube|youtu)\.(com|be)/gm) === -1) {

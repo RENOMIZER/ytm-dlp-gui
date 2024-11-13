@@ -1,7 +1,7 @@
-document.getElementById('accButton').addEventListener('click', sendOnlineArt)
+document.getElementById('accButton').addEventListener('click', () => { sendOnlineArt() })
 
 window.onload = async () => {
-  language = await window.electronAPI.sendGetLanguage()
+  let language = await window.electronAPI.sendGetLanguage()
 
   let [_currentStyle, _styles, currentStylePath] = await window.electronAPI.sendGetStyles()
 
@@ -14,7 +14,7 @@ window.onload = async () => {
   document.getElementById('accButton').title = language.accept
 }
 
-function sendOnlineArt() {
+const sendOnlineArt = () => {
   if (document.getElementById('urlInput').value !== '') {
     window.electronAPI.sendOnlineArt(document.getElementById('urlInput').value)
     window.close()

@@ -4,10 +4,12 @@ let artist = document.getElementById('artist')
 let album = document.getElementById('album')
 let year = document.getElementById('year')
 let lyrics = document.getElementById('lrcSelect')
+let genre = document.getElementById('genre')
+let albumArtist = document.getElementById('albumArtist')
 let language
 
-document.getElementById('accButton').addEventListener('click', applyMetadata)
-document.getElementById('artButton').addEventListener('click', createArtButtons)
+document.getElementById('accButton').addEventListener('click', () => { applyMetadata() })
+document.getElementById('artButton').addEventListener('click', () => { createArtButtons() })
 document.getElementById('decButton').addEventListener('click', () => { window.close() })
 document.getElementById('urlButton').addEventListener('click', () => { window.electronAPI.sendGetArt() })
 document.getElementById('fileButton').addEventListener('click', () => { window.electronAPI.sendOpenArt() })
@@ -59,7 +61,7 @@ window.electronAPI.onRecieveArt((_event, newArt) => {
   art.setAttribute('src', newArt)
 })
 
-function applyMetadata() {
+const applyMetadata = () => {
   window.electronAPI.sendChangedMetadata({
     "track": title.value,
     "artist": artist.value,
@@ -74,7 +76,7 @@ function applyMetadata() {
   window.close()
 }
 
-function createArtButtons() {
-  document.getElementById('artButtonContainer').style.display = artButtonContainer.style.display === "flex" ? "none" : "flex"
-  document.getElementById('metaContainer').style.paddingTop = metaContainer.style.paddingTop === "0px" ? "5%" : "0px"
+const createArtButtons = () => {
+  document.getElementById('artButtonContainer').style.display = document.getElementById('artButtonContainer').style.display === "flex" ? "none" : "flex"
+  document.getElementById('metaContainer').style.paddingTop = document.getElementById('metaContainer').style.paddingTop === "0px" ? "5%" : "0px"
 }
