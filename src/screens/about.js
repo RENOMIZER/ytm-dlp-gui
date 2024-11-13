@@ -19,6 +19,7 @@ window.onload = async () => {
   document.querySelector("head").appendChild(node)
 
   document.getElementById('resetButton').title = language.resdep
+  document.getElementById('clearButton').title = language.cache
   document.getElementById('header').textContent = language.about
   document.getElementById('langTxt').textContent = language.language + ':'
   document.getElementById('styleTxt').textContent = language.style + ':'

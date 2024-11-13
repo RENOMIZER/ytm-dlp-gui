@@ -30,5 +30,6 @@
   "decline": "Decline",
   "selalbumart": "Select album cover",
   "lyrics": "Lyrics",
-  "lrcwarn": "Works only if extension isn't set to MP3"
+  "lrcwarn": "Works only if extension isn't set to MP3",
+  "cache": "Clear cache"
 }
