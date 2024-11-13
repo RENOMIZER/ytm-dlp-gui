@@ -2,6 +2,8 @@ const getLocalPath = require("./local-path").default;
 const fs = require('fs-extra');
 const path = require('path');
 
+var currentStylePath;
+
 const getStyles = () => {
   if (!fs.existsSync(path.join(getLocalPath('ytm-dlp'), 'styles/mocha.css'))) {
     fs.copyFile(path.join(__dirname, 'styles/mocha.css'), path.join(getLocalPath('ytm-dlp'), 'styles/mocha.css'))
@@ -15,9 +17,9 @@ const getStyles = () => {
   let currentStyle = JSON.parse(data).style
 
   if (fs.existsSync(path.join(getLocalPath('ytm-dlp'), 'styles', currentStyle + '.css'))) {
-    var currentStylePath = path.join(getLocalPath('ytm-dlp'), 'styles', currentStyle + '.css')
+    currentStylePath = path.join(getLocalPath('ytm-dlp'), 'styles', currentStyle + '.css')
   } else {
-    var currentStylePath = path.join(getLocalPath('ytm-dlp'), 'styles/mocha.css')
+    currentStylePath = path.join(getLocalPath('ytm-dlp'), 'styles/mocha.css')
     currentStyle = "mocha"
   }
 

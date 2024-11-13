@@ -8,7 +8,7 @@ const getLang = () => {
   }
 
   let local = JSON.parse(fs.readFileSync(path.join(getLocalPath("ytm-dlp"), "config.json")))
-  return JSON.parse(fs.readFileSync(path.join(__dirname, '/lang/', local.lang + '.json')))
+  return JSON.parse(fs.readFileSync(path.join(__dirname, '../lang/', local.lang + '.json')))
 }
 
 module.exports = {

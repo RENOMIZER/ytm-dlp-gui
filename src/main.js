@@ -7,11 +7,11 @@ const fs = require('fs-extra')
 const path = require('path')
 const os = require('os')
 
-const { throwErr, logStream } = require('./throw-err')
-const getLocalPath = require("./local-path").default
-const getStyles = require('./get-styles').default
-const getLang = require('./get-lang').default
-const getDeps = require('./get-deps').default
+const { throwErr, logStream } = require('./modules/throw-err')
+const getLocalPath = require("./modules/local-path").default
+const getStyles = require('./modules/get-styles').default
+const getLang = require('./modules/get-lang').default
+const getDeps = require('./modules/get-deps').default
 
 const YtDlpWrap = new YTDlpWrap(path.join(getLocalPath("ytm-dlp"), 'yt-dlp/yt-dlp' + (os.platform() === 'win32' ? '.exe' : '')));
 
