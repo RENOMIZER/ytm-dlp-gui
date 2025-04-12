@@ -6,7 +6,7 @@ var currentStylePath;
 
 const getStyles = () => {
   if (!fs.existsSync(path.join(getLocalPath('ytm-dlp'), 'styles/mocha.css'))) {
-    fs.copyFile(path.join(__dirname, 'styles/mocha.css'), path.join(getLocalPath('ytm-dlp'), 'styles/mocha.css'))
+    fs.copyFile(path.join(__dirname, '../styles/mocha.css'), path.join(getLocalPath('ytm-dlp'), 'styles/mocha.css'))
   }
 
   let files = fs.readdirSync(path.join(getLocalPath('ytm-dlp'), 'styles'), { withFileTypes: false })

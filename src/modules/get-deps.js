@@ -29,7 +29,7 @@ const getDeps = async () => {
   }
 
   if (!fs.existsSync(path.join(getLocalPath("ytm-dlp"), "yt-dlp/arguments.list"))) {
-    fs.readFile(path.join(__dirname, 'arguments.list'), 'utf-8', (err, data) => {
+    fs.readFile(path.join(__dirname, '../arguments.list'), 'utf-8', (err, data) => {
       if (err) { throwErr(err) }
 
       data = data.replace(/<ffmpeg_directory>/, path.join(getLocalPath("ytm-dlp"), "ffmpeg"))
@@ -39,7 +39,7 @@ const getDeps = async () => {
   }
 
   if (!fs.existsSync(path.join(getLocalPath('ytm-dlp'), 'styles')) || fs.readdirSync(path.join(getLocalPath('ytm-dlp'), 'styles')) === '') {
-    fs.copy(path.join(__dirname, 'styles'), path.join(getLocalPath('ytm-dlp'), 'styles'), { recursive: true }, (err) => {
+    fs.copy(path.join(__dirname, '../styles'), path.join(getLocalPath('ytm-dlp'), 'styles'), { recursive: true }, (err) => {
       if (err) { throwErr(err) }
 
       fs.chmod(path.join(getLocalPath('ytm-dlp'), 'styles'), '755')

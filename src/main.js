@@ -116,8 +116,8 @@ app.whenReady().then(async () => {
   // Start downloading
   ipcMain.on('startDownload', startDownload)
 
-  language = getLang()
   await getDeps()
+  language = getLang()
   createMain()
 })
 
