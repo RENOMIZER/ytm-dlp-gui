@@ -1,8 +1,9 @@
 /* Modules */
 const { app, BrowserWindow, ipcMain, dialog, shell } = require('electron')
+const { updateElectronApp } = require('update-electron-app')
 const YTDlpWrap = require('yt-dlp-wrap').default
-const fetch = require("node-fetch-commonjs")
 const getLyrics = require('lyrics-snatcher')
+const fetch = require('node-fetch-commonjs')
 const fs = require('fs-extra')
 const path = require('path')
 const os = require('os')
@@ -32,6 +33,7 @@ let AboutWin
 
 /* Initialisation */
 if (require('electron-squirrel-startup')) return
+updateElectronApp()
 
 app.whenReady().then(async () => {
   app.on('window-all-closed', () => {

@@ -14,7 +14,7 @@ const logStream = fs.createWriteStream(path.join(os.tmpdir(), `ytm-dlp-log-${dat
 
 const throwErr = (err) => {
   console.error(err)
-  logStream.write(`[error] ` + err + '\n\n')
+  logStream.write(`[error] ${err} \n\n`)
 }
 
 module.exports = {

@@ -10,6 +10,7 @@
     "publish": "electron-forge publish"
   },
   "author": "RENOMIZER",
+  "repository": "github:RENOMIZER/ytm-dlp-gui",
   "license": "MIT",
   "devDependencies": {
     "@electron-forge/cli": "^6.4.1",
@@ -31,6 +32,7 @@
     "fs-extra": "^11.1.1",
     "lyrics-snatcher": "^1.1.0",
     "node-fetch-commonjs": "^3.3.2",
+    "update-electron-app": "^3.1.1",
     "yt-dlp-wrap": "^2.3.11"
   }
 }
