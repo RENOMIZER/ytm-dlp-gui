@@ -2,7 +2,7 @@ name: Build app
 on:
   workflow_dispatch:
 jobs:
-  build-then-publish:
+  build-with-artifacts:
     strategy:
       matrix:
         os:
@@ -25,7 +25,12 @@ jobs:
       - name: Install WiX build tools
         if: runner.os == 'windows'
         run: dotnet tool install --global wix
-      - name: Publish app
+      - name: Build app
         env:
           GITHUB_TOKEN: ${{ secrets.GH_TOKEN }}
-        run: npm run publish
+        run: npm run make
+      - name: Upload artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: artifacts-${{ matrix.os.name }}
+          path: out/make
