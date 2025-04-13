@@ -1,8 +1,8 @@
-name: Release app
+name: Build app
 on:
   workflow_dispatch:
 jobs:
-  build:
+  build-then-publish:
     strategy:
       matrix:
         os:
