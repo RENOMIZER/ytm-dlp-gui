@@ -1,5 +1,6 @@
 document.getElementById('resetButton').addEventListener('click', () => {window.electronAPI.sendResetDependencies()})
 document.getElementById('clearButton').addEventListener('click', () => {window.electronAPI.sendClearCache()})
+document.getElementById('proxyButton').addEventListener('click', () => {window.electronAPI.sendOpenProxy()})
 
 window.onload = async () => {
   let language = await window.electronAPI.sendGetLanguage()
@@ -20,6 +21,7 @@ window.onload = async () => {
 
   document.getElementById('resetButton').title = language.resdep
   document.getElementById('clearButton').title = language.cache
+  document.getElementById('proxyButton').title = language.proxy
   document.getElementById('header').textContent = language.about
   document.getElementById('langTxt').textContent = language.language + ':'
   document.getElementById('styleTxt').textContent = language.style + ':'

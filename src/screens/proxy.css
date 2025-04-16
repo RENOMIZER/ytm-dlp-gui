@@ -1,0 +1,245 @@
+@import "https://www.nerdfonts.com/assets/css/webfont.css";
+@import "font/cantarell.css";
+
+:root {
+  --fallback-title-bar-height: 40px;
+  background-color: black;
+}
+
+html,
+body {
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  height: 100vh;
+  width: 100vw;
+  background: var(--background-color);
+}
+
+* {
+  box-sizing: border-box;
+}
+
+.main-container {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  position: absolute;
+  top: env(titlebar-area-height, var(--fallback-title-bar-height));
+  height: calc(100% - env(titlebar-area-height, var(--fallback-title-bar-height)));
+  width: 100%;
+}
+
+.input-container {
+  display: flex;
+  margin: 5% 10%;
+}
+
+.button-container {
+  display: flex;
+  justify-content: end;
+  margin-top: 5%;
+  padding-right: 10%;
+}
+
+.txt {
+  margin-top: auto;
+  margin-bottom: auto;
+  min-width: fit-content;
+  color: var(--text);
+  font-size: large;
+  font-weight: bold;
+  font-family: "Cantarell";
+  user-select: none;
+}
+
+.url-input {
+  justify-self: end;
+  margin: auto 0% auto auto;
+  width: 75%;
+  height: 30px;
+  padding-left: 10px;
+  padding-right: 10px;
+  border: none;
+  border-radius: 5px;
+  font-weight: bold;
+  font-family: "Cantarell";
+  color: var(--darker-text-color);
+  background-color: var(--light-text-color);
+  user-select: none;
+}
+
+/* The switch - the box around the slider */
+.switch {
+  margin-left: auto;
+  position: relative;
+  display: inline-block;
+  width: 60px;
+  height: 34px;
+}
+
+/* Hide default HTML checkbox */
+.switch input {
+  opacity: 0;
+  width: 0;
+  height: 0;
+}
+
+/* The slider */
+.slider {
+  position: absolute;
+  cursor: pointer;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: var(--default-button-color-darker);
+  -webkit-transition: .4s;
+  transition: .4s;
+}
+
+.slider:before {
+  position: absolute;
+  content: "";
+  height: 26px;
+  width: 26px;
+  left: 4px;
+  bottom: 4px;
+  background-color: var(--text);
+  -webkit-transition: .4s;
+  transition: .4s;
+}
+
+input:checked+.slider {
+  background-color: var(--light-text-color);
+}
+
+input:focus+.slider {
+  box-shadow: 0 0 1px var(--light-text-color);
+}
+
+input:checked+.slider:before {
+  -webkit-transform: translateX(26px);
+  -ms-transform: translateX(26px);
+  transform: translateX(26px);
+}
+
+/* Rounded sliders */
+.slider.round {
+  border-radius: 34px;
+}
+
+.slider.round:before {
+  border-radius: 50%;
+}
+
+.proto-select {
+  margin-left: auto;
+  margin-right: auto;
+  padding-left: 1.5vh;
+  padding-right: 1.5vh;
+  border: none;
+  border-radius: 0.625vh;
+  font-weight: bold;
+  font-family: "Cantarell";
+  color: var(--darker-text-color);
+  background-color: var(--light-text-color);
+  user-select: none;
+}
+
+.proto-select>option {
+  font-weight: bold;
+  font-family: "Cantarell";
+  color: var(--darker-text-color);
+  user-select: none;
+}
+
+.act-button {
+  margin-left: 2%;
+  width: 45px;
+  height: 30px;
+  border: none;
+  border-radius: 5px;
+  color: var(--background-color);
+  text-align: center;
+  user-select: none;
+}
+
+.acc-button {
+  font-size: medium;
+  background-color: var(--accept-button-color);
+  cursor: pointer;
+  transition: 0.2s;
+}
+
+.acc-button:hover {
+  background-color: var(--accept-button-color-lighter);
+  box-shadow: 0 0 10px 10px var(--accept-button-color-glow-hover);
+  transition: 0.2s;
+}
+
+.acc-button:active {
+  background-color: var(--accept-button-color-darker);
+  box-shadow: 0 0 5px 5px var(--accept-button-color-glow-active);
+  transition: 0.2s;
+}
+
+.dec-button {
+  font-size: medium;
+  background-color: var(--decline-button-color);
+  cursor: pointer;
+  transition: 0.2s;
+}
+
+.dec-button:hover {
+  background-color: var(--decline-button-color-lighter);
+  box-shadow: 0 0 10px 10px var(--decline-button-color-glow-hover);
+  transition: 0.2s;
+}
+
+.dec-button:active {
+  background-color: var(--decline-button-color-darker);
+  box-shadow: 0 0 5px 5px var(--decline-button-color-glow-active);
+  transition: 0.2s;
+}
+
+.draggable {
+  -webkit-app-region: drag;
+}
+
+.non-draggable {
+  -webkit-app-region: no-drag;
+}
+
+#titleBarContainer {
+  position: absolute;
+  top: env(titlebar-area-y, 0);
+  height: env(titlebar-area-height, var(--fallback-title-bar-height));
+  width: 100%;
+  background-color: var(--header-color);
+}
+
+#titleBar {
+  position: absolute;
+  top: 0;
+  display: flex;
+  user-select: none;
+  height: 100%;
+  left: env(titlebar-area-x, 0);
+  width: 100%;
+  color: var(--header-text);
+  font-weight: bold;
+  text-align: center;
+}
+
+#titleBar .header {
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  position: absolute;
+  align-self: center;
+  padding: 0px 16px 0px 16px;
+  font-family: "Cantarell";
+}

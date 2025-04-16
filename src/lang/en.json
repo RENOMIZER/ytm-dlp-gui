@@ -31,5 +31,10 @@
   "selalbumart": "Select album cover",
   "lyrics": "Lyrics",
   "lrcwarn": "Works only if extension isn't set to MP3",
-  "cache": "Clear cache"
+  "cache": "Clear cache",
+  "proxy": "Proxy",
+  "host": "Host",
+  "port": "Port",
+  "proto": "Protocol",
+  "enable": "Enable"
 }

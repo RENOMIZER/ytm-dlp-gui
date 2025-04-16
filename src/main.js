@@ -16,12 +16,14 @@ const getDeps = require('./modules/get-deps').default
 
 const YtDlpWrap = new YTDlpWrap(path.join(getLocalPath("ytm-dlp"), 'yt-dlp/yt-dlp' + (os.platform() === 'win32' ? '.exe' : '')))
 
-let changedMetadata = {}
+let proxy = {}
 let metadata = {}
-let rawMetadata
+let changedMetadata = {}
 let currentVideo
+let rawMetadata
 let customArt
 let language
+
 
 /* DO NOT CHANGE */
 let MainWin
@@ -44,6 +46,7 @@ app.whenReady().then(async () => {
   // Window creation
   ipcMain.on('getArt', createUrl)
   ipcMain.on('openAbout', createAbout)
+  ipcMain.on('openProxy', createProxy)
   ipcMain.on('clickedSettings', createSettings)
   ipcMain.on('chooseDirectory', () => {
     dialog.showOpenDialog(MainWin, {
@@ -114,12 +117,24 @@ app.whenReady().then(async () => {
   ipcMain.on('clearCache', () => {
     if (fs.existsSync(path.join(os.homedir(), '.ffbinaries-cache'))) fs.rmSync(path.join(os.homedir(), '.ffbinaries-cache'), { recursive: true, force: true })
   })
+  ipcMain.on('updateProxy', (_event, new_proxy) => { 
+    let config = JSON.parse(fs.readFileSync(path.join(getLocalPath("ytm-dlp"), "config.json"), 'utf-8'))
+    config.proxy = new_proxy.enable
+    config.proto = new_proxy.proto
+    config.host = new_proxy.host
+    config.port = new_proxy.port
+
+    fs.writeFileSync(path.join(getLocalPath("ytm-dlp"), "config.json"), JSON.stringify(config))
+  
+    proxy = new_proxy
+  })
 
   // Start downloading
   ipcMain.on('startDownload', startDownload)
 
   await getDeps()
   language = getLang()
+  proxy = getProxy()
   createMain()
 })
 
@@ -232,6 +247,37 @@ const createAbout = () => {
   })
 }
 
+const createProxy = () => {
+  ProxyWin = new BrowserWindow({
+    width: 450,
+    height: 450,
+    resizable: false,
+    title: language.url,
+    titleBarStyle: 'hidden',
+    titleBarOverlay: {
+      color: '#00000000',
+      symbolColor: '#707070',
+      height: 45,
+    },
+    parent: SetWin,
+    modal: true,
+    show: false,
+    icon: path.join(__dirname, 'images/icon.png'),
+    webPreferences: {
+      preload: path.join(__dirname, 'preload.js')
+    }
+  })
+
+  // ProxyWin.removeMenu()
+  ProxyWin.loadFile('src/screens/proxy.html')
+  ProxyWin.on('ready-to-show', () => { 
+    let config = getProxy();  
+    (proxy.enable) ? ProxyWin.webContents.send('sendProxy', config) : ''
+    ProxyWin.show(); 
+  })
+  ProxyWin.on('minimize', () => { MainWin.minimize() })
+}
+
 const getMetadata = async (videoURL) => {
   if (videoURL === currentVideo && Object.keys(changedMetadata).length === 0) {
     SetWin.webContents.send('sendMetadata', metadata)
@@ -242,7 +288,7 @@ const getMetadata = async (videoURL) => {
     return
   }
 
-  rawMetadata = await YtDlpWrap.getVideoInfo(videoURL)
+  rawMetadata = await YtDlpWrap.getVideoInfo([videoURL, (proxy.enable) ? '--proxy' : '', (proxy.enable) ? `${proxy.proto}://${proxy.host}:${proxy.port}` : ''])
 
   if (rawMetadata.artist) {
     metadata.track = rawMetadata.track
@@ -264,6 +310,23 @@ const getMetadata = async (videoURL) => {
   currentVideo = videoURL
 
   SetWin.webContents.send('sendMetadata', metadata)
+}
+
+const getProxy = () => {
+  let config = JSON.parse(fs.readFileSync(path.join(getLocalPath("ytm-dlp"), "config.json"), 'utf-8'))
+
+  let proxy = { enable: false }
+
+  if (config.host) {
+    proxy = {
+      enable: config.proxy,
+      proto: config.proto,
+      host: config.host,
+      port: config.port
+    }
+  }
+
+  return proxy
 }
 
 const startDownload = async (_event, videoURL, dirPath, ext, order) => {
@@ -341,8 +404,11 @@ const startDownload = async (_event, videoURL, dirPath, ext, order) => {
 
   args.push(
     '--audio-format', ext,
+    (proxy.enable) ? '--proxy' : '', (proxy.enable) ? `${proxy.proto}://${proxy.host}:${proxy.port}` : '',
     videoURL
   )
+
+  console.log(args)
 
   YtDlpWrap.exec(args)
     .on('ytDlpEvent', (eType, eData) => {
