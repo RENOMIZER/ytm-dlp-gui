@@ -8,13 +8,14 @@ const fs = require('fs-extra')
 const path = require('path')
 const os = require('os')
 
-const { throwErr, logStream } = require('./modules/throw-err')
+const { logStream, throwErr } = require('./modules/throw-err')
+const AssetsManager = require('./modules/assets-manager').default
+const AssetsGetter = require('./modules/assets-getter').default
 const getLocalPath = require("./modules/local-path").default
-const getStyles = require('./modules/get-styles').default
-const getLang = require('./modules/get-lang').default
-const getDeps = require('./modules/get-deps').default
 
 const YtDlpWrap = new YTDlpWrap(path.join(getLocalPath("ytm-dlp"), 'yt-dlp/yt-dlp' + (os.platform() === 'win32' ? '.exe' : '')))
+const Getter = new AssetsGetter();
+const Manager = new AssetsManager();
 
 let proxy = {}
 let metadata = {}
@@ -30,6 +31,7 @@ let MainWin
 let SetWin
 let UrlWin
 let AboutWin
+let ProxyWin
 /* DO NOT CHANGE */
 
 
@@ -43,98 +45,103 @@ app.whenReady().then(async () => {
     app.quit()
   })
 
-  // Window creation
-  ipcMain.on('getArt', createUrl)
-  ipcMain.on('openAbout', createAbout)
-  ipcMain.on('openProxy', createProxy)
-  ipcMain.on('clickedSettings', createSettings)
-  ipcMain.on('chooseDirectory', () => {
-    dialog.showOpenDialog(MainWin, {
-      title: language.seldlfolder,
-      buttonLabel: language.select,
-      properties: ['openDirectory']
-    }).then((e) => { if (!e.canceled) { MainWin.webContents.send('sendDirectory', e.filePaths[0]) } })
-  })
-  ipcMain.on('openArt', () => {
-    dialog.showOpenDialog(SetWin, {
-      title: language.selalbumart,
-      buttonLabel: language.select,
-      filters: [
-        { name: 'Images', extensions: ['png', 'jpg', 'jpeg', 'webp'] }
-      ],
-      properties: ['openFile']
-    }).then((e) => { if (!e.canceled) { SetWin.webContents.send('sendArt', e.filePaths[0]); customArt = e.filePaths[0] } })
-  })
-
-  // Data receiving
-  ipcMain.handle('getStyles', getStyles)
+  ipcMain.handle('getStyles', () => { return Getter.getStyles() })
   ipcMain.handle('getLanguage', () => { return language })
-  ipcMain.on('recieveMetadata', (_event, metadata) => { changedMetadata = metadata })
-  ipcMain.on('recieveLanguage', (_event, lang) => {
-    if (lang !== language.current) {
-      let config = JSON.parse(fs.readFileSync(path.join(getLocalPath("ytm-dlp"), "config.json")))
-      config.lang = lang
+
+  for (const [channel, listener] of Object.entries({
+    // Window creation
+    getArt: createUrl,
+    openAbout: createAbout,
+    openProxy: createProxy,
+    clickedSettings: createSettings,
+    chooseDirectory: () => {
+      dialog.showOpenDialog(MainWin, {
+        title: language.seldlfolder,
+        buttonLabel: language.select,
+        properties: ['openDirectory']
+      }).then((e) => { if (!e.canceled) { MainWin.webContents.send('sendDirectory', e.filePaths[0]) } })
+    },
+    openArt: () => {
+      dialog.showOpenDialog(SetWin, {
+        title: language.selalbumart,
+        buttonLabel: language.select,
+        filters: [
+          { name: 'Images', extensions: ['png', 'jpg', 'jpeg', 'webp'] }
+        ],
+        properties: ['openFile']
+      }).then((e) => { if (!e.canceled) { SetWin.webContents.send('sendArt', e.filePaths[0]); customArt = e.filePaths[0] } })
+    },
+
+    // Data receiving
+    recieveMetadata: (_event, metadata) => { changedMetadata = metadata },
+    recieveLanguage: (_event, lang) => {
+      if (lang !== language.current) {
+        let config = JSON.parse(fs.readFileSync(path.join(getLocalPath("ytm-dlp"), "config.json")))
+        config.lang = lang
+
+        fs.writeFileSync(path.join(getLocalPath("ytm-dlp"), "config.json"), JSON.stringify(config))
+
+        app.relaunch()
+        app.quit()
+      }
+    },
+    receiveOnlineArt: (_event, artURL) => {
+      fetch(artURL)
+        .then((response) => response.buffer())
+        .then((buffer) => {
+          if (!fs.existsSync(path.join(os.tmpdir(), '/ytm-dlp-images/'))) { fs.mkdirSync(path.join(os.tmpdir(), '/ytm-dlp-images/')) }
+
+          fs.writeFileSync(path.join(os.tmpdir(), '/ytm-dlp-images/art'), buffer)
+
+          SetWin.webContents.send('sendArt', path.join(os.tmpdir(), '/ytm-dlp-images/art'))
+          customArt = path.join(os.tmpdir(), '/ytm-dlp-images/art')
+        })
+        .catch((err) => {
+          throwErr(err)
+        })
+    },
+
+    // Data reloading
+    reloadMetadata: () => { SetWin.webContents.send('sendMetadata', metadata); customArt = null },
+    changeStyle: (_event, style) => {
+      let config = JSON.parse(fs.readFileSync(path.join(getLocalPath("ytm-dlp"), "config.json"), 'utf-8'))
+      config.style = style
 
       fs.writeFileSync(path.join(getLocalPath("ytm-dlp"), "config.json"), JSON.stringify(config))
 
-      app.relaunch()
-      app.quit()
-    }
-  })
-  ipcMain.on('receiveOnlineArt', (_event, artURL) => {
-    fetch(artURL)
-      .then((response) => response.buffer())
-      .then((buffer) => {
-        if (!fs.existsSync(path.join(os.tmpdir(), '/ytm-dlp-images/'))) { fs.mkdirSync(path.join(os.tmpdir(), '/ytm-dlp-images/')) }
+      MainWin.reload()
+      AboutWin.reload()
+    },
+    resetDeps: async () => {
+      fs.rmSync(path.join(getLocalPath("ytm-dlp"), "yt-dlp"), { recursive: true, force: true })
+      fs.rmSync(path.join(getLocalPath("ytm-dlp"), "ffmpeg"), { recursive: true, force: true })
 
-        fs.writeFileSync(path.join(os.tmpdir(), '/ytm-dlp-images/art'), buffer)
+      Manager.setupAll()
+    },
+    clearCache: () => {
+      if (fs.existsSync(path.join(os.homedir(), '.ffbinaries-cache'))) fs.rmSync(path.join(os.homedir(), '.ffbinaries-cache'), { recursive: true, force: true })
+    },
+    updateProxy: (_event, new_proxy) => {
+      let config = JSON.parse(fs.readFileSync(path.join(getLocalPath("ytm-dlp"), "config.json"), 'utf-8'))
+      config.proxy = new_proxy.enable
+      config.proto = new_proxy.proto
+      config.host = new_proxy.host
+      config.port = new_proxy.port
 
-        SetWin.webContents.send('sendArt', path.join(os.tmpdir(), '/ytm-dlp-images/art'))
-        customArt = path.join(os.tmpdir(), '/ytm-dlp-images/art')
-      })
-      .catch((err) => {
-        throwErr(err)
-      })
-  })
+      fs.writeFileSync(path.join(getLocalPath("ytm-dlp"), "config.json"), JSON.stringify(config))
 
-  // Data reloading
-  ipcMain.on('reloadMetadata', () => { SetWin.webContents.send('sendMetadata', metadata); customArt = null })
-  ipcMain.on('changeStyle', (_event, style) => {
-    let config = JSON.parse(fs.readFileSync(path.join(getLocalPath("ytm-dlp"), "config.json"), 'utf-8'))
-    config.style = style
+      proxy = new_proxy
+    },
 
-    fs.writeFileSync(path.join(getLocalPath("ytm-dlp"), "config.json"), JSON.stringify(config))
+    // Start downloading
+    startDownload: startDownload
+  })) {
+    ipcMain.on(channel, listener)
+  }
 
-    MainWin.reload()
-    AboutWin.reload()
-  })
-  ipcMain.on('resetDeps', async () => {
-    fs.rmSync(path.join(getLocalPath("ytm-dlp"), "yt-dlp"), { recursive: true, force: true })
-    fs.rmSync(path.join(getLocalPath("ytm-dlp"), "ffmpeg"), { recursive: true, force: true })
+  language = Getter.getLanguage();
+  proxy = Getter.getProxy()
 
-    await getDeps()
-  })
-  ipcMain.on('clearCache', () => {
-    if (fs.existsSync(path.join(os.homedir(), '.ffbinaries-cache'))) fs.rmSync(path.join(os.homedir(), '.ffbinaries-cache'), { recursive: true, force: true })
-  })
-  ipcMain.on('updateProxy', (_event, new_proxy) => { 
-    let config = JSON.parse(fs.readFileSync(path.join(getLocalPath("ytm-dlp"), "config.json"), 'utf-8'))
-    config.proxy = new_proxy.enable
-    config.proto = new_proxy.proto
-    config.host = new_proxy.host
-    config.port = new_proxy.port
-
-    fs.writeFileSync(path.join(getLocalPath("ytm-dlp"), "config.json"), JSON.stringify(config))
-  
-    proxy = new_proxy
-  })
-
-  // Start downloading
-  ipcMain.on('startDownload', startDownload)
-
-  await getDeps()
-  language = getLang()
-  proxy = getProxy()
   createMain()
 })
 
@@ -270,10 +277,10 @@ const createProxy = () => {
 
   // ProxyWin.removeMenu()
   ProxyWin.loadFile('src/screens/proxy.html')
-  ProxyWin.on('ready-to-show', () => { 
-    let config = getProxy();  
-    (proxy.enable) ? ProxyWin.webContents.send('sendProxy', config) : ''
-    ProxyWin.show(); 
+  ProxyWin.on('ready-to-show', () => {
+    let config = Getter.getProxy()
+    if (config.host) ProxyWin.webContents.send('sendProxy', config)
+    ProxyWin.show()
   })
   ProxyWin.on('minimize', () => { MainWin.minimize() })
 }
@@ -288,7 +295,12 @@ const getMetadata = async (videoURL) => {
     return
   }
 
-  rawMetadata = await YtDlpWrap.getVideoInfo([videoURL, (proxy.enable) ? '--proxy' : '', (proxy.enable) ? `${proxy.proto}://${proxy.host}:${proxy.port}` : ''])
+  if (proxy.enable) {
+    rawMetadata = await YtDlpWrap.getVideoInfo([videoURL, '--proxy', `${proxy.proto}://${proxy.host}:${proxy.port}`])
+  }
+  else {
+    rawMetadata = await YtDlpWrap.getVideoInfo(videoURL)
+  }
 
   if (rawMetadata.artist) {
     metadata.track = rawMetadata.track
@@ -312,35 +324,14 @@ const getMetadata = async (videoURL) => {
   SetWin.webContents.send('sendMetadata', metadata)
 }
 
-const getProxy = () => {
-  let config = JSON.parse(fs.readFileSync(path.join(getLocalPath("ytm-dlp"), "config.json"), 'utf-8'))
-
-  let proxy = { enable: false }
-
-  if (config.host) {
-    proxy = {
-      enable: config.proxy,
-      proto: config.proto,
-      host: config.host,
-      port: config.port
-    }
-  }
-
-  return proxy
-}
-
 const startDownload = async (_event, videoURL, dirPath, ext, order) => {
-  let args = fs.readFileSync(path.join(getLocalPath("ytm-dlp"), "yt-dlp/arguments.list"), 'UTF-8').split(/\n/).map(e => { return e.replace(/"/g, '') })
+  let args = fs.readFileSync(path.join(getLocalPath("ytm-dlp"), "yt-dlp/arguments"), 'UTF-8').split(/\n/).map(e => { return e.replace(/"/g, '') })
 
   if (Object.keys(changedMetadata).length !== 0) {
-    for (let i = 0; i < 12; i++) {
-      args.pop()
-    }
+    args.splice(-12)
 
     if (customArt) {
-      args.push(
-        '--ppa', `ThumbnailsConvertor+ffmpeg_i: -i '${customArt}'`
-      )
+      args.push('--ppa', `ThumbnailsConvertor+ffmpeg_i: -i '${customArt}'`)
 
       customArt = null
     }
@@ -351,9 +342,8 @@ const startDownload = async (_event, videoURL, dirPath, ext, order) => {
         lrc = await getLyrics(changedMetadata.track, changedMetadata.artist.replace(/(,[a-zа-яА-ЯA-Z0-9_ ]).*/g, ''), ' ', `${rawMetadata.duration}`)
       }
 
-      if (lrc instanceof Error) {
-        throwErr(lrc)
-      }
+      if (lrc instanceof Error) throwErr(lrc)
+
       else {
         args.push(
           "--parse-metadata", "NA:(?P<meta_lyrics>.*)",
@@ -367,7 +357,7 @@ const startDownload = async (_event, videoURL, dirPath, ext, order) => {
           args.push(lrc.plain)
         }
         else {
-          args.push("")
+          args.splice(-5)
         }
       }
     }
@@ -392,19 +382,13 @@ const startDownload = async (_event, videoURL, dirPath, ext, order) => {
     }
   }
 
-  args.unshift(
-    '-o', `${fs.existsSync(dirPath) ? dirPath : os.homedir()}${os.platform === "win32" ? "\\" : '/'}%(artist,uploader)s - %(title,meta_title)s.%(ext)s`
-  )
+  args.unshift('-o', path.join(fs.existsSync(dirPath) ? dirPath : os.homedir(), '%(artist,uploader)s - %(title,meta_title)s.%(ext)s'))
 
-  if (order === 'strict') {
-    args.push(
-      '--parse-metadata', "playlist_index:%(track_number)s"
-    )
-  }
+  if (order === 'strict') args.push('--parse-metadata', "playlist_index:%(track_number)s")
+  if (proxy.enable) args.push('--proxy', `${proxy.proto}://${proxy.host}:${proxy.port}`)
 
   args.push(
     '--audio-format', ext,
-    (proxy.enable) ? '--proxy' : '', (proxy.enable) ? `${proxy.proto}://${proxy.host}:${proxy.port}` : '',
     videoURL
   )
 

@@ -4,7 +4,7 @@ document.getElementById('proxyButton').addEventListener('click', () => {window.e
 
 window.onload = async () => {
   let language = await window.electronAPI.sendGetLanguage()
-  let [ currentStyle, styles, currentStylePath ] = await window.electronAPI.sendGetStyles()
+  let [styles, currentStyle, currentStylePath] = await window.electronAPI.sendGetStyles()
 
   styles.forEach(e => {
     const node = document.createElement("option");

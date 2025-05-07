@@ -10,7 +10,4 @@ const getLocalPath = (app) => {
   }
 }
 
-module.exports = {
-  getLocalPath: getLocalPath,
-  default: getLocalPath
-}
+module.exports = { default: getLocalPath }
