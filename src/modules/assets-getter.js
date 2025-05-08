@@ -4,8 +4,8 @@ const path = require('path');
 
 class AssetsGetter {
   constructor() {
-    this.localPath = getLocalPath("ytm-dlp");
-    this.configPath = path.join(this.localPath, "config.json");
+    this.localPath = getLocalPath("ytm-dlp")
+    this.configPath = path.join(this.localPath, "config.json")
     this.projectRoot = path.join(__dirname, "../..")
   }
 
@@ -36,18 +36,18 @@ class AssetsGetter {
 
   getProxy() {
     let config = JSON.parse(fs.readFileSync(this.configPath, 'utf-8'))
-    let proxy = { enable: false }
   
     if (config.host) {
-      proxy = {
-        enable: config.proxy,
+      return {
+        proxy: config.proxy,
         proto: config.proto,
         host: config.host,
         port: config.port
       }
     }
-    
-    return proxy
+    else {
+      return { proxy: false }
+    }
   }
 }
 

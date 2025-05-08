@@ -29,7 +29,7 @@ window.onload = async () => {
   document.getElementById('styleSelect').value = currentStyle
 }
 
-window.onunload = () => {
+window.addEventListener("unload", () => {
   window.electronAPI.sendLanguage(document.getElementById('langSelect').value)
   window.electronAPI.sendChangeStyle(document.getElementById('styleSelect').value)
-}
+})
