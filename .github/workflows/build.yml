@@ -29,8 +29,39 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GH_TOKEN }}
         run: npm run make
-      - name: Upload artifacts
+      - name: Upload squirrel.windows artifacts
+        if: runner.os == 'windows'
         uses: actions/upload-artifact@v4
         with:
-          name: artifacts-${{ matrix.os.name }}
-          path: out/make
+          name: artifacts-squirrel
+          path: out/make/squirrel.windows
+      - name: Upload msi artifacts
+        if: runner.os == 'windows'
+        uses: actions/upload-artifact@v4
+        with:
+          name: artifacts-msi
+          path: out/make/wix
+      - name: Upload zip.windows artifacts
+        if: runner.os == 'windows'
+        uses: actions/upload-artifact@v4
+        with:
+          name: artifacts-zip.windows
+          path: out/make/zip
+      - name: Upload zip.linux artifacts
+        if: runner.os == 'linux'
+        uses: actions/upload-artifact@v4
+        with:
+          name: artifacts-zip.linux
+          path: out/make/zip
+      - name: Upload deb artifacts
+        if: runner.os == 'linux'
+        uses: actions/upload-artifact@v4
+        with:
+          name: artifacts-deb
+          path: out/make/deb
+      - name: Upload rpm artifacts
+        if: runner.os == 'linux'
+        uses: actions/upload-artifact@v4
+        with:
+          name: artifacts-rpm
+          path: out/make/rpm

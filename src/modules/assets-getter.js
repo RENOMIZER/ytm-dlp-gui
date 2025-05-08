@@ -45,9 +45,8 @@ class AssetsGetter {
         port: config.port
       }
     }
-    else {
-      return { proxy: false }
-    }
+
+    return { proxy: false }
   }
 }
 
