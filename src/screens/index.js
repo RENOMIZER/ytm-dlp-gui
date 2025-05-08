@@ -74,5 +74,5 @@ const settingsOpen = () => {
     return
   }
 
-  window.electronAPI.sendClickedSettings(videoURL.replace(/&list.*/gm, ''))
+  window.electronAPI.sendOpenEdit(videoURL.replace(/&list.*/gm, ''))
 }

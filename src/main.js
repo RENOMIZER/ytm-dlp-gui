@@ -1,5 +1,5 @@
 /* Modules */
-const { app, BrowserWindow, ipcMain, dialog, shell } = require('electron')
+const { app, ipcMain, dialog } = require('electron')
 const { updateElectronApp } = require('update-electron-app')
 const YTDlpWrap = require('yt-dlp-wrap').default
 const getLyrics = require('lyrics-snatcher')
@@ -9,77 +9,67 @@ const path = require('path')
 const os = require('os')
 
 const { logStream, throwErr } = require('./modules/throw-err')
+const WindowManager = require('./modules/window-manager').default
 const AssetsManager = require('./modules/assets-manager').default
 const AssetsGetter = require('./modules/assets-getter').default
 const getLocalPath = require("./modules/local-path").default
 
-const YtDlpWrap = new YTDlpWrap(path.join(getLocalPath("ytm-dlp"), 'yt-dlp/yt-dlp' + (os.platform() === 'win32' ? '.exe' : '')))
+const localPath = getLocalPath("ytm-dlp")
+const configPath = path.join(localPath, "config.json")
+
+const YtDlpWrap = new YTDlpWrap(path.join(localPath, "yt-dlp", "yt-dlp" + (os.platform() === 'win32' ? '.exe' : '')))
 const Getter = new AssetsGetter();
 const Manager = new AssetsManager();
+const Windows = new WindowManager();
 
-let proxy = {}
-let metadata = {}
-let changedMetadata = {}
-let currentVideo
-let rawMetadata
-let customArt
-let language
-
-
-/* DO NOT CHANGE */
-let MainWin
-let SetWin
-let UrlWin
-let AboutWin
-let ProxyWin
-/* DO NOT CHANGE */
-
+let metadata = {}, changedMetadata = {}
+let currentVideo, rawMetadata, customArt
 
 /* Initialisation */
 if (require('electron-squirrel-startup')) return
 updateElectronApp()
 
-app.whenReady().then(async () => {
-  app.on('window-all-closed', () => {
-    logStream.end(`[info] Log end.`)
-    app.quit()
-  })
+let language = Getter.getLanguage()
+let proxy = Getter.getProxy()
 
+Windows.setLanguage(language)
+
+app.whenReady().then(async () => {
   ipcMain.handle('getStyles', () => { return Getter.getStyles() })
   ipcMain.handle('getLanguage', () => { return language })
 
   for (const [channel, listener] of Object.entries({
     // Window creation
-    getArt: createUrl,
-    openAbout: createAbout,
-    openProxy: createProxy,
-    clickedSettings: createSettings,
+    openUrl: () => { Windows.createUrl() },
+    openAbout: () => { Windows.createAbout() },
+    openProxy: () => { Windows.createProxy(Getter.getProxy()) },
+    openEdit: (_event, videoURL) => { Windows.createEdit(), dlMetadata(videoURL) },
     chooseDirectory: () => {
-      dialog.showOpenDialog(MainWin, {
+      dialog.showOpenDialog(Windows.main, {
         title: language.seldlfolder,
         buttonLabel: language.select,
         properties: ['openDirectory']
-      }).then((e) => { if (!e.canceled) { MainWin.webContents.send('sendDirectory', e.filePaths[0]) } })
+      }).then((e) => { if (!e.canceled) { Windows.send(Windows.main, 'sendDirectory', e.filePaths[0]) } })
     },
     openArt: () => {
-      dialog.showOpenDialog(SetWin, {
+      dialog.showOpenDialog(Windows.edit, {
         title: language.selalbumart,
         buttonLabel: language.select,
         filters: [
           { name: 'Images', extensions: ['png', 'jpg', 'jpeg', 'webp'] }
         ],
         properties: ['openFile']
-      }).then((e) => { if (!e.canceled) { SetWin.webContents.send('sendArt', e.filePaths[0]); customArt = e.filePaths[0] } })
+      }).then((e) => { if (!e.canceled) { Windows.send(Windows.edit, 'sendArt', e.filePaths[0]); customArt = e.filePaths[0] } })
     },
 
     // Data receiving
     recieveMetadata: (_event, metadata) => { changedMetadata = metadata },
     recieveLanguage: (_event, lang) => {
       if (lang !== language.current) {
-        let config = JSON.parse(fs.readFileSync(path.join(getLocalPath("ytm-dlp"), "config.json")))
+        let config = JSON.parse(fs.readFileSync(configPath))
         config.lang = lang
 
-        fs.writeFileSync(path.join(getLocalPath("ytm-dlp"), "config.json"), JSON.stringify(config))
+        fs.writeFileSync(configPath, JSON.stringify(config))
 
         app.relaunch()
         app.quit()
@@ -89,12 +79,12 @@ app.whenReady().then(async () => {
       fetch(artURL)
         .then((response) => response.buffer())
         .then((buffer) => {
-          if (!fs.existsSync(path.join(os.tmpdir(), '/ytm-dlp-images/'))) { fs.mkdirSync(path.join(os.tmpdir(), '/ytm-dlp-images/')) }
+          if (!fs.existsSync(path.join(os.tmpdir(), "ytm-dlp-images"))) { fs.mkdirSync(path.join(os.tmpdir(), "ytm-dlp-images")) }
 
-          fs.writeFileSync(path.join(os.tmpdir(), '/ytm-dlp-images/art'), buffer)
+          fs.writeFileSync(path.join(os.tmpdir(), "ytm-dlp-images", "art"), buffer)
 
-          SetWin.webContents.send('sendArt', path.join(os.tmpdir(), '/ytm-dlp-images/art'))
-          customArt = path.join(os.tmpdir(), '/ytm-dlp-images/art')
+          Windows.send(Windows.edit, 'sendArt', path.join(os.tmpdir(), "ytm-dlp-images", "art"))
+          customArt = path.join(os.tmpdir(), "ytm-dlp-images", "art")
         })
         .catch((err) => {
           throwErr(err)
@@ -102,35 +92,33 @@ app.whenReady().then(async () => {
     },
 
     // Data reloading
-    reloadMetadata: () => { SetWin.webContents.send('sendMetadata', metadata); customArt = null },
+    reloadMetadata: () => { Windows.send(Windows.edit, 'sendMetadata', metadata); customArt = null },
     changeStyle: (_event, style) => {
-      let config = JSON.parse(fs.readFileSync(path.join(getLocalPath("ytm-dlp"), "config.json"), 'utf-8'))
-      config.style = style
+      let config = JSON.parse(fs.readFileSync(configPath, 'utf-8'))
+      if (config.style !== style) {
+        config.style = style
 
-      fs.writeFileSync(path.join(getLocalPath("ytm-dlp"), "config.json"), JSON.stringify(config))
+        fs.writeFileSync(configPath, JSON.stringify(config))
 
-      MainWin.reload()
-      AboutWin.reload()
+        Windows.main.reload()
+        Windows.about.reload()
+      }
     },
     resetDeps: async () => {
-      fs.rmSync(path.join(getLocalPath("ytm-dlp"), "yt-dlp"), { recursive: true, force: true })
-      fs.rmSync(path.join(getLocalPath("ytm-dlp"), "ffmpeg"), { recursive: true, force: true })
+      fs.rmSync(path.join(localPath, "yt-dlp"), { recursive: true, force: true })
+      fs.rmSync(path.join(localPath, "ffmpeg"), { recursive: true, force: true })
 
       Manager.setupAll()
     },
     clearCache: () => {
       if (fs.existsSync(path.join(os.homedir(), '.ffbinaries-cache'))) fs.rmSync(path.join(os.homedir(), '.ffbinaries-cache'), { recursive: true, force: true })
     },
-    updateProxy: (_event, new_proxy) => {
-      let config = JSON.parse(fs.readFileSync(path.join(getLocalPath("ytm-dlp"), "config.json"), 'utf-8'))
-      config.proxy = new_proxy.enable
-      config.proto = new_proxy.proto
-      config.host = new_proxy.host
-      config.port = new_proxy.port
+    updateProxy: (_event, newConfig) => {
+      let config = JSON.parse(fs.readFileSync(configPath, 'utf-8'))
 
-      fs.writeFileSync(path.join(getLocalPath("ytm-dlp"), "config.json"), JSON.stringify(config))
+      fs.writeFileSync(configPath, JSON.stringify({...config, ...newConfig}))
 
-      proxy = new_proxy
+      proxy = newConfig
     },
 
     // Start downloading
@@ -139,163 +127,26 @@ app.whenReady().then(async () => {
     ipcMain.on(channel, listener)
   }
 
-  language = Getter.getLanguage();
-  proxy = Getter.getProxy()
+  Windows.createMain()
 
-  createMain()
+  app.on('window-all-closed', () => {
+    logStream.end(`[info] Log end.`)
+    app.quit()
+  })
 })
 
 /* Funcitions */
-const createMain = () => {
-  MainWin = new BrowserWindow({
-    width: 800,
-    minWidth: 400,
-    height: 600,
-    minHeight: 300,
-    titleBarStyle: 'hidden',
-    titleBarOverlay: {
-      color: '#00000000',
-      symbolColor: '#707070',
-      height: 45,
-    },
-    menuBarVisible: false,
-    show: false,
-    icon: path.join(__dirname, 'images/icon.png'),
-    webPreferences: {
-      preload: path.join(__dirname, 'preload.js')
-    }
-  })
-
-  MainWin.removeMenu()
-  MainWin.loadFile('src/screens/index.html')
-  MainWin.on('ready-to-show', () => { MainWin.show() })
-}
-
-const createSettings = (_event, videoURL) => {
-  SetWin = new BrowserWindow({
-    width: 600,
-    height: 800,
-    resizable: false,
-    title: language.edit,
-    titleBarStyle: 'hidden',
-    titleBarOverlay: {
-      color: '#00000000',
-      symbolColor: '#707070',
-      height: 45,
-    },
-    parent: MainWin,
-    modal: true,
-    show: false,
-    icon: path.join(__dirname, 'images/icon.png'),
-    webPreferences: {
-      preload: path.join(__dirname, 'preload.js')
-    }
-  })
-
-  SetWin.removeMenu()
-  SetWin.loadFile('src/screens/settings.html')
-  SetWin.on('ready-to-show', () => { SetWin.show(); getMetadata(videoURL) })
-  SetWin.on('minimize', () => { MainWin.minimize() })
-}
-
-const createUrl = () => {
-  UrlWin = new BrowserWindow({
-    width: 450,
-    height: 150,
-    resizable: false,
-    title: language.url,
-    titleBarStyle: 'hidden',
-    titleBarOverlay: {
-      color: '#00000000',
-      symbolColor: '#707070',
-      height: 45,
-    },
-    parent: SetWin,
-    modal: true,
-    show: false,
-    icon: path.join(__dirname, 'images/icon.png'),
-    webPreferences: {
-      preload: path.join(__dirname, 'preload.js')
-    }
-  })
-
-  UrlWin.removeMenu()
-  UrlWin.loadFile('src/screens/url.html')
-  UrlWin.on('ready-to-show', () => { UrlWin.show() })
-}
-
-const createAbout = () => {
-  AboutWin = new BrowserWindow({
-    width: 450,
-    height: 600,
-    resizable: false,
-    title: language.about,
-    titleBarStyle: 'hidden',
-    titleBarOverlay: {
-      color: '#00000000',
-      symbolColor: '#707070',
-      height: 45,
-    },
-    parent: MainWin,
-    modal: true,
-    show: false,
-    icon: path.join(__dirname, 'images/icon.png'),
-    webPreferences: {
-      preload: path.join(__dirname, 'preload.js')
-    }
-  })
-
-  AboutWin.removeMenu()
-  AboutWin.loadFile('src/screens/about.html')
-  AboutWin.on('ready-to-show', () => { AboutWin.show() })
-  AboutWin.webContents.setWindowOpenHandler(({ url }) => {
-    shell.openExternal(url)
-    return { action: 'deny' }
-  })
-}
-
-const createProxy = () => {
-  ProxyWin = new BrowserWindow({
-    width: 450,
-    height: 450,
-    resizable: false,
-    title: language.url,
-    titleBarStyle: 'hidden',
-    titleBarOverlay: {
-      color: '#00000000',
-      symbolColor: '#707070',
-      height: 45,
-    },
-    parent: SetWin,
-    modal: true,
-    show: false,
-    icon: path.join(__dirname, 'images/icon.png'),
-    webPreferences: {
-      preload: path.join(__dirname, 'preload.js')
-    }
-  })
-
-  // ProxyWin.removeMenu()
-  ProxyWin.loadFile('src/screens/proxy.html')
-  ProxyWin.on('ready-to-show', () => {
-    let config = Getter.getProxy()
-    if (config.host) ProxyWin.webContents.send('sendProxy', config)
-    ProxyWin.show()
-  })
-  ProxyWin.on('minimize', () => { MainWin.minimize() })
-}
-
-const getMetadata = async (videoURL) => {
+const dlMetadata = async (videoURL) => {
   if (videoURL === currentVideo && Object.keys(changedMetadata).length === 0) {
-    SetWin.webContents.send('sendMetadata', metadata)
+    Windows.send(Windows.edit, 'sendMetadata', metadata)
     return
   }
   else if (Object.keys(changedMetadata).length !== 0) {
-    SetWin.webContents.send('sendMetadata', changedMetadata)
+    Windows.send(Windows.edit, 'sendMetadata', changedMetadata)
     return
   }
 
-  if (proxy.enable) {
+  if (proxy.proxy) {
     rawMetadata = await YtDlpWrap.getVideoInfo([videoURL, '--proxy', `${proxy.proto}://${proxy.host}:${proxy.port}`])
   }
   else {
@@ -321,11 +172,11 @@ const getMetadata = async (videoURL) => {
   metadata.art = rawMetadata.thumbnails.pop().url
   currentVideo = videoURL
 
-  SetWin.webContents.send('sendMetadata', metadata)
+  Windows.send(Windows.edit, 'sendMetadata', metadata)
 }
 
 const startDownload = async (_event, videoURL, dirPath, ext, order) => {
-  let args = fs.readFileSync(path.join(getLocalPath("ytm-dlp"), "yt-dlp/arguments"), 'UTF-8').split(/\n/).map(e => { return e.replace(/"/g, '') })
+  let args = fs.readFileSync(path.join(localPath, "yt-dlp/arguments"), 'UTF-8').split(/\n/).map(e => { return e.replace(/"/g, '') })
 
   if (Object.keys(changedMetadata).length !== 0) {
     args.splice(-12)
@@ -385,7 +236,7 @@ const startDownload = async (_event, videoURL, dirPath, ext, order) => {
   args.unshift('-o', path.join(fs.existsSync(dirPath) ? dirPath : os.homedir(), '%(artist,uploader)s - %(title,meta_title)s.%(ext)s'))
 
   if (order === 'strict') args.push('--parse-metadata', "playlist_index:%(track_number)s")
-  if (proxy.enable) args.push('--proxy', `${proxy.proto}://${proxy.host}:${proxy.port}`)
+  if (proxy.proxy) args.push('--proxy', `${proxy.proto}://${proxy.host}:${proxy.port}`)
 
   args.push(
     '--audio-format', ext,
@@ -400,14 +251,14 @@ const startDownload = async (_event, videoURL, dirPath, ext, order) => {
       logStream.write(`[${eType}] ${eData}\n`)
 
       if (eType === 'download' && eData.slice(1, 4) !== 'Des' && eData.slice(4, 5) === '.') {
-        MainWin.webContents.send('sendProgress', eData.slice(1, 4))
+        Windows.send(Windows.main, 'sendProgress', eData.slice(1, 4))
       }
     })
-    .on('error', (err) => { MainWin.webContents.send('sendDownloadError'); throwErr(err) })
+    .on('error', (err) => { Windows.send(Windows.main, 'sendDownloadError'); throwErr(err) })
     .on('close', () => {
       logStream.write('\n')
 
-      MainWin.webContents.send('sendDownloadFinished')
+      Windows.send(Windows.main, 'sendDownloadFinished')
       if (fs.existsSync(path.join(os.tmpdir(), '/ytm-dlp-images/art'))) {
         fs.unlink(path.join(os.tmpdir(), '/ytm-dlp-images/art'), (err) => { if (err) { throwErr(err) } })
       }

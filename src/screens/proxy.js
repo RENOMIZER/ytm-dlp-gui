@@ -24,12 +24,12 @@ window.electronAPI.onRecieveProxy((_event, proxy) => {
   document.getElementById('hostInput').value = proxy.host
   document.getElementById('portInput').value = proxy.port
   document.getElementById('protoSelect').value = proxy.proto
-  document.getElementById('enableSwitch').checked = proxy.enable
+  document.getElementById('enableSwitch').checked = proxy.proxy
 })
 
 const sendProxyConfig = () => {
   let proxy = {
-    enable: document.getElementById('enableSwitch').checked,
+    proxy: document.getElementById('enableSwitch').checked,
     proto: document.getElementById('protoSelect').value,
     host: document.getElementById('hostInput').value,
     port: document.getElementById('portInput').value

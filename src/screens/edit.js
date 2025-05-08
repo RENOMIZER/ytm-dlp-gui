@@ -11,7 +11,7 @@ let language
 document.getElementById('accButton').addEventListener('click', () => { applyMetadata() })
 document.getElementById('artButton').addEventListener('click', () => { createArtButtons() })
 document.getElementById('decButton').addEventListener('click', () => { window.close() })
-document.getElementById('urlButton').addEventListener('click', () => { window.electronAPI.sendGetArt() })
+document.getElementById('urlButton').addEventListener('click', () => { window.electronAPI.sendOpenUrl() })
 document.getElementById('fileButton').addEventListener('click', () => { window.electronAPI.sendOpenArt() })
 document.getElementById('relButton').addEventListener('click', () => { window.electronAPI.sendReloadMetadata() })
 
