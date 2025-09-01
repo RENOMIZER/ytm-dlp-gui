@@ -1,73 +1,62 @@
-let language
+const $ = (id) => document.getElementById(id) 
+let language = window.electronAPI.language
 
-/* Listeners */
-document.getElementById('dlButton').addEventListener('click', () => { downloadStart() })
-document.getElementById('setButton').addEventListener('click', () => { settingsOpen() })
-document.getElementById('aboutButton').addEventListener('click', () => { window.electronAPI.sendOpenAbout() })
-document.getElementById('locButton').addEventListener('click', () => { window.electronAPI.sendChooseDirectory() })
+$('dlButton').addEventListener('click', () => { downloadStart() })
+$('setButton').addEventListener('click', () => { editOpen() })
+$('aboutButton').addEventListener('click', () => { window.electronAPI.sendOpenAbout() })
+$('locButton').addEventListener('click', () => { window.electronAPI.sendChooseDirectory() })
 
-window.onload = async () => {
-  language = await window.electronAPI.sendGetLanguage()
-
-  let [_currentStyle, _styles, currentStylePath] = await window.electronAPI.sendGetStyles()
-
-  const node = document.createElement("link");
-  node.setAttribute('rel', 'stylesheet')
-  node.setAttribute('href', currentStylePath)
-  document.querySelector("head").appendChild(node)
-
-  document.getElementById('aboutButton').title = language.about
-  document.getElementById('dlButton').title = language.download
-  document.getElementById('setButton').title = language.settings
-  document.getElementById('locButton').title = language.dlfolder
-  document.getElementById('waitingLabel').textContent = language.waiting
-  document.getElementById('extTitle').textContent = language.extension
-  document.getElementById('ordTitle').textContent = language.order
-}
+$('aboutButton').title = language.about
+$('dlButton').title = language.download
+$('setButton').title = language.settings
+$('locButton').title = language.dlfolder
+$('waitingLabel').textContent = language.waiting
+$('extTitle').textContent = language.extension
+$('ordTitle').textContent = language.order
 
 window.electronAPI.onDownloadFinished(() => {
   setTimeout(() => {
-    document.getElementById('waitingLabel').textContent = language.waiting
-    document.getElementById('dlButton').removeAttribute('disabled')
+    $('waitingLabel').textContent = language.waiting
+    $('dlButton').removeAttribute('disabled')
   }, 1000)
 })
 
 window.electronAPI.onDownloadError(() => {
-  document.getElementById('waitingLabel').textContent = language.error
+  $('waitingLabel').textContent = language.error
   setTimeout(() => {
-    document.getElementById('waitingLabel').textContent = language.waiting
-    document.getElementById('dlButton').removeAttribute('disabled')
+    $('waitingLabel').textContent = language.waiting
+    $('dlButton').removeAttribute('disabled')
   }, 2500)
 })
 
 window.electronAPI.onRecieveProgress((_event, prog) => {
-  document.getElementById('waitingLabel').textContent = language.downloading + ` ${prog}%`
+  $('waitingLabel').textContent = language.downloading + ` ${prog}%`
 })
 
 window.electronAPI.onRecieveDirectory((_event, path) => {
-  document.getElementById('inputLocation').value = path
+  $('inputLocation').value = path
 })
 
 /* Listeners' functions */
 const downloadStart = () => {
-  let videoURL = document.getElementById('inputURL').value
+  let videoURL = $('inputURL').value
 
   if (videoURL.search(/(youtube|youtu)\.(com|be)/gm) === -1) {
-    document.getElementById('inputURL').value = ''
+    $('inputURL').value = ''
     return
   }
 
-  window.electronAPI.sendStartDownload(videoURL.replace(/&list.*/gm, ''), document.getElementById('inputLocation').value, document.getElementById('extVal').value, document.getElementById('ordSelect').value)
-  document.getElementById('dlButton').setAttribute('disabled', true)
-  document.getElementById('waitingLabel').textContent = language.downloading
-  document.getElementById('inputURL').value = ''
+  window.electronAPI.sendStartDownload(videoURL.replace(/&list.*/gm, ''), $('inputLocation').value, $('extVal').value, $('ordSelect').value)
+  $('dlButton').setAttribute('disabled', true)
+  $('waitingLabel').textContent = language.downloading
+  $('inputURL').value = ''
 }
 
-const settingsOpen = () => {
-  let videoURL = document.getElementById('inputURL').value
+const editOpen = () => {
+  let videoURL = $('inputURL').value
 
   if (videoURL.search(/(youtube|youtu)\.(com|be)/gm) === -1) {
-    document.getElementById('inputURL').value = ''
+    $('inputURL').value = ''
     return
   }
   else if (videoURL.search(/youtube\.com\/playlist\?/gm) !== -1) {

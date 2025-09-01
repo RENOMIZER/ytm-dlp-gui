@@ -1,45 +1,36 @@
-let art = document.getElementById('art')
-let title = document.getElementById('title')
-let artist = document.getElementById('artist')
-let album = document.getElementById('album')
-let year = document.getElementById('year')
-let lyrics = document.getElementById('lrcSelect')
-let genre = document.getElementById('genre')
-let albumArtist = document.getElementById('albumArtist')
-let language
+const $ = (id) => document.getElementById(id) 
+let language = window.electronAPI.language
 
-document.getElementById('accButton').addEventListener('click', () => { applyMetadata() })
-document.getElementById('artButton').addEventListener('click', () => { createArtButtons() })
-document.getElementById('decButton').addEventListener('click', () => { window.close() })
-document.getElementById('urlButton').addEventListener('click', () => { window.electronAPI.sendOpenUrl() })
-document.getElementById('fileButton').addEventListener('click', () => { window.electronAPI.sendOpenArt() })
-document.getElementById('relButton').addEventListener('click', () => { window.electronAPI.sendReloadMetadata() })
+let art = $('art')
+let title = $('title')
+let artist = $('artist')
+let album = $('album')
+let year = $('year')
+let lyrics = $('lrcSelect')
+let genre = $('genre')
+let albumArtist = $('albumArtist')
 
-window.onload = async () => {
-  language = await window.electronAPI.sendGetLanguage()
+$('accButton').addEventListener('click', () => { applyMetadata() })
+$('artButton').addEventListener('click', () => { createArtButtons() })
+$('decButton').addEventListener('click', () => { window.close() })
+$('urlButton').addEventListener('click', () => { window.electronAPI.sendOpenUrl() })
+$('fileButton').addEventListener('click', () => { window.electronAPI.sendOpenArt() })
+$('relButton').addEventListener('click', () => { window.electronAPI.sendReloadMetadata() })
 
-  let [_currentStyle, _styles, currentStylePath] = await window.electronAPI.sendGetStyles()
-
-  const node = document.createElement("link");
-  node.setAttribute('rel', 'stylesheet')
-  node.setAttribute('href', currentStylePath)
-  document.querySelector("head").appendChild(node)
-
-  document.getElementById('header').textContent = language.loading
-  document.getElementById('urlButton').textContent = language.loadurl
-  document.getElementById('fileButton').textContent = language.loadfile
-  document.getElementById('titleTxt').textContent = language.title + ':'
-  document.getElementById('artistTxt').textContent = language.artist + ':'
-  document.getElementById('albumTxt').textContent = language.album + ':'
-  document.getElementById('yearTxt').textContent = language.year + ':'
-  document.getElementById('genreTxt').textContent = language.genre + ':'
-  document.getElementById('albumArtistTxt').textContent = language.albumartist + ':'
-  document.getElementById('lrcTxt').textContent = language.lyrics + ':'
-  document.getElementById('accButton').title = language.accept
-  document.getElementById('relButton').title = language.reset
-  document.getElementById('decButton').title = language.decline
-  lyrics.title = language.lrcwarn
-}
+$('header').textContent = language.loading
+$('urlButton').textContent = language.loadurl
+$('fileButton').textContent = language.loadfile
+$('titleTxt').textContent = language.title + ':'
+$('artistTxt').textContent = language.artist + ':'
+$('albumTxt').textContent = language.album + ':'
+$('yearTxt').textContent = language.year + ':'
+$('genreTxt').textContent = language.genre + ':'
+$('albumArtistTxt').textContent = language.albumartist + ':'
+$('lrcTxt').textContent = language.lyrics + ':'
+$('accButton').title = language.accept
+$('relButton').title = language.reset
+$('decButton').title = language.decline
+lyrics.title = language.lrcwarn
 
 window.electronAPI.onRecieveMetadata((_event, metadata) => {
   art.setAttribute('src', metadata.art)
@@ -51,10 +42,10 @@ window.electronAPI.onRecieveMetadata((_event, metadata) => {
   albumArtist.value = metadata.album_artist ? metadata.album_artist : ""
   lyrics.value = metadata.lyrics ? metadata.lyrics : "none"
   lyrics.removeAttribute('disabled')
-  setTimeout(() => { document.getElementById('header').textContent = language.edit }, 1) // it works only this way and I don't know why
-  document.getElementById('accButton').removeAttribute('disabled')
-  document.getElementById('relButton').removeAttribute('disabled')
-  document.getElementById('artButton').removeAttribute('disabled')
+  setTimeout(() => { $('header').textContent = language.edit }, 1) // it works only this way and I don't know why
+  $('accButton').removeAttribute('disabled')
+  $('relButton').removeAttribute('disabled')
+  $('artButton').removeAttribute('disabled')
 })
 
 window.electronAPI.onRecieveArt((_event, newArt) => {
@@ -77,6 +68,6 @@ const applyMetadata = () => {
 }
 
 const createArtButtons = () => {
-  document.getElementById('artButtonContainer').style.display = document.getElementById('artButtonContainer').style.display === "flex" ? "none" : "flex"
-  document.getElementById('metaContainer').style.paddingTop = document.getElementById('metaContainer').style.paddingTop === "0px" ? "5%" : "0px"
+  $('artButtonContainer').style.display = $('artButtonContainer').style.display === "flex" ? "none" : "flex"
+  $('metaContainer').style.paddingTop = $('metaContainer').style.paddingTop === "0px" ? "5%" : "0px"
 }

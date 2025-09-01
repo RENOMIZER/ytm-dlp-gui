@@ -17,16 +17,16 @@ class AssetsManager {
     this.execExt = (os.platform() === 'win32' ? '.exe' : '')
 
     if (!fs.existsSync(this.configPath) || !fs.readFileSync(this.configPath, "utf-8").length) {
-      fs.writeFileSync(this.configPath, '{"lang":"en","style":"mocha","proxy":false,"proto":"http","host":"","port":""}')
+      fs.writeFileSync(this.configPath, '{"fresh":true,"lang":"en","style":"mocha","proxy":false,"proto":"http","host":"","port":""}')
     }
      
-    this.setupStyles()
+    this.setupStyles(false)
     this.setupYtDlp()
     this.setupFFmpeg()
   }
 
   setupAll() {
-    this.setupStyles()
+    this.setupStyles(true)
     this.setupYtDlp()
     this.setupFFmpeg()
   }
@@ -81,25 +81,26 @@ class AssetsManager {
     })
   }
 
-  setupStyles() {
+  setupStyles(force) {
     let config = JSON.parse(fs.readFileSync(this.configPath, 'utf-8'));
     let stylesPath = path.join(this.localPath, 'styles')
     let currentStylePath = path.join(stylesPath, config.style + ".css")
 
-    if (!fs.existsSync(stylesPath)) {
-      fs.readdirSync(path.join(this.assetsPath, "styles")).filter(file => { return path.extname(file) === ".css"}).forEach(e => {
-        fs.copyFile(path.join(this.assetsPath, "styles", e), path.join(stylesPath, e))
-      })
-      fs.chmod(path.join(this.localPath, "styles"), '755')
-    }
-
     if (!fs.existsSync(currentStylePath) && !fs.existsSync(path.join(stylesPath, "mocha.css"))) {
       if (!fs.existsSync(path.join(stylesPath))) {
         fs.mkdir(stylesPath, (err) => { if (err) { throwErr(err) } })
+        }
+        fs.copyFile(path.join(this.assetsPath, "styles", "mocha.css"), path.join(stylesPath, "mocha.css"))
       }
-      fs.copyFile(path.join(this.assetsPath, "styles", "mocha.css"), path.join(stylesPath, "mocha.css"))
-    }
-  }
-}
 
+      if (config.fresh || force) {
+        fs.readdirSync(path.join(this.assetsPath, "styles")).filter(file => { return path.extname(file) === ".css"}).forEach(e => {
+          fs.copyFile(path.join(this.assetsPath, "styles", e), path.join(stylesPath, e))
+        })
+        fs.chmod(path.join(this.localPath, "styles"), '755')
+        fs.writeFileSync(this.configPath, JSON.stringify({...config, ...{fresh: false}}))
+      }
+    }    
+  }
+  
 module.exports = { default: AssetsManager }

@@ -1,22 +1,14 @@
-document.getElementById('accButton').addEventListener('click', () => { sendOnlineArt() })
+const $ = (id) => document.getElementById(id) 
+let language = window.electronAPI.language
 
-window.onload = async () => {
-  let language = await window.electronAPI.sendGetLanguage()
+$('accButton').addEventListener('click', () => { sendOnlineArt() })
 
-  let [_currentStyle, _styles, currentStylePath] = await window.electronAPI.sendGetStyles()
-
-  const node = document.createElement("link");
-  node.setAttribute('rel', 'stylesheet')
-  node.setAttribute('href', currentStylePath)
-  document.querySelector("head").appendChild(node)
-
-  document.getElementById('urlTxt').textContent = language.url
-  document.getElementById('accButton').title = language.accept
-}
+$('urlTxt').textContent = language.url
+$('accButton').title = language.accept
 
 const sendOnlineArt = () => {
-  if (document.getElementById('urlInput').value !== '') {
-    window.electronAPI.sendOnlineArt(document.getElementById('urlInput').value)
+  if ($('urlInput').value !== '') {
+    window.electronAPI.sendOnlineArt($('urlInput').value)
     window.close()
   }
 }

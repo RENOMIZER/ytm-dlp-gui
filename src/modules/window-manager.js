@@ -2,7 +2,7 @@ const { BrowserWindow, shell } = require('electron')
 const path = require('path')
 
 class WindowManager {
-  constructor() {
+  constructor(styleText) {
     this.srcRoot = path.join(__dirname, "..")
     this.projectRoot = path.join(__dirname, "../..")
     this.basicConfig = {
@@ -17,11 +17,12 @@ class WindowManager {
         preload: path.join(this.srcRoot, "preload.js")
       },
       removeMenu: true,
-      icon: path.join(this.projectRoot, "assets", "images", "icon.png"),
+      icon: path.join(this.projectRoot, "assets", "images", "icon.png")
     }
+    this.styleText = styleText
   }
 
-  createMain() {
+  async createMain() {
     this.main = new BrowserWindow({
       ...{
         width: 800,
@@ -29,11 +30,13 @@ class WindowManager {
         minWidth: 400,
         minHeight: 300,
         menuBarVisible: false,
+        sandbox: false
       }, ...this.basicConfig
     })
 
     this.main.loadFile(path.join(this.srcRoot, "screens", "index.html"))
     this.main.on('ready-to-show', () => { this.main.show() })
+    this.mainCSSkey = await this.main.webContents.insertCSS(this.styleText)
   }
 
   createAbout() {
@@ -54,6 +57,10 @@ class WindowManager {
       shell.openExternal(url)
       return { action: 'deny' }
     })
+    this.about.on('close', () => {
+      this.main.focus();
+    })
+    this.about.webContents.insertCSS(this.styleText)
   }
 
   createProxy(config) {
@@ -62,7 +69,7 @@ class WindowManager {
         width: 450,
         height: 450,
         resizable: false,
-        title: this.language.url,
+        title: this.language.proxy,
         parent: this.about,
         modal: true,
       }, ...this.basicConfig
@@ -73,7 +80,10 @@ class WindowManager {
       if (config.host) this.proxy.webContents.send('sendProxy', config)
       this.proxy.show()
     })
-    this.proxy.on('minimize', () => { this.main.minimize() })
+    this.proxy.on('close', () => {
+      this.about.focus();
+    })
+    this.proxy.webContents.insertCSS(this.styleText)
   }
 
   createEdit() {
@@ -90,7 +100,10 @@ class WindowManager {
 
     this.edit.loadFile(path.join(this.srcRoot, "screens", "edit.html"))
     this.edit.on('ready-to-show', () => { this.edit.show() })
-    this.edit.on('minimize', () => { this.main.minimize() })
+    this.edit.on('close', () => {
+      this.main.focus();
+    })
+    this.edit.webContents.insertCSS(this.styleText)
   }
 
   createUrl() {
@@ -107,6 +120,10 @@ class WindowManager {
 
     this.url.loadFile(path.join(this.srcRoot, "screens", "url.html"))
     this.url.on('ready-to-show', () => { this.url.show() })
+    this.url.on('close', () => {
+      this.edit.focus();
+    })
+    this.url.webContents.insertCSS(this.styleText)
   }
 
   send(window, channel, ...args) {
@@ -115,6 +132,12 @@ class WindowManager {
 
   setLanguage(language) {
     this.language = language
+  }
+
+  async setStyle(styleText) {
+    this.main.webContents.removeInsertedCSS(this.mainCSSkey)
+    this.mainCSSkey = await this.main.webContents.insertCSS(styleText)
+    this.styleText = styleText
   }
 }
 

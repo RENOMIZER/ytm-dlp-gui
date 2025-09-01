@@ -20,7 +20,7 @@ const configPath = path.join(localPath, "config.json")
 const YtDlpWrap = new YTDlpWrap(path.join(localPath, "yt-dlp", "yt-dlp" + (os.platform() === 'win32' ? '.exe' : '')))
 const Getter = new AssetsGetter();
 const Manager = new AssetsManager();
-const Windows = new WindowManager();
+const Windows = new WindowManager(Getter.getStyles().currentStyleText);
 
 let metadata = {}, changedMetadata = {}
 let currentVideo, rawMetadata, customArt
@@ -36,7 +36,7 @@ Windows.setLanguage(language)
 
 app.whenReady().then(async () => {
   ipcMain.handle('getStyles', () => { return Getter.getStyles() })
-  ipcMain.handle('getLanguage', () => { return language })
+  // ipcMain.handle('getLanguage', () => { return language })
 
   for (const [channel, listener] of Object.entries({
     // Window creation
@@ -96,12 +96,9 @@ app.whenReady().then(async () => {
     changeStyle: (_event, style) => {
       let config = JSON.parse(fs.readFileSync(configPath, 'utf-8'))
       if (config.style !== style) {
-        config.style = style
+        fs.writeFileSync(configPath, JSON.stringify({ ...config, ...{ style: style } }))
 
-        fs.writeFileSync(configPath, JSON.stringify(config))
-
-        Windows.main.reload()
-        Windows.about.reload()
+        Windows.setStyle(Getter.getStyles().currentStyleText)
       }
     },
     resetDeps: async () => {
@@ -116,13 +113,16 @@ app.whenReady().then(async () => {
     updateProxy: (_event, newConfig) => {
       let config = JSON.parse(fs.readFileSync(configPath, 'utf-8'))
 
-      fs.writeFileSync(configPath, JSON.stringify({...config, ...newConfig}))
+      fs.writeFileSync(configPath, JSON.stringify({ ...config, ...newConfig }))
 
       proxy = newConfig
     },
+    getLanguage: (event) => {
+      event.returnValue = language
+    },
 
     // Start downloading
-    startDownload: startDownload
+    startDownload
   })) {
     ipcMain.on(channel, listener)
   }
@@ -137,13 +137,9 @@ app.whenReady().then(async () => {
 
 /* Funcitions */
 const dlMetadata = async (videoURL) => {
-  if (videoURL === currentVideo && Object.keys(changedMetadata).length === 0) {
-    Windows.send(Windows.edit, 'sendMetadata', metadata)
-    return
-  }
-  else if (Object.keys(changedMetadata).length !== 0) {
-    Windows.send(Windows.edit, 'sendMetadata', changedMetadata)
-    return
+  if (videoURL === currentVideo) {
+    Windows.edit.webContents.once("dom-ready", () => Windows.send(Windows.edit, 'sendMetadata', ((Object.keys(changedMetadata).length === 0) ? metadata : changedMetadata)))
+    return 0;
   }
 
   if (proxy.proxy) {

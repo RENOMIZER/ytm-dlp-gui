@@ -31,7 +31,9 @@ class AssetsGetter {
       currentStylePath = path.join(stylesPath, "mocha.css")
     }
 
-    return [styles, currentStyle, currentStylePath]
+    let currentStyleText = fs.readFileSync(currentStylePath, 'utf-8')
+
+    return { styles, currentStyle, currentStyleText }
   }
 
   getProxy() {

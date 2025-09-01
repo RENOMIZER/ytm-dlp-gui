@@ -25,7 +25,9 @@ contextBridge.exposeInMainWorld('electronAPI', {
   onDownloadError: (callback) => ipcRenderer.on('sendDownloadError', callback),
   onRecieveDirectory: (callback) => ipcRenderer.on('sendDirectory', callback),
   onRecieveMetadata: (callback) => ipcRenderer.on('sendMetadata', callback),
-	onRecieveProgress: (callback) => ipcRenderer.on('sendProgress', callback),
+  onRecieveProgress: (callback) => ipcRenderer.on('sendProgress', callback),
   onRecieveProxy: (callback) => ipcRenderer.on('sendProxy', callback),
   onRecieveArt: (callback) => ipcRenderer.on('sendArt', callback),
+
+  language: ipcRenderer.sendSync('getLanguage')
 })
