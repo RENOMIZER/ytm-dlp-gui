@@ -36,7 +36,6 @@ Windows.setLanguage(language)
 
 app.whenReady().then(async () => {
   ipcMain.handle('getStyles', () => { return Getter.getStyles() })
-  // ipcMain.handle('getLanguage', () => { return language })
 
   for (const [channel, listener] of Object.entries({
     // Window creation

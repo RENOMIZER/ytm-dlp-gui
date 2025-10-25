@@ -12,7 +12,6 @@ contextBridge.exposeInMainWorld('electronAPI', {
   sendChooseDirectory: () => ipcRenderer.send('chooseDirectory'),
   sendReloadMetadata: () => ipcRenderer.send('reloadMetadata'),
   sendResetDependencies: () => ipcRenderer.send('resetDeps'),
-  sendGetLanguage: () => ipcRenderer.invoke('getLanguage'),
   sendGetStyles: () => ipcRenderer.invoke('getStyles'),
   sendClearCache: () => ipcRenderer.send('clearCache'),
   sendOpenAbout: () => ipcRenderer.send('openAbout'),
