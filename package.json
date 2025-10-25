@@ -20,9 +20,9 @@
     "@electron-forge/maker-wix": "^6.4.2",
     "@electron-forge/maker-zip": "^6.4.1",
     "@electron-forge/plugin-auto-unpack-natives": "^6.4.1",
-    "@electron-forge/publisher-github": "^6.4.2",
+    "@electron-forge/publisher-github": "^7.10.2",
     "@eslint/js": "^9.14.0",
-    "electron": "^26.1.0",
+    "electron": "^38.4.0",
     "eslint": "^9.14.0",
     "globals": "^15.12.0"
   },
