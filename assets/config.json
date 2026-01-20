@@ -1,0 +1,9 @@
+{
+  "fresh": true,
+  "lang": "en",
+  "style": "mocha",
+  "proxy": false,
+  "proto": "http",
+  "host": "",
+  "port": ""
+}

@@ -1,4 +1,4 @@
-/* Modules */
+/* NPM Modules */
 const { app, ipcMain, dialog } = require('electron')
 const { updateElectronApp } = require('update-electron-app')
 const YTDlpWrap = require('yt-dlp-wrap').default
@@ -8,57 +8,60 @@ const fs = require('fs-extra')
 const path = require('path')
 const os = require('os')
 
-const { logStream, throwErr } = require('./modules/throw-err')
+/* Local Modules */
+const LogManager = require('./modules/log-manager').default
 const WindowManager = require('./modules/window-manager').default
 const AssetsManager = require('./modules/assets-manager').default
-const AssetsGetter = require('./modules/assets-getter').default
 const getLocalPath = require("./modules/local-path").default
 
+/* Constants */
 const localPath = getLocalPath("ytm-dlp")
 const configPath = path.join(localPath, "config.json")
 
+/* Classes */
 const YtDlpWrap = new YTDlpWrap(path.join(localPath, "yt-dlp", "yt-dlp" + (os.platform() === 'win32' ? '.exe' : '')))
-const Getter = new AssetsGetter();
-const Manager = new AssetsManager();
-const Windows = new WindowManager(Getter.getStyles().currentStyleText);
+const logger = new LogManager();
+const manager = new AssetsManager(logger);
+const windows = new WindowManager(manager.getStyles().currentStyleText);
 
+/* Globals */
 let metadata = {}, changedMetadata = {}
 let currentVideo, rawMetadata, customArt
 
-/* Initialisation */
+/* Initialization */
 if (require('electron-squirrel-startup')) return
 updateElectronApp()
 
-let language = Getter.getLanguage()
-let proxy = Getter.getProxy()
+let language = manager.getLanguage()
+let proxy = manager.getProxy()
 
-Windows.setLanguage(language)
+windows.setLanguage(language)
 
 app.whenReady().then(async () => {
-  ipcMain.handle('getStyles', () => { return Getter.getStyles() })
+  ipcMain.handle('getStyles', () => { return manager.getStyles() })
 
   for (const [channel, listener] of Object.entries({
     // Window creation
-    openUrl: () => { Windows.createUrl() },
-    openAbout: () => { Windows.createAbout() },
-    openProxy: () => { Windows.createProxy(Getter.getProxy()) },
-    openEdit: (_event, videoURL) => { Windows.createEdit(), dlMetadata(videoURL) },
+    openUrl: () => { windows.createUrl() },
+    openAbout: () => { windows.createAbout() },
+    openProxy: () => { windows.createProxy(manager.getProxy()) },
+    openEdit: (_event, videoURL) => { windows.createEdit(), dlMetadata(videoURL) },
     chooseDirectory: () => {
-      dialog.showOpenDialog(Windows.main, {
+      dialog.showOpenDialog(windows.main, {
         title: language.seldlfolder,
         buttonLabel: language.select,
         properties: ['openDirectory']
-      }).then((e) => { if (!e.canceled) { Windows.send(Windows.main, 'sendDirectory', e.filePaths[0]) } })
+      }).then((e) => { if (!e.canceled) { windows.send(windows.main, 'sendDirectory', e.filePaths[0]) } })
     },
     openArt: () => {
-      dialog.showOpenDialog(Windows.edit, {
+      dialog.showOpenDialog(windows.edit, {
         title: language.selalbumart,
         buttonLabel: language.select,
         filters: [
           { name: 'Images', extensions: ['png', 'jpg', 'jpeg', 'webp'] }
         ],
         properties: ['openFile']
-      }).then((e) => { if (!e.canceled) { Windows.send(Windows.edit, 'sendArt', e.filePaths[0]); customArt = e.filePaths[0] } })
+      }).then((e) => { if (!e.canceled) { windows.send(windows.edit, 'sendArt', e.filePaths[0]); customArt = e.filePaths[0] } })
     },
 
     // Data receiving
@@ -82,29 +85,29 @@ app.whenReady().then(async () => {
 
           fs.writeFileSync(path.join(os.tmpdir(), "ytm-dlp-images", "art"), buffer)
 
-          Windows.send(Windows.edit, 'sendArt', path.join(os.tmpdir(), "ytm-dlp-images", "art"))
+          windows.send(windows.edit, 'sendArt', path.join(os.tmpdir(), "ytm-dlp-images", "art"))
           customArt = path.join(os.tmpdir(), "ytm-dlp-images", "art")
         })
         .catch((err) => {
-          throwErr(err)
+          logger.throwErr(err)
         })
     },
 
     // Data reloading
-    reloadMetadata: () => { Windows.send(Windows.edit, 'sendMetadata', metadata); customArt = null },
+    reloadMetadata: () => { windows.send(windows.edit, 'sendMetadata', metadata); customArt = null },
     changeStyle: (_event, style) => {
       let config = JSON.parse(fs.readFileSync(configPath, 'utf-8'))
       if (config.style !== style) {
         fs.writeFileSync(configPath, JSON.stringify({ ...config, ...{ style: style } }))
 
-        Windows.setStyle(Getter.getStyles().currentStyleText)
+        windows.setStyle(manager.getStyles().currentStyleText)
       }
     },
     resetDeps: async () => {
       fs.rmSync(path.join(localPath, "yt-dlp"), { recursive: true, force: true })
       fs.rmSync(path.join(localPath, "ffmpeg"), { recursive: true, force: true })
 
-      Manager.setupAll()
+      manager.setupAll(true)
     },
     clearCache: () => {
       if (fs.existsSync(path.join(os.homedir(), '.ffbinaries-cache'))) fs.rmSync(path.join(os.homedir(), '.ffbinaries-cache'), { recursive: true, force: true })
@@ -126,18 +129,18 @@ app.whenReady().then(async () => {
     ipcMain.on(channel, listener)
   }
 
-  Windows.createMain()
+  windows.createMain()
 
   app.on('window-all-closed', () => {
-    logStream.end(`[info] Log end.`)
+    logger.endLog()
     app.quit()
   })
 })
 
-/* Funcitions */
+/* Functions */
 const dlMetadata = async (videoURL) => {
   if (videoURL === currentVideo) {
-    Windows.edit.webContents.once("dom-ready", () => Windows.send(Windows.edit, 'sendMetadata', ((Object.keys(changedMetadata).length === 0) ? metadata : changedMetadata)))
+    windows.edit.webContents.once("dom-ready", () => windows.send(windows.edit, 'sendMetadata', ((Object.keys(changedMetadata).length === 0) ? metadata : changedMetadata)))
     return 0;
   }
 
@@ -167,7 +170,7 @@ const dlMetadata = async (videoURL) => {
   metadata.art = rawMetadata.thumbnails.pop().url
   currentVideo = videoURL
 
-  Windows.send(Windows.edit, 'sendMetadata', metadata)
+  windows.send(windows.edit, 'sendMetadata', metadata)
 }
 
 const startDownload = async (_event, videoURL, dirPath, ext, order) => {
@@ -188,7 +191,7 @@ const startDownload = async (_event, videoURL, dirPath, ext, order) => {
         lrc = await getLyrics(changedMetadata.track, changedMetadata.artist.replace(/(,[a-zа-яА-ЯA-Z0-9_ ]).*/g, ''), ' ', `${rawMetadata.duration}`)
       }
 
-      if (lrc instanceof Error) throwErr(lrc)
+      if (lrc instanceof Error) logger.throwErr(lrc)
 
       else {
         args.push(
@@ -243,19 +246,17 @@ const startDownload = async (_event, videoURL, dirPath, ext, order) => {
   YtDlpWrap.exec(args)
     .on('ytDlpEvent', (eType, eData) => {
       console.log('[' + eType + ']', eData)
-      logStream.write(`[${eType}] ${eData}\n`)
+      logger.logMessage(eType, eData)
 
       if (eType === 'download' && eData.slice(1, 4) !== 'Des' && eData.slice(4, 5) === '.') {
-        Windows.send(Windows.main, 'sendProgress', eData.slice(1, 4))
+        windows.send(windows.main, 'sendProgress', eData.slice(1, 4))
       }
     })
-    .on('error', (err) => { Windows.send(Windows.main, 'sendDownloadError'); throwErr(err) })
+    .on('error', (err) => { windows.send(windows.main, 'sendDownloadError'); logger.throwErr(err) })
     .on('close', () => {
-      logStream.write('\n')
-
-      Windows.send(Windows.main, 'sendDownloadFinished')
+      windows.send(windows.main, 'sendDownloadFinished')
       if (fs.existsSync(path.join(os.tmpdir(), '/ytm-dlp-images/art'))) {
-        fs.unlink(path.join(os.tmpdir(), '/ytm-dlp-images/art'), (err) => { if (err) { throwErr(err) } })
+        fs.unlink(path.join(os.tmpdir(), '/ytm-dlp-images/art'), (err) => { if (err) { logger.throwErr(err) } })
       }
     })
 
