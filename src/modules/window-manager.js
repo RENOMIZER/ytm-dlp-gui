@@ -35,8 +35,10 @@ class WindowManager {
     })
 
     this.main.loadFile(path.join(this.srcRoot, "screens", "index.html"))
-    this.main.on('ready-to-show', () => { this.main.show() })
-    this.mainCSSkey = await this.main.webContents.insertCSS(this.styleText)
+    this.main.on('ready-to-show', async () => {
+      this.mainCSSkey = await this.main.webContents.insertCSS(this.styleText)
+      this.main.show()
+    })
   }
 
   createAbout() {
@@ -52,7 +54,10 @@ class WindowManager {
     })
 
     this.about.loadFile(path.join(this.srcRoot, "screens", "about.html"))
-    this.about.on('ready-to-show', () => { this.about.show() })
+    this.about.on('ready-to-show', () => {
+      this.about.webContents.insertCSS(this.styleText)
+      this.about.show()
+    })
     this.about.webContents.setWindowOpenHandler(({ url }) => {
       shell.openExternal(url)
       return { action: 'deny' }
@@ -60,7 +65,6 @@ class WindowManager {
     this.about.on('close', () => {
       this.main.focus();
     })
-    this.about.webContents.insertCSS(this.styleText)
   }
 
   createProxy(config) {
@@ -78,12 +82,12 @@ class WindowManager {
     this.proxy.loadFile(path.join(this.srcRoot, "screens", "proxy.html"))
     this.proxy.on('ready-to-show', () => {
       if (config.host) this.proxy.webContents.send('sendProxy', config)
+      this.proxy.webContents.insertCSS(this.styleText)
       this.proxy.show()
     })
     this.proxy.on('close', () => {
       this.about.focus();
     })
-    this.proxy.webContents.insertCSS(this.styleText)
   }
 
   createEdit() {
@@ -99,11 +103,13 @@ class WindowManager {
     })
 
     this.edit.loadFile(path.join(this.srcRoot, "screens", "edit.html"))
-    this.edit.on('ready-to-show', () => { this.edit.show() })
+    this.edit.on('ready-to-show', () => {
+      this.edit.webContents.insertCSS(this.styleText)
+      this.edit.show()
+    })
     this.edit.on('close', () => {
       this.main.focus();
     })
-    this.edit.webContents.insertCSS(this.styleText)
   }
 
   createUrl() {
@@ -119,11 +125,32 @@ class WindowManager {
     })
 
     this.url.loadFile(path.join(this.srcRoot, "screens", "url.html"))
-    this.url.on('ready-to-show', () => { this.url.show() })
+    this.url.on('ready-to-show', () => {
+      this.url.webContents.insertCSS(this.styleText)
+      this.url.show()
+    })
     this.url.on('close', () => {
       this.edit.focus();
     })
-    this.url.webContents.insertCSS(this.styleText)
+  }
+
+  createSettings() {
+    this.settings = new BrowserWindow({
+      ...{
+        width: 450,
+        height: 150,
+        resizable: false,
+        title: this.language.settings,
+        parent: this.main,
+        modal: true,
+      }, ...this.basicConfig
+    })
+
+    this.settings.loadFile(path.join(this.srcRoot, "screens", "settings.html"))
+    this.settings.on('ready-to-show', () => {
+      this.settings.webContents.insertCSS(this.styleText)
+      this.settings.show()
+    })
   }
 
   send(window, channel, ...args) {
