@@ -1,27 +1,4 @@
-@import "https://www.nerdfonts.com/assets/css/webfont.css";
-@import "font/cantarell.css";
 @import "font/akony.css";
-
-:root {
-	--fallback-title-bar-height: 40px;
-  background-color: black;
-}
-
-html,
-body {
-	margin: 0;
-	padding: 0;
-}
-
-body {
-	height: 100vh;
-	width: 100vw;
-	background: var(--background-color);
-}
-
-* {
-	box-sizing: border-box;
-}
 
 .container {
 	width: 100%;
@@ -182,45 +159,6 @@ body {
 	color: var(--darker-text-color);
 	background-color: var(--light-text-color);
 	user-select: none;
-}
-
-.draggable {
-	-webkit-app-region: drag;
-}
-
-.non-draggable {
-	-webkit-app-region: no-drag;
-}
-
-#titleBarContainer {
-	position: absolute;
-	top: env(titlebar-area-y, 0);
-	height: env(titlebar-area-height, var(--fallback-title-bar-height));
-	width: 100%;
-	background-color: var(--header-color);
-}
-
-#titleBar {
-	position: absolute;
-	top: 0;
-	display: flex;
-	user-select: none;
-	height: 100%;
-	left: env(titlebar-area-x, 0);
-	width: 100%;
-	color: var(--header-text);
-	font-weight: bold;
-	text-align: center;
-}
-
-#titleBar .header {
-	top: 50%;
-	left: 50%;
-	transform: translate(-50%, -50%);
-	position: absolute;
-	align-self: center;
-	padding: 0px 16px 0px 16px;
-	font-family: "Cantarell";
 }
 
 .about-button {
