@@ -17,8 +17,12 @@ class AssetsManager {
     this.execExt = (os.platform() === 'win32' ? '.exe' : '')
     this.logger = logger
 
+    if (os.platform() === 'linux' && !fs.existsSync(this.localPath)) {
+      fs.mkdirSync(this.localPath)
+    }
+
     if (!fs.existsSync(this.configPath) || !fs.readFileSync(this.configPath, "utf-8").length) {
-      fs.copyFileSync(this.localPath, path.join(this.assetsPath, "config.json"))
+      fs.copyFileSync(path.join(this.assetsPath, "config.json"), path.join(this.localPath, "config.json"))
     }
 
     this.setupAll(false)

@@ -26,7 +26,7 @@ const windows = new WindowManager(manager.getStyles().currentStyleText);
 
 /* Globals */
 let metadata = {}, changedMetadata = {}
-let currentVideo, rawMetadata, customArt
+let currentVideo, customArt
 
 /* Initialization */
 if (require('electron-squirrel-startup')) return
@@ -61,7 +61,7 @@ app.whenReady().then(async () => {
           { name: 'Images', extensions: ['png', 'jpg', 'jpeg', 'webp'] }
         ],
         properties: ['openFile']
-      }).then((e) => { if (!e.canceled) { windows.send(windows.edit, 'sendArt', e.filePaths[0]); customArt = e.filePaths[0] } })
+      }).then((e) => { if (!e.canceled) { customArt = e.filePaths[0]; windows.send(windows.edit, 'sendArt', customArt) } })
     },
 
     // Data receiving
@@ -110,7 +110,10 @@ app.whenReady().then(async () => {
       manager.setupAll(true)
     },
     clearCache: () => {
+      logger.logMessage('info', 'Clearing ffsuite cache')
       if (fs.existsSync(path.join(os.homedir(), '.ffbinaries-cache'))) fs.rmSync(path.join(os.homedir(), '.ffbinaries-cache'), { recursive: true, force: true })
+      if (fs.existsSync(path.join(os.homedir(), '.ffbinaries-cache'))) logger.logMessage('error', 'Coundn\'t clear ffsuite cache')
+      else logger.logMessage('info', 'FFsuite cache successfuly cleared')
     },
     updateProxy: (_event, newConfig) => {
       let config = JSON.parse(fs.readFileSync(configPath, 'utf-8'))
@@ -144,6 +147,8 @@ const dlMetadata = async (videoURL) => {
     return 0;
   }
 
+  let rawMetadata = {}
+
   if (proxy.proxy) {
     rawMetadata = await YtDlpWrap.getVideoInfo([videoURL, '--proxy', `${proxy.proto}://${proxy.host}:${proxy.port}`])
   }
@@ -168,6 +173,7 @@ const dlMetadata = async (videoURL) => {
 
   metadata.genre = rawMetadata.genre ? rawMetadata.genre : ""
   metadata.art = rawMetadata.thumbnails.pop().url
+  metadata.duration = rawMetadata.duration
   currentVideo = videoURL
 
   windows.send(windows.edit, 'sendMetadata', metadata)
@@ -186,9 +192,9 @@ const startDownload = async (_event, videoURL, dirPath, ext, order) => {
     }
 
     if (changedMetadata.lyrics !== 'none' && ext !== 'mp3') {
-      let lrc = await getLyrics(changedMetadata.track, changedMetadata.artist.replace(/(,[a-zа-яА-ЯA-Z0-9_ ]).*/g, ''), changedMetadata.album, `${rawMetadata.duration}`)
+      let lrc = await getLyrics(changedMetadata.track, changedMetadata.artist.replace(/(,[a-zа-яА-ЯA-Z0-9_ ]).*/g, ''), changedMetadata.album, `${metadata.duration}`)
       if (lrc.plain === null) {
-        lrc = await getLyrics(changedMetadata.track, changedMetadata.artist.replace(/(,[a-zа-яА-ЯA-Z0-9_ ]).*/g, ''), ' ', `${rawMetadata.duration}`)
+        lrc = await getLyrics(changedMetadata.track, changedMetadata.artist.replace(/(,[a-zа-яА-ЯA-Z0-9_ ]).*/g, ''), ' ', `${metadata.duration}`)
       }
 
       if (lrc instanceof Error) logger.throwErr(lrc)
