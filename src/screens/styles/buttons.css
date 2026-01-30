@@ -1,0 +1,48 @@
+.act-button {
+  margin-left: 2%;
+  width: 45px;
+  height: 30px;
+  border: none;
+  border-radius: 5px;
+  color: var(--background-color);
+  text-align: center;
+  user-select: none;
+}
+
+.acc-button {
+  font-size: medium;
+  background-color: var(--accept-button-color);
+  cursor: pointer;
+  transition: 0.2s;
+}
+
+.acc-button:hover {
+  background-color: var(--accept-button-color-lighter);
+  box-shadow: 0 0 10px 10px var(--accept-button-color-glow-hover);
+  transition: 0.2s;
+}
+
+.acc-button:active {
+  background-color: var(--accept-button-color-darker);
+  box-shadow: 0 0 5px 5px var(--accept-button-color-glow-active);
+  transition: 0.2s;
+}
+
+.dec-button {
+  font-size: medium;
+  background-color: var(--decline-button-color);
+  cursor: pointer;
+  transition: 0.2s;
+}
+
+.dec-button:hover {
+  background-color: var(--decline-button-color-lighter);
+  box-shadow: 0 0 10px 10px var(--decline-button-color-glow-hover);
+  transition: 0.2s;
+}
+
+.dec-button:active {
+  background-color: var(--decline-button-color-darker);
+  box-shadow: 0 0 5px 5px var(--decline-button-color-glow-active);
+  transition: 0.2s;
+}

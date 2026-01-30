@@ -1,0 +1,18 @@
+.aboutSection {
+    display: flex;
+    flex-direction: column;
+}
+
+.aboutSection img {
+    align-self: center;
+    width: 200px;
+    height: 200px;
+}
+
+.aboutSection p {
+    align-self: center;
+}
+
+[hidden]{
+  display:none;
+}

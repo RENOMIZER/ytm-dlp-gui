@@ -5,12 +5,8 @@
     height: 100%;
 }
 
-@media (max-width: 450px) {
-    .mainContainer { flex-direction: column-reverse; }
-}
-
 .optionsContainer {
-    width: 200px;
+    min-width: 200px;
 }
 
 .optionsContainer>h1 {
@@ -51,13 +47,23 @@
 }
 
 .checkmark {
-    width: 4px;
-    background-color: gray;
+    background-color: grey;
     border-radius: 2px;
-    margin-right: 8px;
     transform-origin: center;
-    transform: scaleY(0);
     transition: transform 0.1s ease-in-out; 
+    will-change: transform;
+}
+
+.checkmarkWide {
+    width: 4px;
+    transform: scaleY(0);
+    margin-right: 8px;
+}
+
+.checkmarkThin {
+    height: 4px; 
+    transform: scaleX(0); 
+    margin-top: 8px; 
 }
 
 .separator {
@@ -67,5 +73,37 @@
 }
 
 .workAreaContainer {
-    padding-left: 20px;
+    padding: 0px 20px;
+    padding-bottom: 20px;
+    overflow: auto;
+    /* scrollbar-width:unset; */
+    scrollbar-color: var(--background-color-lighter) var(--background-color-darker);
 }
+
+.workAreaContainer>h1 {
+    margin-bottom: 30px;
+}
+
+.media {
+    width: 100%;
+    justify-content: center;
+    color: var(--text);
+    display: none;
+}
+
+@media (max-width: 450px) {
+    .mainContainer { flex-direction: column-reverse; }
+    .separator { width: unset; height: 1px; margin: 10px 30px 0 30px; }
+    .workAreaContainer { flex: 1; }
+    .optionsContainer { width: 100%; }
+    .optionsContainer>h1 { display: none; }
+    .optionsContainer>menu { display: flex; flex-direction: row; margin: 0; }
+    .optionsContainer>menu>li { display: flex; flex-direction: column-reverse; flex: 1; margin: 15px; }
+    .optionsContainer>menu>li>label { display: none; }
+    .optionsContainer>menu>li>.media { display: flex; align-self: center; }
+    .checkmarkWide { display: none; }
+    .checkmarkThin { display: block;  } */
+    .optionsContainer>menu>li:hover .checkmark { transform: scaleX(1); }
+    .optionsContainer>menu>li input:checked ~ .checkmark { transform: scaleX(1); }
+}
+

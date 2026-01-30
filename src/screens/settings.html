@@ -12,8 +12,11 @@
       font-src 'self' https://www.nerdfonts.com/assets/fonts/Symbols-2048-em%20Nerd%20Font%20Complete.woff2
     ">
     <link rel="stylesheet" href="styles/settings.css">
+    <link rel="stylesheet" href="styles/settings-about.css">
+    <link rel="stylesheet" href="styles/settings-proxy.css">
     <link rel="stylesheet" href="styles/generic.css">
     <link rel="stylesheet" href="styles/title-bar.css">
+    <!-- <link rel="stylesheet" href="styles/buttons.css"> -->
 </head>
 
 <body>
@@ -26,39 +29,88 @@
     <div class="mainContainer">
         <section class="optionsContainer">
             <h1 class="txt">Options</h1>
-            <menu>
+            <menu id="menu">
                 <li>
                     <input type="radio" id="langOpt" value="lang" name="options" checked>
-                    <div class="checkmark"></div>
+                    <div class="checkmark checkmarkWide"></div>
+                    <div class="checkmark checkmarkThin"></div>
                     <label for="langOpt" class="txt">Language</label>
+                    <label for="langOpt" class="media"><i class="nf nf-md-translate"></i></label>
                 </li>
                 <li>
                     <input type="radio" id="themeOpt" value="theme" name="options">
-                    <div class="checkmark"></div>
+                    <div class="checkmark checkmarkWide"></div>
+                    <div class="checkmark checkmarkThin"></div>
                     <label for="themeOpt" class="txt">Themes</label>
+                    <label for="themeOpt" class="media"><i class="nf nf-md-brush"></i></label>
                 </li>
                 <li>
                     <input type="radio" id="proxyOpt" value="proxy" name="options">
-                    <div class="checkmark"></div>
+                    <div class="checkmark checkmarkWide"></div>
+                    <div class="checkmark checkmarkThin"></div>
                     <label for="proxyOpt" class="txt">Proxy</label>
+                    <label for="proxyOpt" class="media"><i class="nf nf-md-connection"></i></label>
                 </li>
                 <li>
                     <input type="radio" id="depsOpt" value="deps" name="options">
-                    <div class="checkmark"></div>
+                    <div class="checkmark checkmarkWide"></div>
+                    <div class="checkmark checkmarkThin"></div>
                     <label for="depsOpt" class="txt">Dependencies</label>
+                    <label for="depsOpt" class="media"><i class="nf nf-oct-package_dependencies"></i></label>
                 </li>
                 <li>
                     <input type="radio" id="aboutOpt" value="about" name="options">
-                    <div class="checkmark"></div>
+                    <div class="checkmark checkmarkWide"></div>
+                    <div class="checkmark checkmarkThin"></div>
                     <label for="aboutOpt" class="txt">About</label>
+                    <label for="aboutOpt" class="media"><i class="nf nf-oct-info"></i></label>
                 </li>
             </menu>
         </section>
         <div class="separator"></div>
         <section class="workAreaContainer">
             <h1 class="txt" id="workAreaHeader">Language</h1>
-            <div id="langSettings">
-
+            <div class="aboutSection txt" id="aboutSection" hidden>
+                <img src="..\..\assets\images\icon.ico">
+                <p>YTM-DLP</p>
+                <span>
+                    YTM-DLP is an app created for sole purpose of
+                    downloading music off YouTube Music in particular and YouTube in general. <br>
+                    It does not download video, only audio. <br>
+                    It provides convinient way of editing said audio's metadata on the spot. <br>
+                    It was created as a practice project, to try my hand at development of desktop apps. <br>
+                    It is my first attempt at making one, so be aware of bad code and tons of bugs
+                    which you can report back to me and I'll try to fix them. <br>
+                    <br>
+                    If you are wondering "How to use this app?"
+                    you can refer to <a href="https://github.com/RENOMIZER/ytm-dlp-gui/blob/main/README.md"
+                        target="_blank" rel="noopener noreferrer"
+                        title="https://github.com/RENOMIZER/ytm-dlp-gui/blob/main/README.md">README</a> file
+                    in the GitHub repository.
+                </span>
+            </div>
+            <div class="proxySection txt" id="proxySection" hidden>
+                <div class="inputContainer">
+                    <span class="txt" id="hostTxt"></span>
+                    <input type="text" id="hostInput" class="url-input" id="hostInput">
+                </div>
+                <div class="inputContainer">
+                    <span class="txt" id="portTxt"></span>
+                    <input type="text" id="portInput" class="url-input" id="portInput">
+                </div>
+                <div class="inputContainer lowerContainer">
+                    <span class="txt" id="protoTxt"></span>
+                    <select name="protocol" id="protoSelect" , class="proto-select">
+                        <option value="http">HTTP</option>
+                        <option value="https">HTTPS</option>
+                        <option value="socks">SOCKS5</option>
+                    </select>
+                    <!-- <span class="txt" id="enableTxt"></span>
+                    <label class="switch">
+                        <input type="checkbox" id="enableSwitch">
+                        <span class="slider round"></span>
+                    </label> -->
+                </div>
             </div>
         </section>
     </div>
