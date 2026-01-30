@@ -137,9 +137,8 @@ class WindowManager {
   createSettings() {
     this.settings = new BrowserWindow({
       ...{
-        width: 450,
-        height: 150,
-        resizable: false,
+        minWidth: 310,
+        minHeight: 500,
         title: this.language.settings,
         parent: this.main,
         modal: true,

@@ -21,3 +21,11 @@ body {
 * {
   box-sizing: border-box;
 }
+
+.txt {
+  color: var(--text);
+  font-size: large;
+  font-weight: bold;
+  font-family: "Cantarell";
+  user-select: none;
+}

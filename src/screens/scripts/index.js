@@ -3,10 +3,10 @@ let language = window.electronAPI.language
 
 $('dlButton').addEventListener('click', () => { downloadStart() })
 $('setButton').addEventListener('click', () => { editOpen() })
-$('aboutButton').addEventListener('click', () => { window.electronAPI.sendOpenAbout() })
+$('settingsButton').addEventListener('click', () => { window.electronAPI.sendOpenSettings() })
 $('locButton').addEventListener('click', () => { window.electronAPI.sendChooseDirectory() })
 
-$('aboutButton').title = language.about
+// $('aboutButton').title = language.about
 $('dlButton').title = language.download
 $('setButton').title = language.settings
 $('locButton').title = language.dlfolder

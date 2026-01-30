@@ -1,0 +1,71 @@
+.mainContainer {
+    display: flex;
+    flex-direction: row;
+    padding-top: env(titlebar-area-height, var(--fallback-title-bar-height));
+    height: 100%;
+}
+
+@media (max-width: 450px) {
+    .mainContainer { flex-direction: column-reverse; }
+}
+
+.optionsContainer {
+    width: 200px;
+}
+
+.optionsContainer>h1 {
+    text-align: center;
+}
+
+.optionsContainer>menu {
+    padding: 0px 25px;
+}
+
+.optionsContainer>menu>li {
+    list-style-type: none;
+    display: flex;
+    flex-direction: row;
+    margin: 20px 0px;
+}
+
+.optionsContainer>menu label {
+    flex: 1;
+    cursor: pointer;
+}
+
+.optionsContainer>menu input {
+    position: absolute;
+    opacity: 0;
+    cursor: pointer;
+    height: 0;
+    width: 0;
+}
+
+.optionsContainer>menu>li:hover .checkmark {
+    transform: scaleY(1);
+}
+
+.optionsContainer>menu>li input:checked ~ .checkmark{
+    transform: scaleY(1);
+    background-color: cadetblue;
+}
+
+.checkmark {
+    width: 4px;
+    background-color: gray;
+    border-radius: 2px;
+    margin-right: 8px;
+    transform-origin: center;
+    transform: scaleY(0);
+    transition: transform 0.1s ease-in-out; 
+}
+
+.separator {
+    width: 1px;
+    margin: 30px 0px;
+    background-color: var(--background-color-lighter);
+}
+
+.workAreaContainer {
+    padding-left: 20px;
+}

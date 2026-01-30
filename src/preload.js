@@ -14,6 +14,7 @@ contextBridge.exposeInMainWorld('electronAPI', {
   sendResetDependencies: () => ipcRenderer.send('resetDeps'),
   sendGetStyles: () => ipcRenderer.invoke('getStyles'),
   sendClearCache: () => ipcRenderer.send('clearCache'),
+  sendOpenSettings: () => ipcRenderer.send('openSettings'),
   sendOpenAbout: () => ipcRenderer.send('openAbout'),
   sendOpenProxy: () => ipcRenderer.send('openProxy'),
   sendOpenArt: () => ipcRenderer.send('openArt'),

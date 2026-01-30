@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="UTF-8">
+    <!-- https://developer.mozilla.org/en-US/docs/Web/HTTP/CSP -->
+    <meta http-equiv="Content-Security-Policy" content="
+      default-src 'self'; 
+      script-src 'self'; 
+      img-src 'self' https://*;
+      style-src 'self' https://www.nerdfonts.com/assets/css/webfont.css 'unsafe-inline';
+      font-src 'self' https://www.nerdfonts.com/assets/fonts/Symbols-2048-em%20Nerd%20Font%20Complete.woff2
+    ">
+    <link rel="stylesheet" href="styles/settings.css">
+    <link rel="stylesheet" href="styles/generic.css">
+    <link rel="stylesheet" href="styles/title-bar.css">
+</head>
+
+<body>
+    <div id="titleBarContainer">
+        <div id="titleBar" class="draggable">
+            <span class="draggable header">Settings</span>
+        </div>
+    </div>
+
+    <div class="mainContainer">
+        <section class="optionsContainer">
+            <h1 class="txt">Options</h1>
+            <menu>
+                <li>
+                    <input type="radio" id="langOpt" value="lang" name="options" checked>
+                    <div class="checkmark"></div>
+                    <label for="langOpt" class="txt">Language</label>
+                </li>
+                <li>
+                    <input type="radio" id="themeOpt" value="theme" name="options">
+                    <div class="checkmark"></div>
+                    <label for="themeOpt" class="txt">Themes</label>
+                </li>
+                <li>
+                    <input type="radio" id="proxyOpt" value="proxy" name="options">
+                    <div class="checkmark"></div>
+                    <label for="proxyOpt" class="txt">Proxy</label>
+                </li>
+                <li>
+                    <input type="radio" id="depsOpt" value="deps" name="options">
+                    <div class="checkmark"></div>
+                    <label for="depsOpt" class="txt">Dependencies</label>
+                </li>
+                <li>
+                    <input type="radio" id="aboutOpt" value="about" name="options">
+                    <div class="checkmark"></div>
+                    <label for="aboutOpt" class="txt">About</label>
+                </li>
+            </menu>
+        </section>
+        <div class="separator"></div>
+        <section class="workAreaContainer">
+            <h1 class="txt" id="workAreaHeader">Language</h1>
+            <div id="langSettings">
+
+            </div>
+        </section>
+    </div>
+    <script src="scripts/settings.js"></script>
+</body>
+
+</html>

@@ -44,6 +44,7 @@ app.whenReady().then(async () => {
     // Window creation
     openUrl: () => { windows.createUrl() },
     openAbout: () => { windows.createAbout() },
+    openSettings: () => { windows.createSettings() },
     openProxy: () => { windows.createProxy(manager.getProxy()) },
     openEdit: (_event, videoURL) => { windows.createEdit(), dlMetadata(videoURL) },
     chooseDirectory: () => {
