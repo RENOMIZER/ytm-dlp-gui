@@ -13,26 +13,26 @@
   "repository": "github:RENOMIZER/ytm-dlp-gui",
   "license": "MIT",
   "devDependencies": {
-    "@electron-forge/cli": "^6.4.1",
-    "@electron-forge/maker-deb": "^6.4.1",
-    "@electron-forge/maker-rpm": "^6.4.1",
-    "@electron-forge/maker-squirrel": "^6.4.1",
-    "@electron-forge/maker-wix": "^6.4.2",
-    "@electron-forge/maker-zip": "^6.4.1",
-    "@electron-forge/plugin-auto-unpack-natives": "^6.4.1",
-    "@electron-forge/publisher-github": "^7.10.2",
+    "@electron-forge/cli": "^7.11.1",
+    "@electron-forge/maker-deb": "^7.11.1",
+    "@electron-forge/maker-rpm": "^7.11.1",
+    "@electron-forge/maker-squirrel": "^7.11.1",
+    "@electron-forge/maker-wix": "^7.11.1",
+    "@electron-forge/maker-zip": "^7.11.1",
+    "@electron-forge/plugin-auto-unpack-natives": "^7.11.1",
+    "@electron-forge/publisher-github": "^7.11.1",
     "@eslint/js": "^9.14.0",
-    "electron": "^38.4.0",
-    "eslint": "^9.14.0",
-    "globals": "^15.12.0"
+    "electron": "^40.1.0",
+    "eslint": "^9.39.2",
+    "globals": "^17.3.0"
   },
   "dependencies": {
-    "electron-squirrel-startup": "^1.0.0",
-    "ffbinaries-plus": "^1.2.1",
-    "fs-extra": "^11.1.1",
+    "electron-squirrel-startup": "^1.0.1",
+    "ffbinaries-plus": "^1.2.4",
+    "fs-extra": "^11.3.3",
     "lyrics-snatcher": "^1.1.0",
     "node-fetch-commonjs": "^3.3.2",
-    "update-electron-app": "^3.1.1",
-    "yt-dlp-wrap": "^2.3.11"
+    "update-electron-app": "^3.1.2",
+    "yt-dlp-wrap": "^2.3.12"
   }
 }
