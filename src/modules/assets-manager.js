@@ -135,16 +135,12 @@ class AssetsManager {
   getProxy() {
     let config = JSON.parse(fs.readFileSync(this.configPath, 'utf-8'))
 
-    if (config.host) {
-      return {
-        proxy: config.proxy,
-        proto: config.proto,
-        host: config.host,
-        port: config.port
-      }
+    return {
+      proxy: config.proxy,
+      proto: config.proto,
+      host: config.host,
+      port: config.port
     }
-
-    return { proxy: false }
   }
 }
 

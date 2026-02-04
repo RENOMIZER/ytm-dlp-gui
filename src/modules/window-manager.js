@@ -1,4 +1,4 @@
-const { BrowserWindow, shell } = require('electron')
+const { BrowserWindow } = require('electron')
 const path = require('path')
 
 class WindowManager {
@@ -38,55 +38,6 @@ class WindowManager {
     this.main.on('ready-to-show', async () => {
       this.mainCSSkey = await this.main.webContents.insertCSS(this.styleText)
       this.main.show()
-    })
-  }
-
-  createAbout() {
-    this.about = new BrowserWindow({
-      ...{
-        width: 450,
-        height: 600,
-        resizable: false,
-        title: this.language.title,
-        parent: this.main,
-        modal: true,
-      }, ...this.basicConfig
-    })
-
-    this.about.loadFile(path.join(this.srcRoot, "screens", "about.html"))
-    this.about.on('ready-to-show', () => {
-      this.about.webContents.insertCSS(this.styleText)
-      this.about.show()
-    })
-    this.about.webContents.setWindowOpenHandler(({ url }) => {
-      shell.openExternal(url)
-      return { action: 'deny' }
-    })
-    this.about.on('close', () => {
-      this.main.focus();
-    })
-  }
-
-  createProxy(config) {
-    this.proxy = new BrowserWindow({
-      ...{
-        width: 450,
-        height: 450,
-        resizable: false,
-        title: this.language.proxy,
-        parent: this.about,
-        modal: true,
-      }, ...this.basicConfig
-    })
-
-    this.proxy.loadFile(path.join(this.srcRoot, "screens", "proxy.html"))
-    this.proxy.on('ready-to-show', () => {
-      if (config.host) this.proxy.webContents.send('sendProxy', config)
-      this.proxy.webContents.insertCSS(this.styleText)
-      this.proxy.show()
-    })
-    this.proxy.on('close', () => {
-      this.about.focus();
     })
   }
 
@@ -134,7 +85,7 @@ class WindowManager {
     })
   }
 
-  createSettings() {
+  createSettings(config) {
     this.settings = new BrowserWindow({
       ...{
         minWidth: 310,
@@ -147,6 +98,7 @@ class WindowManager {
 
     this.settings.loadFile(path.join(this.srcRoot, "screens", "settings.html"))
     this.settings.on('ready-to-show', () => {
+      this.settings.webContents.send('sendProxy', config)
       this.settings.webContents.insertCSS(this.styleText)
       this.settings.show()
     })

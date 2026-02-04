@@ -43,9 +43,7 @@ app.whenReady().then(async () => {
   for (const [channel, listener] of Object.entries({
     // Window creation
     openUrl: () => { windows.createUrl() },
-    openAbout: () => { windows.createAbout() },
-    openSettings: () => { windows.createSettings() },
-    openProxy: () => { windows.createProxy(manager.getProxy()) },
+    openSettings: () => { windows.createSettings(manager.getProxy()) },
     openEdit: (_event, videoURL) => { windows.createEdit(), dlMetadata(videoURL) },
     chooseDirectory: () => {
       dialog.showOpenDialog(windows.main, {
@@ -68,15 +66,13 @@ app.whenReady().then(async () => {
     // Data receiving
     recieveMetadata: (_event, metadata) => { changedMetadata = metadata },
     recieveLanguage: (_event, lang) => {
-      if (lang !== language.current) {
-        let config = JSON.parse(fs.readFileSync(configPath))
-        config.lang = lang
+      let config = JSON.parse(fs.readFileSync(configPath))
+      config.lang = lang
 
-        fs.writeFileSync(configPath, JSON.stringify(config))
+      fs.writeFileSync(configPath, JSON.stringify(config))
 
-        app.relaunch()
-        app.quit()
-      }
+      app.relaunch()
+      app.quit()
     },
     receiveOnlineArt: (_event, artURL) => {
       fetch(artURL)
@@ -98,11 +94,10 @@ app.whenReady().then(async () => {
     reloadMetadata: () => { windows.send(windows.edit, 'sendMetadata', metadata); customArt = null },
     changeStyle: (_event, style) => {
       let config = JSON.parse(fs.readFileSync(configPath, 'utf-8'))
-      if (config.style !== style) {
-        fs.writeFileSync(configPath, JSON.stringify({ ...config, ...{ style: style } }))
 
-        windows.setStyle(manager.getStyles().currentStyleText)
-      }
+      fs.writeFileSync(configPath, JSON.stringify({ ...config, ...{ style: style } }))
+
+      windows.setStyle(manager.getStyles().currentStyleText)
     },
     resetDeps: async () => {
       fs.rmSync(path.join(localPath, "yt-dlp"), { recursive: true, force: true })

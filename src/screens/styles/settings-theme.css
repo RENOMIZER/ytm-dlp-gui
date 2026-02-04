@@ -1,0 +1,10 @@
+.inputContainer {
+  display: flex;
+  margin-bottom: 20px;
+}
+
+.inputContainer>span {
+  width: 100px;
+  min-width: 60px;
+  align-self: center;
+}

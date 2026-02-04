@@ -9,14 +9,17 @@
 }
 
 .inputContainer>span {
-    margin-right: 100px;
+  width: 100px;
+  min-width: 60px;
+  align-self: center;
 }
 
-.url-input {
+.urlInput {
   justify-self: end;
   margin: auto 0% auto auto;
   width: 300px;
-  height: 30px;
+  height: 34px;
+  min-width: 150px;
   padding-left: 10px;
   padding-right: 10px;
   border: none;
@@ -28,7 +31,7 @@
   user-select: none;
 }
 
-/* .switch {
+.switch {
   margin-left: auto;
   position: relative;
   display: inline-block;
@@ -49,9 +52,9 @@
   left: 0;
   right: 0;
   bottom: 0;
+  border-radius: 4px;
   background-color: var(--default-button-color-darker);
-  -webkit-transition: .4s;
-  transition: .4s;
+  transition: background-color .1s ease-in-out;
 }
 
 .slider:before {
@@ -61,57 +64,39 @@
   width: 26px;
   left: 4px;
   bottom: 4px;
-  background-color: var(--text);
-  -webkit-transition: .4s;
-  transition: .4s;
-}
-
-input:checked+.slider {
+  border-radius: 4px;
+  background-color: var(--background-color);
+  transition: transform .1s ease-in-out;
+  }
+  
+input:checked ~ .slider {
   background-color: var(--light-text-color);
 }
 
-input:focus+.slider {
-  box-shadow: 0 0 1px var(--light-text-color);
-}
-
-input:checked+.slider:before {
-  -webkit-transform: translateX(26px);
-  -ms-transform: translateX(26px);
+input:checked ~ .slider:before {
   transform: translateX(26px);
 }
 
-.slider.round {
-  border-radius: 34px;
-}
-
-.slider.round:before {
-  border-radius: 50%;
-} */
-
-.proto-select {
+.protoSelect {
+  height: 34px;
   margin-left: auto;
-  /* margin-right: auto; */
-  padding-left: 1.5vh;
-  padding-right: 1.5vh;
+  padding: 0px 10px;
   border: none;
-  border-radius: 0.625vh;
+  border-radius: 4px;
   font-weight: bold;
   font-family: "Cantarell";
   color: var(--darker-text-color);
   background-color: var(--light-text-color);
   user-select: none;
+  cursor: pointer;
 }
 
-.proto-select>option {
+.protoSelect>option {
   font-weight: bold;
   font-family: "Cantarell";
   color: var(--darker-text-color);
   user-select: none;
 }
-
-/* @media (max-width: 560px) {
-    .lowerContainer { flex-direction: column; }
-} */
 
 [hidden]{
   display:none;
