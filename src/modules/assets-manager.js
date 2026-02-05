@@ -1,5 +1,8 @@
+const { finished } = require('stream/promises')
 const ffbinaries = require('ffbinaries-plus')
 const { exec } = require('child_process')
+const { Readable } = require('stream')
+const extract = require('extract-zip')
 const fs = require('fs-extra')
 const path = require('path')
 const os = require('os')
@@ -32,6 +35,7 @@ class AssetsManager {
     this.setupStyles(forceReinstallStyles)
     this.setupYtDlp()
     this.setupFFmpeg()
+    this.setupQuickJS()
   }
 
   async setupYtDlp() {
@@ -42,16 +46,16 @@ class AssetsManager {
       fs.mkdir(ytDlpDirPath, (err) => { if (err) { this.logger.throwErr(err) } })
     }
 
-    if (!fs.existsSync(path.join(ytDlpDirPath, "arguments"))) {
-      fs.readFile(path.join(this.assetsPath, "arguments"), 'utf-8', (_err, data) => {
-        data = data.replace(/<ffmpeg_directory>/, path.join(this.localPath, "ffmpeg"))
-        fs.writeFile(path.join(ytDlpDirPath, "arguments"), data, (err) => { if (err) { this.logger.throwErr(err) } })
+    if (!fs.existsSync(path.join(ytDlpDirPath, "ytm-dlp.conf"))) {
+      fs.readFile(path.join(this.assetsPath, "ytm-dlp.conf"), 'utf-8', (_err, data) => {
+        data = data.replace(/<ffmpeg_directory>/, path.join(this.localPath, "ffmpeg")).replace(/<qjs-directory>/, path.join(this.localPath, "qjs"))
+        fs.writeFile(path.join(ytDlpDirPath, "ytm-dlp.conf"), data, (err) => { if (err) { this.logger.throwErr(err) } })
       })
     }
 
     exec(ytDlpExecPath, async (_error, _stdout, stderr) => {
       if (!stderr.includes('Usage:')) {
-        this.logger.throwErr('YT-DLP Executable Error!')
+        this.logger.throwErr('YT-DLP Executable Error')
 
         if (fs.existsSync(ytDlpExecPath)) {
           fs.unlinkSync(ytDlpExecPath)
@@ -69,7 +73,7 @@ class AssetsManager {
 
     exec(ffmpegExecPath, async (_error, _stdout, stderr) => {
       if (!stderr.includes('ffmpeg version')) {
-        this.logger.throwErr('FFMpeg Executable Error!')
+        this.logger.throwErr('FFMpeg Executable Error')
 
         ffbinaries.downloadBinaries(['ffmpeg'], { destination: ffmpegDirPath }, (err) => { if (err) { this.logger.throwErr(err) } })
       }
@@ -77,7 +81,7 @@ class AssetsManager {
 
     exec(ffprobeExecPath, async (_error, _stdout, stderr) => {
       if (!stderr.includes('ffprobe version')) {
-        this.logger.throwErr('FFProbe Executable Error!')
+        this.logger.throwErr('FFProbe Executable Error')
 
         ffbinaries.downloadBinaries(['ffprobe'], { destination: ffmpegDirPath }, (err) => { if (err) { this.logger.throwErr(err) } })
       }
@@ -103,6 +107,39 @@ class AssetsManager {
       fs.chmod(path.join(this.localPath, "styles"), '755')
       fs.writeFileSync(this.configPath, JSON.stringify({ ...config, ...{ fresh: false } }))
     }
+  }
+
+  setupQuickJS() {
+    let qjsPath = path.join(this.localPath, "qjs")
+    let qjsExecPath = path.join(qjsPath, "qjs" + this.execExt)
+
+    if (!fs.existsSync(qjsPath)) {
+      fs.mkdir(qjsPath, (err) => { if (err) { this.logger.throwErr(err) } })
+    }
+
+    exec(qjsExecPath + " --", async (_error, _stdout, stderr) => {
+      if (!stderr.includes('QuickJS-ng version')) {
+        this.logger.throwErr('QuickJS Executable Error')
+
+        if (fs.existsSync(qjsExecPath)) {
+          fs.unlinkSync(qjsExecPath)
+        }
+
+        let response = await fetch("https://bellard.org/quickjs/binary_releases/LATEST.json")
+        response = await response.json()
+
+        let downloadName = 'quickjs-' + (os.platform() === 'linux' ? 'linux' : 'win') + '-x86_64-' + response.version + '.zip'
+        let downloadPath = path.join(qjsPath, downloadName)
+        let fileStream = fs.createWriteStream(downloadPath, { flags: 'wx' })
+
+        response = await fetch("https://bellard.org/quickjs/binary_releases/" + downloadName)
+        await finished(Readable.fromWeb(response.body).pipe(fileStream))
+
+        await extract(downloadPath, { dir: qjsPath })
+
+        fs.unlinkSync(downloadPath)
+      }
+    })
   }
 
   getLanguage() {

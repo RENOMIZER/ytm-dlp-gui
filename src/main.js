@@ -176,7 +176,7 @@ const dlMetadata = async (videoURL) => {
 }
 
 const startDownload = async (_event, videoURL, dirPath, ext, order) => {
-  let args = fs.readFileSync(path.join(localPath, "yt-dlp/arguments"), 'UTF-8').split(/\n/).map(e => { return e.replace(/"/g, '') })
+  let args = fs.readFileSync(path.join(localPath, "yt-dlp/ytm-dlp.conf"), 'UTF-8').split(/\n/).map(e => { return e.replace(/"/g, '') })
 
   if (Object.keys(changedMetadata).length !== 0) {
     args.splice(-12)
