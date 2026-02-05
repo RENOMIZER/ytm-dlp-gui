@@ -1,4 +1,4 @@
-const $ = (id) => document.getElementById(id) 
+const $ = (id) => document.getElementById(id)
 let language = window.electronAPI.language
 
 $('dlButton').addEventListener('click', () => { downloadStart() })
@@ -6,31 +6,30 @@ $('setButton').addEventListener('click', () => { editOpen() })
 $('settingsButton').addEventListener('click', () => { window.electronAPI.sendOpenSettings() })
 $('locButton').addEventListener('click', () => { window.electronAPI.sendChooseDirectory() })
 
-// $('aboutButton').title = language.about
-$('dlButton').title = language.download
-$('setButton').title = language.settings
-$('locButton').title = language.dlfolder
-$('waitingLabel').textContent = language.waiting
-$('extTitle').textContent = language.extension
-$('ordTitle').textContent = language.order
+$('dlButton').title = language.index.download
+$('setButton').title = language.index.settings
+$('locButton').title = language.index.dlfolder
+$('waitingLabel').textContent = language.index.waiting
+$('extTitle').textContent = language.index.extension
+$('ordTitle').textContent = language.index.order
 
 window.electronAPI.onDownloadFinished(() => {
   setTimeout(() => {
-    $('waitingLabel').textContent = language.waiting
+    $('waitingLabel').textContent = language.index.waiting
     $('dlButton').removeAttribute('disabled')
   }, 1000)
 })
 
 window.electronAPI.onDownloadError(() => {
-  $('waitingLabel').textContent = language.error
+  $('waitingLabel').textContent = language.index.error
   setTimeout(() => {
-    $('waitingLabel').textContent = language.waiting
+    $('waitingLabel').textContent = language.index.waiting
     $('dlButton').removeAttribute('disabled')
   }, 2500)
 })
 
 window.electronAPI.onRecieveProgress((_event, prog) => {
-  $('waitingLabel').textContent = language.downloading + ` ${prog}%`
+  $('waitingLabel').textContent = language.index.downloading + ` ${prog}%`
 })
 
 window.electronAPI.onRecieveDirectory((_event, path) => {
@@ -48,7 +47,7 @@ const downloadStart = () => {
 
   window.electronAPI.sendStartDownload(videoURL.replace(/&list.*/gm, ''), $('inputLocation').value, $('extVal').value, $('ordSelect').value)
   $('dlButton').setAttribute('disabled', true)
-  $('waitingLabel').textContent = language.downloading
+  $('waitingLabel').textContent = language.index.downloading
   $('inputURL').value = ''
 }
 

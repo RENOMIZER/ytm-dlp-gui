@@ -3,55 +3,55 @@ let language = window.electronAPI.language
 let style = ''
 let oldProxy = {}
 
-$('hostTxt').textContent = language.host
-$('portTxt').textContent = language.port
-$('protoTxt').textContent = language.proto
-$('enableTxt').textContent = language.enable
-$('langTxt').textContent = language.language + ':'
-$('styleTxt').textContent = language.style + ':'
+$('hostTxt').textContent = language.settings.host
+$('portTxt').textContent = language.settings.port
+$('protoTxt').textContent = language.settings.proto
+$('enableTxt').textContent = language.settings.enable
+$('langTxt').textContent = language.settings.language
+$('styleTxt').textContent = language.settings.style
 $('langSelect').value = language.current
 
-$('menu').addEventListener('click', () => { 
-    if ($('langOpt').checked) {
-        $('workAreaHeader').innerHTML = 'Language'
-        $('langSection').hidden = false
-    }
-    else {
-        $('langSection').hidden = true
-    }
+$('menu').addEventListener('click', () => {
+  if ($('langOpt').checked) {
+    $('workAreaHeader').innerHTML = 'Language'
+    $('langSection').hidden = false
+  }
+  else {
+    $('langSection').hidden = true
+  }
 
-    if ($('themeOpt').checked) {
-        $('workAreaHeader').innerHTML = 'Themes'
-        $('themeSection').hidden = false
-    }
-    else {
-        $('themeSection').hidden = true
-    }
+  if ($('themeOpt').checked) {
+    $('workAreaHeader').innerHTML = 'Themes'
+    $('themeSection').hidden = false
+  }
+  else {
+    $('themeSection').hidden = true
+  }
 
-    if ($('proxyOpt').checked) {
-        $('workAreaHeader').innerHTML = 'Proxy'
-        $('proxySection').hidden = false
-    }
-    else if (!$('proxySection').hidden) {
-        sendProxyConfig()
-        $('proxySection').hidden = true
-    }
+  if ($('proxyOpt').checked) {
+    $('workAreaHeader').innerHTML = 'Proxy'
+    $('proxySection').hidden = false
+  }
+  else if (!$('proxySection').hidden) {
+    sendProxyConfig()
+    $('proxySection').hidden = true
+  }
 
-    if ($('depsOpt').checked) {
-        $('workAreaHeader').innerHTML = 'Dependencies'
-        $('depsSection').hidden = false
-    }
-    else {
-        $('depsSection').hidden = true
-    }
+  if ($('depsOpt').checked) {
+    $('workAreaHeader').innerHTML = 'Dependencies'
+    $('depsSection').hidden = false
+  }
+  else {
+    $('depsSection').hidden = true
+  }
 
-    if ($('aboutOpt').checked) {
-        $('workAreaHeader').innerHTML = 'About'
-        $('aboutSection').hidden = false
-    }
-    else {
-        $('aboutSection').hidden = true
-    }
+  if ($('aboutOpt').checked) {
+    $('workAreaHeader').innerHTML = 'About'
+    $('aboutSection').hidden = false
+  }
+  else {
+    $('aboutSection').hidden = true
+  }
 })
 
 const sendProxyConfig = () => {

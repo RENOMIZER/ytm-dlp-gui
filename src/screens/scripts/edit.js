@@ -1,4 +1,4 @@
-const $ = (id) => document.getElementById(id) 
+const $ = (id) => document.getElementById(id)
 let language = window.electronAPI.language
 
 let art = $('art')
@@ -17,20 +17,20 @@ $('urlButton').addEventListener('click', () => { window.electronAPI.sendOpenUrl(
 $('fileButton').addEventListener('click', () => { window.electronAPI.sendOpenArt() })
 $('relButton').addEventListener('click', () => { window.electronAPI.sendReloadMetadata() })
 
-$('header').textContent = language.loading
-$('urlButton').textContent = language.loadurl
-$('fileButton').textContent = language.loadfile
-$('titleTxt').textContent = language.title + ':'
-$('artistTxt').textContent = language.artist + ':'
-$('albumTxt').textContent = language.album + ':'
-$('yearTxt').textContent = language.year + ':'
-$('genreTxt').textContent = language.genre + ':'
-$('albumArtistTxt').textContent = language.albumartist + ':'
-$('lrcTxt').textContent = language.lyrics + ':'
-$('accButton').title = language.accept
-$('relButton').title = language.reset
-$('decButton').title = language.decline
-lyrics.title = language.lrcwarn
+$('header').textContent = language.edit.loading
+$('urlButton').textContent = language.edit.loadurl
+$('fileButton').textContent = language.edit.loadfile
+$('titleTxt').textContent = language.edit.title + ':'
+$('artistTxt').textContent = language.edit.artist + ':'
+$('albumTxt').textContent = language.edit.album + ':'
+$('yearTxt').textContent = language.edit.year + ':'
+$('genreTxt').textContent = language.edit.genre + ':'
+$('albumArtistTxt').textContent = language.edit.albumartist + ':'
+$('lrcTxt').textContent = language.edit.lyrics + ':'
+$('accButton').title = language.edit.accept
+$('relButton').title = language.edit.reset
+$('decButton').title = language.edit.decline
+lyrics.title = language.edit.lrcwarn
 
 window.electronAPI.onRecieveMetadata((_event, metadata) => {
   art.setAttribute('src', metadata.art)
@@ -42,7 +42,7 @@ window.electronAPI.onRecieveMetadata((_event, metadata) => {
   albumArtist.value = metadata.album_artist ? metadata.album_artist : ""
   lyrics.value = metadata.lyrics ? metadata.lyrics : "none"
   lyrics.removeAttribute('disabled')
-  setTimeout(() => { $('header').textContent = language.edit }, 1) // it works only this way and I don't know why
+  setTimeout(() => { $('header').textContent = language.edit.edit }, 1) // it works only this way and I don't know why
   $('accButton').removeAttribute('disabled')
   $('relButton').removeAttribute('disabled')
   $('artButton').removeAttribute('disabled')

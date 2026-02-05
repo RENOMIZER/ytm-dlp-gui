@@ -71,8 +71,9 @@ app.whenReady().then(async () => {
 
       fs.writeFileSync(configPath, JSON.stringify(config))
 
-      app.relaunch()
-      app.quit()
+      language = manager.getLanguage()
+
+      windows.main.reload()
     },
     receiveOnlineArt: (_event, artURL) => {
       fetch(artURL)
