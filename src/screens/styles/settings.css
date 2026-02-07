@@ -1,108 +1,168 @@
 .mainContainer {
-    display: flex;
-    flex-direction: row;
-    padding-top: env(titlebar-area-height, var(--fallback-title-bar-height));
-    height: 100%;
+  display: flex;
+  flex-direction: row;
+  padding-top: env(titlebar-area-height, var(--fallback-title-bar-height));
+  height: 100%;
 }
 
 .optionsContainer {
-    min-width: 200px;
+  min-width: 200px;
 }
 
 .optionsContainer>h1 {
-    text-align: center;
+  text-align: center;
 }
 
 .optionsContainer>menu {
-    padding: 0px 25px;
+  padding: 0px 25px;
 }
 
 .optionsContainer>menu>li {
-    list-style-type: none;
-    display: flex;
-    flex-direction: row;
-    margin: 20px 0px;
+  list-style-type: none;
+  display: flex;
+  flex-direction: row;
+  margin: 20px 0px;
 }
 
 .optionsContainer>menu label {
-    flex: 1;
-    cursor: pointer;
+  flex: 1;
+  cursor: pointer;
 }
 
 .optionsContainer>menu input {
-    position: absolute;
-    opacity: 0;
-    cursor: pointer;
-    height: 0;
-    width: 0;
+  position: absolute;
+  opacity: 0;
+  cursor: pointer;
+  height: 0;
+  width: 0;
 }
 
 .optionsContainer>menu>li:hover .checkmark {
-    transform: scaleY(1);
+  transform: scaleY(1);
 }
 
-.optionsContainer>menu>li input:checked ~ .checkmark{
-    transform: scaleY(1);
-    background-color: cadetblue;
+.optionsContainer>menu>li input:checked~.checkmark {
+  transform: scaleY(1);
+  background-color: cadetblue;
 }
 
 .checkmark {
-    background-color: grey;
-    border-radius: 2px;
-    transform-origin: center;
-    transition: transform 0.1s ease-in-out; 
-    will-change: transform;
+  background-color: grey;
+  border-radius: 2px;
+  transform-origin: center;
+  transition: transform 0.1s ease-in-out;
+  will-change: transform;
 }
 
 .checkmarkWide {
-    width: 4px;
-    transform: scaleY(0);
-    margin-right: 8px;
+  width: 4px;
+  transform: scaleY(0);
+  margin-right: 8px;
 }
 
 .checkmarkThin {
-    height: 4px; 
-    transform: scaleX(0); 
-    margin-top: 8px; 
+  height: 4px;
+  transform: scaleX(0);
+  margin-top: 8px;
 }
 
 .separator {
-    width: 1px;
-    margin: 30px 0px;
-    background-color: var(--background-color-lighter);
+  width: 1px;
+  margin: 30px 0px;
+  background-color: var(--background-color-lighter);
 }
 
 .workAreaContainer {
-    width: 100%;
-    padding: 0px 20px 20px 20px;
-    overflow: auto;
-    scrollbar-color: var(--background-color-lighter) var(--background-color-darker);
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  padding: 0px 20px 20px 20px;
+  margin-block-start: 1em;
+  overflow: auto;
+  scrollbar-color: var(--background-color-lighter) var(--background-color-darker);
 }
 
 .workAreaContainer>h1 {
-    margin-bottom: 30px;
+  margin-top: 0;
+  margin-bottom: 30px;
 }
 
 .media {
-    width: 100%;
-    justify-content: center;
-    color: var(--text);
-    display: none;
+  width: 100%;
+  justify-content: center;
+  color: var(--text);
+  display: none;
 }
 
 @media (max-width: 450px) {
-    .mainContainer { flex-direction: column-reverse; }
-    .separator { width: unset; height: 1px; margin: 10px 30px 0 30px; }
-    .workAreaContainer { flex: 1; }
-    .optionsContainer { width: 100%; }
-    .optionsContainer>h1 { display: none; }
-    .optionsContainer>menu { display: flex; flex-direction: row; margin: 0; }
-    .optionsContainer>menu>li { display: flex; flex-direction: column-reverse; flex: 1; margin: 15px; }
-    .optionsContainer>menu>li>label { display: none; }
-    .optionsContainer>menu>li>.media { display: flex; align-self: center; }
-    .checkmarkWide { display: none; }
-    .checkmarkThin { display: block;  } */
-    .optionsContainer>menu>li:hover .checkmark { transform: scaleX(1); }
-    .optionsContainer>menu>li input:checked ~ .checkmark { transform: scaleX(1); }
+  .mainContainer {
+    flex-direction: column-reverse;
+  }
+
+  .separator {
+    width: unset;
+    height: 1px;
+    margin: 10px 30px 0 30px;
+  }
+
+  .workAreaContainer {
+    flex: 1;
+  }
+
+  .optionsContainer {
+    width: 100%;
+  }
+
+  .optionsContainer>h1 {
+    display: none;
+  }
+
+  .optionsContainer>menu {
+    display: flex;
+    flex-direction: row;
+    margin: 0;
+  }
+
+  .optionsContainer>menu>li {
+    display: flex;
+    flex-direction: column-reverse;
+    flex: 1;
+    margin: 15px;
+  }
+
+  .optionsContainer>menu>li>label {
+    display: none;
+  }
+
+  .optionsContainer>menu>li>.media {
+    display: flex;
+    align-self: center;
+  }
+
+  .checkmarkWide {
+    display: none;
+  }
+
+  .checkmarkThin {
+    display: block;
+  }
+
+  */ .optionsContainer>menu>li:hover .checkmark {
+    transform: scaleX(1);
+  }
+
+  .optionsContainer>menu>li input:checked~.checkmark {
+    transform: scaleX(1);
+  }
 }
 
+.inputContainer {
+  display: flex;
+  margin-bottom: 20px;
+}
+
+.inputContainer>span {
+  width: 100px;
+  min-width: 60px;
+  align-self: center;
+}

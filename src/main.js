@@ -1,5 +1,5 @@
 /* NPM Modules */
-const { app, ipcMain, dialog } = require('electron')
+const { app, ipcMain, dialog, shell } = require('electron')
 const { updateElectronApp } = require('update-electron-app')
 const YTDlpWrap = require('yt-dlp-wrap').default
 const getLyrics = require('lyrics-snatcher')
@@ -121,6 +121,10 @@ app.whenReady().then(async () => {
     },
     getLanguage: (event) => {
       event.returnValue = language
+    },
+
+    openStylesDir: () => {
+      shell.openPath(path.join(localPath, 'styles'))
     },
 
     // Start downloading

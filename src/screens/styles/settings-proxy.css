@@ -3,17 +3,6 @@
   flex-direction: column;
 }
 
-.inputContainer {
-  display: flex;
-  margin-bottom: 20px;
-}
-
-.inputContainer>span {
-  width: 100px;
-  min-width: 60px;
-  align-self: center;
-}
-
 .urlInput {
   justify-self: end;
   margin: auto 0% auto auto;
@@ -66,7 +55,7 @@
   bottom: 4px;
   border-radius: 4px;
   background-color: var(--background-color);
-  transition: transform .1s ease-in-out;
+  transition: .1s ease-in-out;
 }
 
 input:checked~.slider {
@@ -75,6 +64,10 @@ input:checked~.slider {
 
 input:checked~.slider:before {
   transform: translateX(26px);
+}
+
+.switch:hover .slider:before {
+  background-color: var(--background-color-lighter);
 }
 
 .protoSelect {

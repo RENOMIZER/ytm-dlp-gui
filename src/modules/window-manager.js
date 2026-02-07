@@ -88,7 +88,7 @@ class WindowManager {
   createSettings(config) {
     this.settings = new BrowserWindow({
       ...{
-        minWidth: 310,
+        minWidth: 340,
         minHeight: 500,
         title: this.language.settings,
         parent: this.main,

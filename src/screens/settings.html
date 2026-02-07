@@ -2,142 +2,138 @@
 <html>
 
 <head>
-    <meta charset="UTF-8">
-    <!-- https://developer.mozilla.org/en-US/docs/Web/HTTP/CSP -->
-    <meta http-equiv="Content-Security-Policy" content="
+  <meta charset="UTF-8">
+  <!-- https://developer.mozilla.org/en-US/docs/Web/HTTP/CSP -->
+  <meta http-equiv="Content-Security-Policy" content="
       default-src 'self'; 
       script-src 'self'; 
       img-src 'self' https://*;
       style-src 'self' https://www.nerdfonts.com/assets/css/webfont.css 'unsafe-inline';
       font-src 'self' https://www.nerdfonts.com/assets/fonts/Symbols-2048-em%20Nerd%20Font%20Complete.woff2
     ">
-    <link rel="stylesheet" href="styles/settings.css">
-    <link rel="stylesheet" href="styles/settings-about.css">
-    <link rel="stylesheet" href="styles/settings-proxy.css">
-    <link rel="stylesheet" href="styles/settings-lang.css">
-    <link rel="stylesheet" href="styles/generic.css">
-    <link rel="stylesheet" href="styles/title-bar.css">
-    <!-- <link rel="stylesheet" href="styles/buttons.css"> -->
+  <link rel="stylesheet" href="styles/settings.css">
+  <link rel="stylesheet" href="styles/settings-about.css">
+  <link rel="stylesheet" href="styles/settings-proxy.css">
+  <link rel="stylesheet" href="styles/settings-appearance.css">
+  <link rel="stylesheet" href="styles/generic.css">
+  <link rel="stylesheet" href="styles/title-bar.css">
+  <!-- <link rel="stylesheet" href="styles/buttons.css"> -->
 </head>
 
 <body>
-    <div id="titleBarContainer">
-        <div id="titleBar" class="draggable">
-            <span class="draggable header">Settings</span>
-        </div>
+  <div id="titleBarContainer">
+    <div id="titleBar" class="draggable">
+      <span class="draggable header">Settings</span>
     </div>
+  </div>
 
-    <div class="mainContainer">
-        <section class="optionsContainer">
-            <h1 class="txt">Options</h1>
-            <menu id="menu">
-                <li>
-                    <input type="radio" id="langOpt" value="lang" name="options" checked>
-                    <div class="checkmark checkmarkWide"></div>
-                    <div class="checkmark checkmarkThin"></div>
-                    <label for="langOpt" class="txt">Language</label>
-                    <label for="langOpt" class="media"><i class="nf nf-md-translate"></i></label>
-                </li>
-                <li>
-                    <input type="radio" id="themeOpt" value="theme" name="options">
-                    <div class="checkmark checkmarkWide"></div>
-                    <div class="checkmark checkmarkThin"></div>
-                    <label for="themeOpt" class="txt">Themes</label>
-                    <label for="themeOpt" class="media"><i class="nf nf-md-brush"></i></label>
-                </li>
-                <li>
-                    <input type="radio" id="proxyOpt" value="proxy" name="options">
-                    <div class="checkmark checkmarkWide"></div>
-                    <div class="checkmark checkmarkThin"></div>
-                    <label for="proxyOpt" class="txt">Proxy</label>
-                    <label for="proxyOpt" class="media"><i class="nf nf-md-connection"></i></label>
-                </li>
-                <li>
-                    <input type="radio" id="depsOpt" value="deps" name="options">
-                    <div class="checkmark checkmarkWide"></div>
-                    <div class="checkmark checkmarkThin"></div>
-                    <label for="depsOpt" class="txt">Dependencies</label>
-                    <label for="depsOpt" class="media"><i class="nf nf-oct-package_dependencies"></i></label>
-                </li>
-                <li>
-                    <input type="radio" id="aboutOpt" value="about" name="options">
-                    <div class="checkmark checkmarkWide"></div>
-                    <div class="checkmark checkmarkThin"></div>
-                    <label for="aboutOpt" class="txt">About</label>
-                    <label for="aboutOpt" class="media"><i class="nf nf-oct-info"></i></label>
-                </li>
-            </menu>
-        </section>
-        <div class="separator"></div>
-        <section class="workAreaContainer">
-            <h1 class="txt" id="workAreaHeader">Language</h1>
-            <div class="langSection txt" id="langSection">
-                <div class="inputContainer">
-                    <span class="txt" id="langTxt"></span>
-                    <select name="language" id="langSelect" class="protoSelect">
-                        <option value="en">English</option>
-                        <option value="ru">Русский</option>
-                    </select>
-                </div>
-            </div>
-            <div class="themeSection txt" id="themeSection" hidden>
-                <div class="inputContainer">
-                    <span class="txt" id="styleTxt"></span>
-                    <select name="style" id="styleSelect" class="protoSelect">
-                        <!-- Styles populate here -->
-                    </select>
-                </div>
-            </div>
-            <div class="proxySection txt" id="proxySection" hidden>
-                <div class="inputContainer">
-                    <span class="txt" id="hostTxt"></span>
-                    <input type="text" id="hostInput" class="urlInput" id="hostInput">
-                </div>
-                <div class="inputContainer">
-                    <span class="txt" id="portTxt"></span>
-                    <input type="text" id="portInput" class="urlInput" id="portInput">
-                </div>
-                <div class="inputContainer">
-                    <span class="txt" id="protoTxt"></span>
-                    <select name="protocol" id="protoSelect" class="protoSelect">
-                        <option value="http">HTTP</option>
-                        <option value="https">HTTPS</option>
-                        <option value="socks">SOCKS5</option>
-                    </select>
-                </div>
-                <div class="inputContainer">
-                    <span class="txt" id="enableTxt"></span>
-                    <label class="switch">
-                        <input type="checkbox" id="enableSwitch">
-                        <span class="slider"></span>
-                    </label>
-                </div>
-            </div>
-            <div class="depsSection txt" id="depsSection" hidden>
-                
-            </div>
-            <div class="aboutSection txt" id="aboutSection" hidden>
-                <img src="..\..\assets\images\icon.ico">
-                <p>YTM-DLP</p>
-                <span>
-                    YTM-DLP is an app created for sole purpose of
-                    downloading music off YouTube Music in particular and YouTube in general. <br>
-                    It does not download video, only audio. <br>
-                    It provides convinient way of editing said audio's metadata on the spot. <br>
-                    It was created as a practice project, to try my hand at development of desktop apps. <br>
-                    It is my first attempt at making one, so be aware of bad code and tons of bugs
-                    which you can report back to me and I'll try to fix them. <br>
-                    <br>
-                    If you are wondering "How to use this app?"
-                    you can refer to <a href="https://github.com/RENOMIZER/ytm-dlp-gui/blob/main/README.md"
-                        target="_blank" rel="noopener noreferrer"
-                        title="https://github.com/RENOMIZER/ytm-dlp-gui/blob/main/README.md">README</a> file
-                    in the GitHub repository.
-                </span>
-            </div>
-        </section>
-    </div>
-    <script src="scripts/settings.js"></script>
+  <div class="mainContainer">
+    <section class="optionsContainer">
+      <menu id="menu">
+        <li>
+          <input type="radio" id="appearOpt" value="appear" name="options" checked>
+          <div class="checkmark checkmarkWide"></div>
+          <div class="checkmark checkmarkThin"></div>
+          <label for="appearOpt" id="appearLabel" class="txt">Appearance</label>
+          <label for="appearOpt" class="media"><i class="nf nf-md-translate"></i></label>
+        </li>
+        <li>
+          <input type="radio" id="proxyOpt" value="proxy" name="options">
+          <div class="checkmark checkmarkWide"></div>
+          <div class="checkmark checkmarkThin"></div>
+          <label for="proxyOpt" id="proxyLabel" class="txt">Proxy</label>
+          <label for="proxyOpt" class="media"><i class="nf nf-md-connection"></i></label>
+        </li>
+        <li>
+          <input type="radio" id="depsOpt" value="deps" name="options">
+          <div class="checkmark checkmarkWide"></div>
+          <div class="checkmark checkmarkThin"></div>
+          <label for="depsOpt" id="depsLabel" class="txt">Dependencies</label>
+          <label for="depsOpt" class="media"><i class="nf nf-oct-package_dependencies"></i></label>
+        </li>
+        <li>
+          <input type="radio" id="aboutOpt" value="about" name="options">
+          <div class="checkmark checkmarkWide"></div>
+          <div class="checkmark checkmarkThin"></div>
+          <label for="aboutOpt" id="aboutLabel" class="txt">About</label>
+          <label for="aboutOpt" class="media"><i class="nf nf-oct-info"></i></label>
+        </li>
+      </menu>
+    </section>
+    <div class="separator"></div>
+    <section class="workAreaContainer">
+      <h1 class="txt" id="workAreaHeader"></h1>
+      <div class="appearSection txt" id="appearSection">
+        <div class="inputContainer">
+          <span class="txt" id="langTxt"></span>
+          <select name="language" id="langSelect" class="protoSelect">
+            <option value="en">English</option>
+            <option value="ru">Русский</option>
+          </select>
+        </div>
+        <div class="inputContainer">
+          <span class="txt" id="styleTxt"></span>
+          <select name="style" id="styleSelect" class="protoSelect">
+            <!-- Styles populate here -->
+          </select>
+        </div>
+        <div class="inputContainer">
+          <button type="button" id="styleDirButton" class="openStyleButton"></button>
+        </div>
+        <div class="dragndropContainer" id="dropZone">
+          <!-- Drag and Drop Here to Import New Style -->
+        </div>
+      </div>
+      <div class="proxySection txt" id="proxySection" hidden>
+        <div class="inputContainer">
+          <span class="txt" id="hostTxt"></span>
+          <input type="text" id="hostInput" class="urlInput" id="hostInput">
+        </div>
+        <div class="inputContainer">
+          <span class="txt" id="portTxt"></span>
+          <input type="text" id="portInput" class="urlInput" id="portInput">
+        </div>
+        <div class="inputContainer">
+          <span class="txt" id="protoTxt"></span>
+          <select name="protocol" id="protoSelect" class="protoSelect">
+            <option value="http">HTTP</option>
+            <option value="https">HTTPS</option>
+            <option value="socks">SOCKS5</option>
+          </select>
+        </div>
+        <div class="inputContainer">
+          <span class="txt" id="enableTxt"></span>
+          <label class="switch">
+            <input type="checkbox" id="enableSwitch">
+            <span class="slider"></span>
+          </label>
+        </div>
+      </div>
+      <div class="depsSection txt" id="depsSection" hidden>
+
+      </div>
+      <div class="aboutSection txt" id="aboutSection" hidden>
+        <img src="..\..\assets\images\icon.ico">
+        <p>YTM-DLP</p>
+        <span>
+          YTM-DLP is an app created for sole purpose of
+          downloading music off YouTube Music in particular and YouTube in general. <br>
+          It does not download video, only audio. <br>
+          It provides convinient way of editing said audio's metadata on the spot. <br>
+          It was created as a practice project, to try my hand at development of desktop apps. <br>
+          It is my first attempt at making one, so be aware of bad code and tons of bugs
+          which you can report back to me and I'll try to fix them. <br>
+          <br>
+          If you are wondering "How to use this app?"
+          you can refer to <a href="https://github.com/RENOMIZER/ytm-dlp-gui/blob/main/README.md" target="_blank"
+            rel="noopener noreferrer" title="https://github.com/RENOMIZER/ytm-dlp-gui/blob/main/README.md">README</a>
+          file
+          in the GitHub repository.
+        </span>
+      </div>
+    </section>
+  </div>
+  <script src="scripts/settings.js"></script>
 </body>
 
 </html>

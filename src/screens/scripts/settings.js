@@ -10,26 +10,62 @@ $('enableTxt').textContent = language.settings.enable
 $('langTxt').textContent = language.settings.language
 $('styleTxt').textContent = language.settings.style
 $('langSelect').value = language.current
+$('styleDirButton').innerHTML = language.settings.openLangDir
+$('appearLabel').innerHTML = language.settings.appearance
+$('proxyLabel').innerHTML = language.settings.proxy
+$('depsLabel').innerHTML = language.settings.dependencies
+$('aboutLabel').innerHTML = language.settings.about
+$('workAreaHeader').innerHTML = language.settings.appearance
+
+$('styleDirButton').addEventListener('click', () => window.electronAPI.sendOpenStylesDir())
+
+$('dropZone').addEventListener('drop', (e) => {
+  if ([...e.dataTransfer.items].some((item) => item.kind === "file")) {
+    e.preventDefault();
+  }
+})
+
+$('dropZone').addEventListener('dragover', (e) => {
+  const fileItems = [...e.dataTransfer.items].filter(
+    (item) => item.kind === "file",
+  );
+  if (fileItems.length > 0) {
+    e.preventDefault();
+    if (fileItems.some((item) => item.type.startsWith("text/css"))) {
+      console.log(e.dataTransfer.files)
+    } else {
+
+      console.log('Wrong')
+    }
+  }
+})
+
+window.addEventListener("dragover", (e) => {
+  const fileItems = [...e.dataTransfer.items].filter(
+    (item) => item.kind === "file",
+  );
+  if (fileItems.length > 0) {
+    e.preventDefault();
+    if (!$('dropZone').contains(e.target)) {
+      e.dataTransfer.dropEffect = "none";
+    }
+  }
+})
+
+$('dropZone').addEventListener('dragenter', () => { console.log('drag start') })
+$('dropZone').addEventListener('dragleave', () => { console.log('drag end') })
 
 $('menu').addEventListener('click', () => {
-  if ($('langOpt').checked) {
-    $('workAreaHeader').innerHTML = 'Language'
-    $('langSection').hidden = false
+  if ($('appearOpt').checked) {
+    $('workAreaHeader').innerHTML = language.settings.appearance
+    $('appearSection').hidden = false
   }
   else {
-    $('langSection').hidden = true
-  }
-
-  if ($('themeOpt').checked) {
-    $('workAreaHeader').innerHTML = 'Themes'
-    $('themeSection').hidden = false
-  }
-  else {
-    $('themeSection').hidden = true
+    $('appearSection').hidden = true
   }
 
   if ($('proxyOpt').checked) {
-    $('workAreaHeader').innerHTML = 'Proxy'
+    $('workAreaHeader').innerHTML = language.settings.proxy
     $('proxySection').hidden = false
   }
   else if (!$('proxySection').hidden) {
@@ -38,7 +74,7 @@ $('menu').addEventListener('click', () => {
   }
 
   if ($('depsOpt').checked) {
-    $('workAreaHeader').innerHTML = 'Dependencies'
+    $('workAreaHeader').innerHTML = language.settings.dependencies
     $('depsSection').hidden = false
   }
   else {
@@ -46,7 +82,7 @@ $('menu').addEventListener('click', () => {
   }
 
   if ($('aboutOpt').checked) {
-    $('workAreaHeader').innerHTML = 'About'
+    $('workAreaHeader').innerHTML = language.settings.about
     $('aboutSection').hidden = false
   }
   else {

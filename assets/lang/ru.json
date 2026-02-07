@@ -40,7 +40,10 @@
     "host": "Хост",
     "port": "Порт",
     "proto": "Протокол",
-    "enable": "Включить"
+    "enable": "Включить",
+    "openLangDir": "Открыть папку с темами",
+    "appearance": "Внешний вид",
+    "dependencies": "Зависимости"
   },
   "url": {
     "title": "Введите URL",

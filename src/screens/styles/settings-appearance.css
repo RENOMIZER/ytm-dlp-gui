@@ -1,0 +1,28 @@
+.appearSection {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+}
+
+.openStyleButton {
+  flex: 1;
+  height: 34px;
+  border: none;
+  border-radius: 5px;
+  font-weight: bold;
+  font-family: "Cantarell";
+  color: var(--darker-text-color);
+  background-color: var(--light-text-color);
+  cursor: pointer;
+}
+
+.dragndropContainer {
+  background-color: rgba(95, 158, 160, 0.1);
+  border: 2px solid rgba(95, 158, 160, 0.3);
+  border-radius: 16px;
+  flex: 1;
+}
+
+[hidden] {
+  display: none;
+}
